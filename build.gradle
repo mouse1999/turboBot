@@ -35,7 +35,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-	testImplementation 'com.microsoft.playwright:playwright:1.41.2'
+	testImplementation 'com.microsoft.playwright:playwright:1.57.0'
 }
 
 tasks.named('test') {
