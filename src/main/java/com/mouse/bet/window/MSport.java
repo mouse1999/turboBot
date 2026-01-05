@@ -146,7 +146,7 @@ public class MSport implements BettingWindow, Runnable {
      */
     private void performLogin(Page page) throws Exception {
         log.info("{} {} Attempting to login with username: {}", EMOJI_LOGIN, EMOJI_TARGET, sportyUsername);
-        // TODO: Implementation to perform login
+        // TODO: Implementation to perform login, Use msportlogin util class to supply implementation
     }
 
     /**
@@ -1102,29 +1102,6 @@ public class MSport implements BettingWindow, Runnable {
     // INNER CLASSES & ENUMS
     // ========================================================================
 
-    /**
-     * Enum representing different sport types
-     */
-    public enum SportType {
-        FOOTBALL("Football"),
-        BASKETBALL("Basketball"),
-        TABLE_TENNIS("Table Tennis");
-
-        private final String displayName;
-
-        SportType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        @Override
-        public String toString() {
-            return displayName;
-        }
-    }
 
     /**
      * Custom exception for captcha detection

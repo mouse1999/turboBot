@@ -1,6 +1,6 @@
 package com.mouse.bet.client;
 
-
+import com.mouse.bet.dto.BreakingBetResponse;
 import com.mouse.bet.interceptor.SimpleHttpLoggingInterceptor;
 import com.mouse.bet.manager.TokenExpirationManager;
 import lombok.RequiredArgsConstructor;
@@ -290,6 +290,16 @@ public class BreakingBetClient {
     }
 
     /**
+     * Fetches and parses prematch arbitrage opportunities as objects
+     * @return Parsed BreakingBetResponse object
+     * @throws IOException if request fails
+     */
+    public BreakingBetResponse fetchPrematchArbsAsObject() throws IOException {
+        String jsonResponse = fetchPrematchArbs();
+        return parseResponse(jsonResponse);
+    }
+
+    /**
      * Fetches current live arbitrage opportunities
      * @return JSON string response containing live arbs
      * @throws IOException if request fails
@@ -311,6 +321,39 @@ public class BreakingBetClient {
             log.error("{} {} Error fetching live arbs: {}",
                     EMOJI_ERROR, EMOJI_REQUEST, e.getMessage(), e);
             throw e;
+        }
+    }
+
+    /**
+     * Fetches and parses live arbitrage opportunities as objects
+     * @return Parsed BreakingBetResponse object
+     * @throws IOException if request fails
+     */
+    public BreakingBetResponse fetchLiveArbsAsObject() throws IOException {
+        String jsonResponse = fetchLiveArbs();
+        return parseResponse(jsonResponse);
+    }
+
+    /**
+     * Parse JSON response string into BreakingBetResponse object
+     * @param jsonResponse Raw JSON string
+     * @return Parsed BreakingBetResponse object
+     * @throws IOException if parsing fails
+     */
+    private BreakingBetResponse parseResponse(String jsonResponse) throws IOException {
+        try {
+            BreakingBetResponse response = objectMapper.readValue(jsonResponse, BreakingBetResponse.class);
+
+            log.info("{} {} Parsed response: {} items, {} events",
+                    EMOJI_SUCCESS, EMOJI_INFO,
+                    response.getItems() != null ? response.getItems().size() : 0,
+                    response.getEvents() != null ? response.getEvents().size() : 0);
+
+            return response;
+        } catch (Exception e) {
+            log.error("{} {} Failed to parse response into object: {}",
+                    EMOJI_ERROR, EMOJI_INFO, e.getMessage());
+            throw new IOException("Failed to parse Breaking-Bet response", e);
         }
     }
 

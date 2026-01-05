@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.0.1'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id "com.github.node-gradle.node" version "7.0.2"
 }
 
 group = 'com.mouse'
@@ -37,6 +38,43 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 	implementation 'com.microsoft.playwright:playwright:1.57.0'
 	implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+}
+
+
+
+// Node configuration - use existing Node.js
+node {
+	download = false
+	version = "20.10.0"
+	nodeProjectDir = file("${project.projectDir}/src/main/frontend")
+}
+
+// Task to install npm dependencies
+//task npmInstall(type: NpmTask) {
+//	args = ['install']
+//}
+
+// Task to build the React app
+task buildReactApp(type: NpmTask) {
+	dependsOn npmInstall
+	args = ['run', 'build']
+}
+
+// Task to copy React build to Spring Boot static folder
+task copyReactBuild(type: Copy) {
+	dependsOn buildReactApp
+	from "${project.projectDir}/src/main/frontend/dist"  // Vite uses 'dist'
+	into "${project.buildDir}/resources/main/static"
+}
+
+// Make sure React is built before Java resources are processed
+processResources.dependsOn copyReactBuild
+
+// Clean task to remove old builds
+clean {
+	delete "${project.projectDir}/src/main/frontend/dist"
+	delete "${project.projectDir}/src/main/frontend/node_modules"
 }
 
 tasks.named('test') {
