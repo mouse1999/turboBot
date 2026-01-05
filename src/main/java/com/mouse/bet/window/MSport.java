@@ -2,12 +2,22 @@ package com.mouse.bet.window;
 
 import com.microsoft.playwright.*;
 import com.mouse.bet.config.WindowConfig;
+import com.mouse.bet.enums.BookMaker;
+import com.mouse.bet.enums.Sport;
+import com.mouse.bet.exception.CaptchaDetectedException;
 import com.mouse.bet.exception.PageHealthException;
+
+import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.interfaces.BettingWindow;
 import com.mouse.bet.manager.ProfileManager;
+import com.mouse.bet.manager.WindowSyncManager;
 import com.mouse.bet.monitor.PageHealthMonitor;
 import com.mouse.bet.profile.UserAgentProfile;
+import com.mouse.bet.util.msport.MSportLoginUtil;
+import com.mouse.bet.util.msport.MSportMarketUtil;
+import com.mouse.bet.util.msport.MSportNavigationUtil;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -48,33 +59,36 @@ public class MSport implements BettingWindow, Runnable {
     private static final String EMOJI_CART = "🛒";
     private static final String EMOJI_MONEY = "💰";
 
+    // Playwright components
     private Playwright playwright;
     private Browser browser;
     private BrowserContext currentContext;
     private UserAgentProfile profile;
-    private final WindowConfig windowConfig;
-    private static final String CONTEXT_FILE = "sporty-context.json";
-    private PageHealthMonitor healthMonitor;
-    private ProfileManager profileManager;
 
+
+    // Configuration and managers
+    private final WindowConfig windowConfig;
+    private final ProfileManager profileManager;
+    private final WindowSyncManager syncManager;
+    private static final String CONTEXT_FILE = "msport-context.json";
+    private PageHealthMonitor healthMonitor;
+
+    // State management
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final AtomicBoolean isWindowUpAndRunning = new AtomicBoolean(false);
     private final AtomicBoolean isPaused = new AtomicBoolean(false);
     private final AtomicBoolean isLoggedIn = new AtomicBoolean(false);
 
-    @Value("${sporty.username:}")
-    private String sportyUsername;
+    // BETTING INDICATOR - Shows when a bet placement is in progress
+    private final AtomicBoolean isBetInProgress = new AtomicBoolean(false);
 
-    @Value("${sporty.password:}")
-    private String sportyPassword;
-
-    @Value("${sporty.context.path:./playwright-context}")
+    @Value("${msport.context.path:./playwright-context}")
     private String contextPath;
 
-    @Value("${sporty.max.retry.attempts:3}")
+    @Value("${msport.max.retry.attempts:3}")
     private int maxRetryAttempts;
 
-    @Value("${sporty.poll.interval.ms:2000}")
+    @Value("${msport.poll.interval.ms:2000}")
     private long pollIntervalMs;
 
     @Value("${bet.timeout.seconds:30}")
@@ -95,21 +109,12 @@ public class MSport implements BettingWindow, Runnable {
     @Value("${fetch.enabled.table-tennis:true}")
     private boolean fetchTableTennisEnabled;
 
-    @Value("${onewin.base.url:https://1win.com}")
-    private String baseUrl;
-
-    @Value("${onewin.login.url:https://1win.com/login}")
-    private String loginUrl;
-
-    @Value("${onewin.live.events.url:https://1win.com/live}")
-    private String liveEventsUrl;
-
     /**
      * Initialize Playwright and browser
      */
     @PostConstruct
     public void init() {
-        log.info("{} {} Initializing OneWin with Playwright...", EMOJI_INIT, EMOJI_BET);
+        log.info("{} {} Initializing MSport with Playwright...", EMOJI_INIT, EMOJI_BET);
         try {
             playwright = Playwright.create();
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
@@ -126,64 +131,7 @@ public class MSport implements BettingWindow, Runnable {
     }
 
     // ========================================================================
-    // INITIAL NAVIGATION METHODS (Empty implementations)
-    // ========================================================================
-
-    /**
-     * Navigate to the bookmaker's homepage
-     * @param page The Playwright page instance
-     * @throws Exception if navigation fails
-     */
-    private void navigateToBookmaker(Page page) throws Exception {
-        log.info("{} {} Navigating to bookmaker homepage: {}", EMOJI_NAVIGATION, EMOJI_START, baseUrl);
-        // TODO: Implementation to navigate to bookmaker homepage
-    }
-
-    /**
-     * Perform login to the bookmaker site
-     * @param page The Playwright page instance
-     * @throws Exception if login fails
-     */
-    private void performLogin(Page page) throws Exception {
-        log.info("{} {} Attempting to login with username: {}", EMOJI_LOGIN, EMOJI_TARGET, sportyUsername);
-        // TODO: Implementation to perform login, Use msportlogin util class to supply implementation
-    }
-
-    /**
-     * Check if user is currently logged in
-     * @param page The Playwright page instance
-     * @return true if logged in, false otherwise
-     * @throws Exception if check fails
-     */
-    private boolean checkIfLoggedIn(Page page) throws Exception {
-        log.info("{} {} Checking login status...", EMOJI_SEARCH, EMOJI_LOGIN);
-        // TODO: Implementation to verify login status
-        return false;
-    }
-
-    /**
-     * Navigate to live events page
-     * @param page The Playwright page instance
-     * @throws Exception if navigation fails
-     */
-    private void navigateToLiveEvents(Page page) throws Exception {
-        log.info("{} {} Navigating to live events page: {}", EMOJI_NAVIGATION, EMOJI_BET, liveEventsUrl);
-        // TODO: Implementation to navigate to live events
-    }
-
-    /**
-     * Navigate to a specific sport page based on configuration
-     * @param page The Playwright page instance
-     * @param sportType The type of sport (FOOTBALL, BASKETBALL, TABLE_TENNIS)
-     * @throws Exception if navigation fails
-     */
-    private void navigateToSportPage(Page page, OneWin.SportType sportType) throws Exception {
-        log.info("{} {} Navigating to sport page: {}", EMOJI_NAVIGATION, EMOJI_SEARCH, sportType);
-        // TODO: Implementation to navigate to specific sport page
-    }
-
-    // ========================================================================
-    // BETTING TASK PROCESSING METHODS (Empty implementations)
+    // POLLING AND TASK RETRIEVAL
     // ========================================================================
 
     /**
@@ -193,119 +141,220 @@ public class MSport implements BettingWindow, Runnable {
      * @return BettingTask object containing game info, market, outcome details, or null if no task available
      * @throws Exception if polling fails
      */
-    private OneWin.BettingTask pollTaskFromDispatcher() throws Exception {
+    private BettingTask pollTaskFromDispatcher() throws Exception {
         log.info("{} {} Polling for betting task from dispatcher...", EMOJI_POLL, EMOJI_SEARCH);
         // TODO: Implementation to poll task from dispatcher
         // This should communicate with your dispatcher service to get the next betting task
         return null;
     }
 
+    // ========================================================================
+    // BET PLACEMENT WORKFLOW WITH INDICATOR
+    // ========================================================================
+
     /**
-     * Navigate to a specific game from the task
-     * Uses game identifiers from the betting task to locate and navigate to the game
+     * Deploy bet - orchestrates the complete bet deployment flow with synchronization
+     * 1. Register intent with sync manager
+     * 2. Navigate to game
+     * 3. Find market
+     * 4. Select outcome
+     * 5. Verify betslip
+     * 6. Mark deployment success
+     * 7. Wait for partner deployment
      *
      * @param page The Playwright page instance
-     * @param task The betting task containing game information
-     * @throws Exception if game navigation fails
+     * @param task The betting task containing all bet details
+     * @return true if bet is successfully deployed to betslip, false otherwise
+     * @throws Exception if deployment fails
      */
-    private void navigateToGame(Page page, OneWin.BettingTask task) throws Exception {
-        log.info("{} {} Navigating to game: {} vs {}",
-                EMOJI_GAME, EMOJI_NAVIGATION, task.getHomeTeam(), task.getAwayTeam());
-        // TODO: Implementation to navigate to specific game
-        // Should locate the game on the page using selectors and click to open game detail
+    private boolean deployBet(Page page, BettingTask task) throws Exception {
+        String arbId = task.getTaskId();
+        log.info("{} {} Starting bet deployment for task: {}",
+                EMOJI_START, EMOJI_TARGET, arbId);
+
+        try {
+            // ========================================
+            // STEP 1: REGISTER INTENT
+            // ========================================
+            boolean intentRegistered = syncManager.registerIntent(
+                    arbId,
+                    BookMaker.MSPORT,
+                    task.getExpectedOdds()
+            );
+
+            if (!intentRegistered) {
+                log.warn("{} {} Arb cancelled during intent registration: {}",
+                        EMOJI_WARNING, EMOJI_SYNC, arbId);
+                return false;
+            }
+
+            log.info("{} {} Intent registered for arb: {}", EMOJI_SUCCESS, EMOJI_SYNC, arbId);
+
+            // ========================================
+            // STEP 2: NAVIGATE TO GAME
+            // ========================================
+            log.info("{} {} [1/4] Navigating to game: {} vs {}",
+                    EMOJI_GAME, EMOJI_NAVIGATION, task.getHomeTeam(), task.getAwayTeam());
+
+            MSportNavigationUtil.navigateToGame(page, task);
+            randomHumanDelay(800, 1500);
+            MSportNavigationUtil.waitForPageReady(page);
+
+            // Check if game is available
+            boolean gameAvailable = page.locator(".m-event--main, .m-teams, .m-market-box")
+                    .count() > 0;
+
+            if (!gameAvailable) {
+                log.warn("{} {} Game not available: {}", EMOJI_WARNING, EMOJI_GAME, arbId);
+                syncManager.notifyBetFailure(arbId, com.mouse.bet.enums.BookMaker.MSPORT,
+                        "Game not available");
+                syncManager.skipArbAndSync(arbId);
+                return false;
+            }
+
+            log.info("{} {} Game navigation successful", EMOJI_SUCCESS, EMOJI_GAME);
+
+            randomHumanDelay(500, 1000);
+
+            // ========================================
+            // STEP 3: FIND MARKET
+            // ========================================
+            log.info("{} {} [2/4] Searching for market: {}",
+                    EMOJI_MARKET, EMOJI_SEARCH, task.getMarketType());
+
+            boolean marketFound = MSportMarketUtil.findMarket(page, task);
+            if (!marketFound) {
+                log.warn("{} {} Market not found: {}", EMOJI_WARNING, EMOJI_MARKET, arbId);
+                syncManager.notifyBetFailure(arbId, com.mouse.bet.enums.BookMaker.MSPORT,
+                        "Market not found: " + task.getMarketType());
+                syncManager.skipArbAndSync(arbId);
+                return false;
+            }
+            log.info("{} {} Market found successfully", EMOJI_SUCCESS, EMOJI_MARKET);
+
+            randomHumanDelay(400, 800);
+
+            // ========================================
+            // STEP 4: SELECT OUTCOME
+            // ========================================
+            log.info("{} {} [3/4] Selecting outcome: {} with odds: {}",
+                    EMOJI_TARGET, EMOJI_BET, task.getOutcome(), task.getExpectedOdds());
+
+            MSportMarketUtil.selectOutcome(page, task);
+            randomHumanDelay(600, 1200);
+            MSportNavigationUtil.waitForPageReady(page);
+            log.info("{} {} Outcome selected successfully", EMOJI_SUCCESS, EMOJI_TARGET);
+
+            randomHumanDelay(300, 600);
+
+            // ========================================
+            // STEP 5: VERIFY BETSLIP
+            // ========================================
+            log.info("{} {} [4/4] Verifying bet in betslip...", EMOJI_CART, EMOJI_SEARCH);
+
+            boolean betslipValid = MSportMarketUtil.verifyBetslip(page, task);
+            if (!betslipValid) {
+                log.warn("{} {} Betslip verification failed", EMOJI_WARNING, EMOJI_CART);
+                MSportMarketUtil.clearBetSlip(page);
+                syncManager.notifyBetFailure(arbId, com.mouse.bet.enums.BookMaker.MSPORT,
+                        "Betslip verification failed");
+                syncManager.skipArbAndSync(arbId);
+                return false;
+            }
+            log.info("{} {} Betslip verified successfully", EMOJI_SUCCESS, EMOJI_CART);
+
+            // ========================================
+            // STEP 6: MARK DEPLOYMENT SUCCESS
+            // ========================================
+            boolean markedDeployed = syncManager.markDeploymentSuccess(
+                    arbId,
+                    com.mouse.bet.enums.BookMaker.MSPORT
+            );
+
+            if (!markedDeployed) {
+                log.warn("{} {} Arb cancelled after deployment: {}",
+                        EMOJI_WARNING, EMOJI_SYNC, arbId);
+                MSportMarketUtil.clearBetSlip(page);
+                return false;
+            }
+
+            log.info("{} {} Deployment marked as successful", EMOJI_SUCCESS, EMOJI_SYNC);
+
+            // ========================================
+            // STEP 7: WAIT FOR PARTNER DEPLOYMENT
+            // ========================================
+            log.info("{} {} Waiting for partner to deploy...", EMOJI_SYNC, EMOJI_CLOCK);
+
+            boolean partnerDeployed = syncManager.waitForPartnerDeploymentOrTimeout(
+                    arbId,
+                    com.mouse.bet.enums.BookMaker.MSPORT,
+                    java.time.Duration.ofSeconds(deployTimeout)
+            );
+
+            if (!partnerDeployed) {
+                log.warn("{} {} Partner deployment failed or timeout", EMOJI_WARNING, EMOJI_SYNC);
+                MSportMarketUtil.clearBetSlip(page);
+                // Partner will handle cleanup and arb killing
+                return false;
+            }
+
+            log.info("{} {} Both windows DEPLOYED - ready for simultaneous placement!",
+                    EMOJI_SUCCESS, EMOJI_ROCKET);
+
+            randomHumanDelay(200, 400);
+
+            log.info("{} {} Bet deployment completed successfully for task: {}",
+                    EMOJI_SUCCESS, EMOJI_ROCKET, arbId);
+            return true;
+
+        } catch (Exception e) {
+            log.error("{} {} Bet deployment failed: {}",
+                    EMOJI_ERROR, EMOJI_BET, e.getMessage(), e);
+
+            // Notify failure and sync
+            syncManager.notifyBetFailure(arbId, com.mouse.bet.enums.BookMaker.MSPORT,
+                    "Deployment exception: " + e.getMessage());
+            syncManager.skipArbAndSync(arbId);
+
+            // Clean up betslip on error
+            try {
+                MSportMarketUtil.clearBetSlip(page);
+            } catch (Exception clearEx) {
+                log.warn("{} {} Failed to clear betslip after error: {}",
+                        EMOJI_WARNING, EMOJI_CART, clearEx.getMessage());
+            }
+
+            throw e;
+        }
     }
 
     /**
-     * Find and locate the specified market within the game
-     * Markets could be: Match Winner, Over/Under, Handicap, etc.
+     * Human-like random delay to avoid bot detection
      *
-     * @param page The Playwright page instance
-     * @param task The betting task containing market information
-     * @return true if market is found and visible, false otherwise
-     * @throws Exception if market search fails
+     * @param minMs Minimum delay in milliseconds
+     * @param maxMs Maximum delay in milliseconds
      */
-    private boolean findMarket(Page page, OneWin.BettingTask task) throws Exception {
-        log.info("{} {} Searching for market: {}",
-                EMOJI_MARKET, EMOJI_SEARCH, task.getMarketType());
-        // TODO: Implementation to find specific market
-        // Should scroll/navigate through markets and verify the target market exists
-        return false;
+    private void randomHumanDelay(long minMs, long maxMs) {
+        try {
+            long delay = minMs + ThreadLocalRandom.current().nextLong(maxMs - minMs + 1);
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Delay interrupted");
+        }
     }
 
     /**
-     * Locate and click the specific outcome within the market
-     * Outcomes could be: Home Win, Draw, Away Win, Over, Under, specific scores, etc.
+     * Handle successful bet placement
+     * Logs success and notifies dispatcher
      *
-     * @param page The Playwright page instance
-     * @param task The betting task containing outcome information
-     * @throws Exception if outcome selection fails
+     * @param task The successfully placed betting task
      */
-    private void selectOutcome(Page page, OneWin.BettingTask task) throws Exception {
-        log.info("{} {} Selecting outcome: {} with odds: {}",
-                EMOJI_TARGET, EMOJI_BET, task.getOutcome(), task.getExpectedOdds());
-        // TODO: Implementation to click specific outcome
-        // Should verify odds match expected range before clicking
-    }
-
-    /**
-     * Verify that the selected game/bet has been added to the betslip
-     * Checks betslip contents, odds, and stake amount
-     *
-     * @param page The Playwright page instance
-     * @param task The betting task to verify against betslip
-     * @return true if bet is correctly added to betslip, false otherwise
-     * @throws Exception if verification fails
-     */
-    private boolean verifyBetslip(Page page, OneWin.BettingTask task) throws Exception {
-        log.info("{} {} Verifying bet added to betslip...", EMOJI_CART, EMOJI_SEARCH);
-        // TODO: Implementation to verify betslip
-        // Should check that the correct game, market, outcome, and odds are in betslip
-        return false;
-    }
-
-    /**
-     * Place the bet from the betslip
-     * Enters stake amount, confirms bet details, and submits the bet
-     *
-     * @param page The Playwright page instance
-     * @param task The betting task containing stake and bet details
-     * @return true if bet is successfully placed, false otherwise
-     * @throws Exception if bet placement fails
-     */
-    private boolean placeBet(Page page, OneWin.BettingTask task) throws Exception {
-        log.info("{} {} Placing bet with stake: {}",
-                EMOJI_MONEY, EMOJI_BET, task.getStakeAmount());
-        // TODO: Implementation to place bet
-        // Should enter stake, verify final odds, click place bet button, and confirm success
-        return false;
-    }
-
-    /**
-     * Return to the live sport page after bet placement
-     * Navigates back to the main sport listing to continue polling for new tasks
-     *
-     * @param page The Playwright page instance
-     * @param sportType The sport type to return to
-     * @throws Exception if navigation back fails
-     */
-    private void returnToSportPage(Page page, OneWin.SportType sportType) throws Exception {
-        log.info("{} {} Returning to {} live page...",
-                EMOJI_NAVIGATION, EMOJI_SYNC, sportType);
-        // TODO: Implementation to return to sport page
-        // Should navigate back to the sport listing page ready for next task
-    }
-
-    /**
-     * Clear the betslip after bet placement or on error
-     * Removes all selections from betslip to prepare for next bet
-     *
-     * @param page The Playwright page instance
-     * @throws Exception if betslip clearing fails
-     */
-    private void clearBetslip(Page page) throws Exception {
-        log.info("{} {} Clearing betslip...", EMOJI_TRASH, EMOJI_CART);
-        // TODO: Implementation to clear betslip
-        // Should remove all selections and reset betslip state
+    private void handleBetSuccess(BettingTask task) {
+        log.info("{} {} Bet successfully placed for task {}",
+                EMOJI_SUCCESS, EMOJI_MONEY, task.getTaskId());
+        // TODO: Notify dispatcher of success
+        // TODO: Update task status to completed
     }
 
     /**
@@ -316,12 +365,12 @@ public class MSport implements BettingWindow, Runnable {
      * @param task The failed betting task
      * @param error The exception that caused the failure
      */
-    private void handleBetFailure(Page page, OneWin.BettingTask task, Exception error) {
+    private void handleBetFailure(Page page, BettingTask task, Exception error) {
         log.error("{} {} Bet placement failed for task {}: {}",
                 EMOJI_ERROR, EMOJI_BET, task.getTaskId(), error.getMessage());
 
         try {
-            clearBetslip(page);
+            MSportMarketUtil.clearBetSlip(page);
         } catch (Exception e) {
             log.warn("{} {} Failed to clear betslip after error: {}",
                     EMOJI_WARNING, EMOJI_CART, e.getMessage());
@@ -332,16 +381,67 @@ public class MSport implements BettingWindow, Runnable {
     }
 
     /**
-     * Handle successful bet placement
-     * Logs success and notifies dispatcher
+     * Perform rollback - cancel/cash out the bet
+     * Called when partner bet fails and this bet succeeded
      *
-     * @param task The successfully placed betting task
+     * @param page The Playwright page instance
+     * @param arbId The arb ID
+     * @param betId The bet ID to rollback
+     * @return true if rollback successful, false otherwise
      */
-    private void handleBetSuccess(OneWin.BettingTask task) {
-        log.info("{} {} Bet successfully placed for task {}",
-                EMOJI_SUCCESS, EMOJI_MONEY, task.getTaskId());
-        // TODO: Notify dispatcher of success
-        // TODO: Update task status to completed
+    private boolean performRollback(Page page, String arbId, String betId) {
+        log.info("🔄 Starting rollback for ArbId: {} | BetId: {}", arbId, betId);
+
+        try {
+            // Navigate to bet history/my bets page
+            String myBetsUrl = "https://www.msport.com/ng/web/mybets";
+            page.navigate(myBetsUrl);
+            page.waitForTimeout(2000);
+
+            // Look for the specific bet
+            String betSelector = String.format(
+                    "//div[contains(@class, 'bet-item')]//span[contains(text(), '%s')]", betId
+            );
+
+            if (page.locator(betSelector).count() > 0) {
+                log.info("✅ Bet found in history: {}", betId);
+
+                // Try to find and click cash out button
+                String cashOutSelector = String.format(
+                        "%s//ancestor::div[contains(@class, 'bet-item')]//button[contains(text(), 'Cash Out')]",
+                        betSelector
+                );
+
+                if (page.locator(cashOutSelector).count() > 0) {
+                    log.info("💰 Cash out available for bet: {}", betId);
+                    page.locator(cashOutSelector).first().click();
+                    page.waitForTimeout(1000);
+
+                    // Confirm cash out
+                    String confirmSelector = "button:has-text('Confirm')";
+                    if (page.locator(confirmSelector).count() > 0) {
+                        page.locator(confirmSelector).first().click();
+                        page.waitForTimeout(2000);
+
+                        log.info("✅ Cash out executed for bet: {}", betId);
+                        return true;
+                    }
+                } else {
+                    log.warn("⚠️ Cash out not available for bet: {}", betId);
+                    // TODO: Implement hedge betting logic if cash out not available
+                    return false;
+                }
+            } else {
+                log.warn("❌ Bet not found in history: {}", betId);
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("❌ Rollback exception for bet {}: {}", betId, e.getMessage(), e);
+            return false;
+        }
+
+        return false;
     }
 
     // ========================================================================
@@ -349,36 +449,26 @@ public class MSport implements BettingWindow, Runnable {
     // ========================================================================
 
     /**
-     * Wait for page to be fully loaded and ready
-     * @param page The Playwright page instance
-     * @throws Exception if page doesn't load properly
-     */
-    private void waitForPageReady(Page page) throws Exception {
-        log.info("{} {} Waiting for page to be ready...", EMOJI_CLOCK, EMOJI_HEALTH);
-        // TODO: Implementation to wait for page readiness
-    }
-
-    /**
      * Determine which sport to navigate to based on configuration
      * @return The configured sport type
      */
-    private OneWin.SportType determineConfiguredSport() {
+    private Sport determineConfiguredSport() {
         log.info("{} {} Determining configured sport from settings...", EMOJI_INFO, EMOJI_SEARCH);
 
         if (fetchTableTennisEnabled) {
             log.info("{} Table Tennis is enabled", EMOJI_TARGET);
-            return OneWin.SportType.TABLE_TENNIS;
+            return Sport.TABLE_TENNIS;
         } else if (fetchFootballEnabled) {
             log.info("{} Football is enabled", EMOJI_TARGET);
-            return OneWin.SportType.FOOTBALL;
+            return Sport.FOOTBALL;
         } else if (fetchBasketballEnabled) {
             log.info("{} Basketball is enabled", EMOJI_TARGET);
-            return OneWin.SportType.BASKETBALL;
+            return Sport.BASKETBALL;
         }
 
         log.warn("{} {} No sport enabled in configuration, defaulting to TABLE_TENNIS",
                 EMOJI_WARNING, EMOJI_INFO);
-        return OneWin.SportType.TABLE_TENNIS;
+        return Sport.TABLE_TENNIS;
     }
 
     /**
@@ -411,6 +501,14 @@ public class MSport implements BettingWindow, Runnable {
             Thread.currentThread().interrupt();
             log.warn("{} {} Wait interrupted", EMOJI_WARNING, EMOJI_CLOCK);
         }
+    }
+
+    /**
+     * Get betting indicator status
+     * @return true if a bet is currently being placed, false otherwise
+     */
+    public boolean isBetInProgress() {
+        return isBetInProgress.get();
     }
 
     // ========================================================================
@@ -563,15 +661,15 @@ public class MSport implements BettingWindow, Runnable {
 
         while (attempt < maxRetryAttempts) {
             attempt++;
-            log.info("{} {} Starting OneWin attempt {}/{}",
+            log.info("{} {} Starting MSport attempt {}/{}",
                     EMOJI_INIT, EMOJI_BET, attempt, maxRetryAttempts);
 
             try {
                 windowEntry();
-                log.info("{} {} OneWin completed successfully", EMOJI_SUCCESS, EMOJI_BET);
+                log.info("{} {} MSport completed successfully", EMOJI_SUCCESS, EMOJI_BET);
                 break;
 
-            } catch (OneWin.CaptchaDetectedException e) {
+            } catch (CaptchaDetectedException e) {
                 log.error("{} {} CAPTCHA detected on attempt {}: {}",
                         EMOJI_ERROR, EMOJI_WARNING, attempt, e.getMessage());
                 lastException = e;
@@ -641,283 +739,178 @@ public class MSport implements BettingWindow, Runnable {
      */
     private void windowEntry() throws Exception {
         Page page = null;
-
         try {
             log.info("{} {} Starting window entry process...", EMOJI_START, EMOJI_ROCKET);
             isRunning.set(true);
 
             // ===== PHASE 1: INITIAL SETUP =====
-
-            // Load or create context
             if (currentContext == null) {
                 currentContext = loadOrCreateContext();
             }
-
             if (currentContext == null) {
                 throw new RuntimeException("Failed to create valid browser context");
             }
 
-            // Close any existing pages to prevent multiple pages
+            // Close any lingering pages
             for (Page existingPage : currentContext.pages()) {
                 if (!existingPage.isClosed()) {
                     log.warn("Closing existing page: {}", existingPage.url());
-                    try {
-                        existingPage.close();
-                    } catch (Exception e) {
-                        log.debug("Error closing existing page: {}", e.getMessage());
-                    }
+                    try { existingPage.close(); } catch (Exception ignored) {}
                 }
             }
 
-            // Create new page
             page = currentContext.newPage();
             log.info("{} {} New page created successfully", EMOJI_SUCCESS, EMOJI_INIT);
 
-            // Step 1: Navigate to bookmaker
-            try {
-                navigateToBookmaker(page);
-                waitForPageReady(page);
-                log.info("{} {} Navigation to bookmaker completed", EMOJI_SUCCESS, EMOJI_NAVIGATION);
-            } catch (Exception e) {
-                log.error("{} {} Failed to navigate to bookmaker: {}",
-                        EMOJI_ERROR, EMOJI_NAVIGATION, e.getMessage());
-                throw new RuntimeException("Bookmaker navigation failed", e);
-            }
+            // Navigate to bookmaker
+            MSportNavigationUtil.navigateToBookmaker(page);
+            MSportNavigationUtil.waitForPageReady(page);
+            log.info("{} {} Navigation to bookmaker completed", EMOJI_SUCCESS, EMOJI_NAVIGATION);
 
-            // Step 2: Check login status and login if needed
-            try {
-                boolean loggedIn = checkIfLoggedIn(page);
-
-                if (!loggedIn) {
-                    log.info("{} {} User not logged in, attempting login...",
-                            EMOJI_INFO, EMOJI_LOGIN);
-                    performLogin(page);
-                    waitForPageReady(page);
-
-                    // Verify login was successful
-                    if (checkIfLoggedIn(page)) {
-                        isLoggedIn.set(true);
-                        log.info("{} {} Login successful", EMOJI_SUCCESS, EMOJI_LOGIN);
-                    } else {
-                        throw new RuntimeException("Login verification failed");
-                    }
-                } else {
-                    isLoggedIn.set(true);
-                    log.info("{} {} User already logged in", EMOJI_SUCCESS, EMOJI_LOGIN);
+            // Login handling
+            boolean loggedIn = MSportLoginUtil.checkIfLoggedIn(page);
+            if (!loggedIn) {
+                log.info("{} {} User not logged in, attempting login...", EMOJI_INFO, EMOJI_LOGIN);
+                MSportLoginUtil.performLogin(page);
+                MSportNavigationUtil.waitForPageReady(page);
+                if (!MSportLoginUtil.checkIfLoggedIn(page)) {
+                    throw new RuntimeException("Login verification failed");
                 }
-            } catch (Exception e) {
-                log.error("{} {} Login process failed: {}",
-                        EMOJI_ERROR, EMOJI_LOGIN, e.getMessage());
-                throw new RuntimeException("Login failed", e);
+                isLoggedIn.set(true);
+                log.info("{} {} Login successful", EMOJI_SUCCESS, EMOJI_LOGIN);
+            } else {
+                isLoggedIn.set(true);
+                log.info("{} {} User already logged in", EMOJI_SUCCESS, EMOJI_LOGIN);
             }
 
-            // Step 3: Navigate to live events
-            try {
-                navigateToLiveEvents(page);
-                waitForPageReady(page);
-                log.info("{} {} Navigation to live events completed",
-                        EMOJI_SUCCESS, EMOJI_BET);
-            } catch (Exception e) {
-                log.error("{} {} Failed to navigate to live events: {}",
-                        EMOJI_ERROR, EMOJI_BET, e.getMessage());
-                throw new RuntimeException("Live events navigation failed", e);
-            }
+            // Navigate to live events → sport page
+            MSportNavigationUtil.navigateToLiveEvents(page);
+            MSportNavigationUtil.waitForPageReady(page);
 
-            // Step 4: Navigate to configured sport page
-            OneWin.SportType configuredSport = determineConfiguredSport();
-            try {
-                navigateToSportPage(page, configuredSport);
-                waitForPageReady(page);
-                log.info("{} {} Navigation to {} page completed",
-                        EMOJI_SUCCESS, EMOJI_TARGET, configuredSport);
-            } catch (Exception e) {
-                log.error("{} {} Failed to navigate to sport page: {}",
-                        EMOJI_ERROR, EMOJI_TARGET, e.getMessage());
-                throw new RuntimeException("Sport page navigation failed", e);
-            }
+            Sport configuredSport = determineConfiguredSport();
+            MSportNavigationUtil.navigateToSportPage(page, configuredSport);
+            MSportNavigationUtil.waitForPageReady(page);
+            log.info("{} {} Navigation to {} page completed", EMOJI_SUCCESS, EMOJI_TARGET, configuredSport);
 
-            // Mark window as up and running
             isWindowUpAndRunning.set(true);
-            log.info("{} {} Window is now up and running - entering betting loop",
-                    EMOJI_SUCCESS, EMOJI_ROCKET);
+            log.info("{} {} Window is now up and running - entering betting loop", EMOJI_SUCCESS, EMOJI_ROCKET);
 
-            // ===== PHASE 2: CONTINUOUS BETTING LOOP =====
-
+            // ===== PHASE 2: BETTING LOOP =====
             int consecutiveFailures = 0;
-            int maxConsecutiveFailures = 5;
+            final int maxConsecutiveFailures = 5;
 
             while (isRunning.get() && !isPaused.get()) {
-                OneWin.BettingTask task = null;
-
+                BettingTask task = null;
                 try {
-                    // Poll for next task from dispatcher
+                    // 1. Poll for task
                     log.info("{} {} Polling for new betting task...", EMOJI_POLL, EMOJI_CLOCK);
                     task = pollTaskFromDispatcher();
-
-                    // If no task available, wait and continue
                     if (task == null) {
-                        log.debug("{} No task available, waiting {}ms...",
-                                EMOJI_CLOCK, pollIntervalMs);
                         Thread.sleep(pollIntervalMs);
                         continue;
                     }
+                    log.info("{} {} Received betting task: {}", EMOJI_SUCCESS, EMOJI_POLL, task.getTaskId());
 
-                    log.info("{} {} Received betting task: {}",
-                            EMOJI_SUCCESS, EMOJI_POLL, task.getTaskId());
+                    // 2. Mark bet in progress
+                    isBetInProgress.set(true);
 
-                    // Navigate to the specific game
-                    try {
-                        navigateToGame(page, task);
-                        waitForPageReady(page);
-                        log.info("{} {} Game navigation successful", EMOJI_SUCCESS, EMOJI_GAME);
-                    } catch (Exception e) {
-                        log.error("{} {} Failed to navigate to game: {}",
-                                EMOJI_ERROR, EMOJI_GAME, e.getMessage());
-                        handleBetFailure(page, task, e);
-                        returnToSportPage(page, configuredSport);
+                    // 3. DEPLOY: Full pre-placement + sync with partner
+                    if (!deployBet(page, task)) {
+                        log.warn("{} {} Deployment failed or cancelled - skipping task {}", EMOJI_WARNING, EMOJI_TARGET, task.getTaskId());
+                        isBetInProgress.set(false);
                         consecutiveFailures++;
                         continue;
                     }
 
-                    // Find the market
-                    try {
-                        boolean marketFound = findMarket(page, task);
-                        if (!marketFound) {
-                            log.warn("{} {} Market not found: {}",
-                                    EMOJI_WARNING, EMOJI_MARKET, task.getMarketType());
-                            handleBetFailure(page, task,
-                                    new Exception("Market not found: " + task.getMarketType()));
-                            returnToSportPage(page, configuredSport);
-                            consecutiveFailures++;
-                            continue;
-                        }
-                        log.info("{} {} Market found successfully", EMOJI_SUCCESS, EMOJI_MARKET);
-                    } catch (Exception e) {
-                        log.error("{} {} Failed to find market: {}",
-                                EMOJI_ERROR, EMOJI_MARKET, e.getMessage());
-                        handleBetFailure(page, task, e);
-                        returnToSportPage(page, configuredSport);
+                    // 4. PLACE THE BET (both sides are now synchronized and ready)
+                    log.info("🚀 SIMULTANEOUS BETTING | ArbId: {} | Bookmaker: MSPORT", task.getTaskId());
+                    boolean betPlaced = MSportMarketUtil.placeBet(page, task);
+
+                    // Placeholder bet ID - replace with actual extraction logic
+                    String betId = "BET_" + System.currentTimeMillis();
+
+                    if (!betPlaced) {
+                        log.warn("❌ Bet placement failed | ArbId: {}", task.getTaskId());
+                        syncManager.notifyBetFailure(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT, "Placement failed");
+
+                        syncManager.waitForPartnerBetCompletion(
+                                task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT,
+                                java.time.Duration.ofSeconds(betTimeoutSeconds + 5));
+
+                        MSportMarketUtil.clearBetSlip(page);
+                        isBetInProgress.set(false);
                         consecutiveFailures++;
                         continue;
                     }
 
-                    // Select the outcome
-                    try {
-                        selectOutcome(page, task);
-                        waitForPageReady(page);
-                        log.info("{} {} Outcome selected successfully", EMOJI_SUCCESS, EMOJI_TARGET);
-                    } catch (Exception e) {
-                        log.error("{} {} Failed to select outcome: {}",
-                                EMOJI_ERROR, EMOJI_TARGET, e.getMessage());
-                        handleBetFailure(page, task, e);
-                        returnToSportPage(page, configuredSport);
-                        consecutiveFailures++;
-                        continue;
-                    }
+                    log.info("✅ Bet PLACED | ArbId: {} | Stake: {} | Odds: {}", task.getTaskId(),
+                            task.getStakeAmount(), task.getExpectedOdds());
 
-                    // Verify betslip
-                    try {
-                        boolean betslipValid = verifyBetslip(page, task);
-                        if (!betslipValid) {
-                            log.warn("{} {} Betslip verification failed",
-                                    EMOJI_WARNING, EMOJI_CART);
-                            clearBetslip(page);
-                            handleBetFailure(page, task,
-                                    new Exception("Betslip verification failed"));
-                            returnToSportPage(page, configuredSport);
-                            consecutiveFailures++;
-                            continue;
-                        }
-                        log.info("{} {} Betslip verified successfully", EMOJI_SUCCESS, EMOJI_CART);
-                    } catch (Exception e) {
-                        log.error("{} {} Failed to verify betslip: {}",
-                                EMOJI_ERROR, EMOJI_CART, e.getMessage());
-                        clearBetslip(page);
-                        handleBetFailure(page, task, e);
-                        returnToSportPage(page, configuredSport);
-                        consecutiveFailures++;
-                        continue;
-                    }
+                    syncManager.notifyBetPlaced(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT);
 
-                    // Place the bet
+                    // Close success modal if present
+                    randomHumanDelay(2000, 3000);
                     try {
-                        boolean betPlaced = placeBet(page, task);
-                        if (!betPlaced) {
-                            log.warn("{} {} Bet placement failed",
-                                    EMOJI_WARNING, EMOJI_MONEY);
-                            clearBetslip(page);
-                            handleBetFailure(page, task,
-                                    new Exception("Bet placement failed"));
-                            returnToSportPage(page, configuredSport);
-                            consecutiveFailures++;
-                            continue;
-                        }
+                        page.locator("div.m-betslip-success button:has-text('OK')")
+                                .first()
+                                .click(new Locator.ClickOptions().setTimeout(2000));
+                    } catch (Exception ignored) {}
 
-                        log.info("{} {} Bet placed successfully for task: {}",
-                                EMOJI_SUCCESS, EMOJI_MONEY, task.getTaskId());
+                    // 5. Wait for partner result & handle rollback if needed
+                    log.info("⏳ Waiting for partner to complete | ArbId: {}", task.getTaskId());
+                    WindowSyncManager.PartnerBetResult partnerResult = syncManager.waitForPartnerBetCompletion(
+                            task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT,
+                            java.time.Duration.ofSeconds(betTimeoutSeconds + 5));
+
+                    if (partnerResult.isSuccess()) {
+                        log.info("✅ BOTH BETS PLACED SUCCESSFULLY | ArbId: {}", task.getTaskId());
                         handleBetSuccess(task);
-                        consecutiveFailures = 0; // Reset failure counter on success
-
-                    } catch (Exception e) {
-                        log.error("{} {} Failed to place bet: {}",
-                                EMOJI_ERROR, EMOJI_MONEY, e.getMessage());
-                        clearBetslip(page);
-                        handleBetFailure(page, task, e);
-                        returnToSportPage(page, configuredSport);
-                        consecutiveFailures++;
-                        continue;
+                        consecutiveFailures = 0;
+                    } else {
+                        log.warn("⚠️ PARTNER FAILED - INITIATING ROLLBACK | ArbId: {}", task.getTaskId());
+                        syncManager.requestRollback(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT,
+                                "Partner failed: " + partnerResult.getMessage());
+                        boolean rollbackSuccess = performRollback(page, task.getTaskId(), betId);
+                        syncManager.notifyRollbackCompleted(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT, rollbackSuccess);
+                        if (!rollbackSuccess) {
+                            log.error("❌ ROLLBACK FAILED - MANUAL INTERVENTION REQUIRED | ArbId: {}", task.getTaskId());
+                        }
                     }
 
-                    // Return to sport page for next task
-                    try {
-                        returnToSportPage(page, configuredSport);
-                        waitForPageReady(page);
-                        log.info("{} {} Returned to sport page, ready for next task",
-                                EMOJI_SUCCESS, EMOJI_NAVIGATION);
-                    } catch (Exception e) {
-                        log.error("{} {} Failed to return to sport page: {}",
-                                EMOJI_ERROR, EMOJI_NAVIGATION, e.getMessage());
-                        throw new RuntimeException("Failed to return to sport page", e);
-                    }
-
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    log.warn("{} {} Betting loop interrupted", EMOJI_WARNING, EMOJI_SHUTDOWN);
-                    break;
+                    // 6. Return to sport page for next task
+                    MSportNavigationUtil.returnToSportPage(page, configuredSport);
+                    MSportNavigationUtil.waitForPageReady(page);
+                    log.info("{} {} Returned to sport page, ready for next task", EMOJI_SUCCESS, EMOJI_NAVIGATION);
 
                 } catch (Exception e) {
-                    log.error("{} {} Unexpected error in betting loop: {}",
-                            EMOJI_ERROR, EMOJI_WARNING, e.getMessage(), e);
-
+                    log.error("{} {} Unexpected error processing task: {}", EMOJI_ERROR, EMOJI_WARNING, e.getMessage(), e);
                     if (task != null) {
                         handleBetFailure(page, task, e);
                     }
-
                     consecutiveFailures++;
-
-                    // If too many consecutive failures, try to recover
-                    if (consecutiveFailures >= maxConsecutiveFailures) {
-                        log.error("{} {} Too many consecutive failures ({}), attempting recovery...",
-                                EMOJI_ERROR, EMOJI_WARNING, consecutiveFailures);
-
-                        try {
-                            clearBetslip(page);
-                            returnToSportPage(page, configuredSport);
-                            waitForPageReady(page);
-                            consecutiveFailures = 0;
-                            log.info("{} {} Recovery successful", EMOJI_SUCCESS, EMOJI_SYNC);
-                        } catch (Exception recoveryError) {
-                            log.error("{} {} Recovery failed: {}",
-                                    EMOJI_ERROR, EMOJI_SYNC, recoveryError.getMessage());
-                            throw new RuntimeException("Failed to recover from errors", recoveryError);
-                        }
+                } finally {
+                    isBetInProgress.set(false);
+                    if (task != null) {
+                        syncManager.unRegisterIntent(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT);
                     }
-
-                    // Wait before next iteration
-                    Thread.sleep(pollIntervalMs);
                 }
 
-                // Check if paused
+                // Recovery from too many failures
+                if (consecutiveFailures >= maxConsecutiveFailures) {
+                    log.warn("{} {} Too many consecutive failures ({}), attempting recovery...", EMOJI_WARNING, EMOJI_SYNC, consecutiveFailures);
+                    try {
+                        MSportMarketUtil.clearBetSlip(page);
+                        MSportNavigationUtil.returnToSportPage(page, configuredSport);
+                        MSportNavigationUtil.waitForPageReady(page);
+                        consecutiveFailures = 0;
+                        log.info("{} {} Recovery completed", EMOJI_SUCCESS, EMOJI_SYNC);
+                    } catch (Exception recoveryEx) {
+                        log.error("{} {} Recovery failed: {}", EMOJI_ERROR, EMOJI_SYNC, recoveryEx.getMessage());
+                        throw recoveryEx;
+                    }
+                }
+
+                // Pause handling
                 if (isPaused.get()) {
                     log.info("{} {} Betting loop paused", EMOJI_WARNING, EMOJI_CLOCK);
                     while (isPaused.get() && isRunning.get()) {
@@ -925,49 +918,30 @@ public class MSport implements BettingWindow, Runnable {
                     }
                     log.info("{} {} Betting loop resumed", EMOJI_SUCCESS, EMOJI_START);
                 }
+
+                Thread.sleep(pollIntervalMs);
             }
 
-            log.info("{} {} Betting loop ended", EMOJI_INFO, EMOJI_SHUTDOWN);
+            log.info("{} {} Betting loop ended normally", EMOJI_INFO, EMOJI_SHUTDOWN);
 
         } catch (Exception e) {
-            log.error("{} {} Error in windowEntry: {}", EMOJI_ERROR, EMOJI_WARNING, e.getMessage(), e);
+            log.error("{} {} Critical error in windowEntry: {}", EMOJI_ERROR, EMOJI_WARNING, e.getMessage(), e);
             isWindowUpAndRunning.set(false);
             throw e;
-
         } finally {
             isRunning.set(false);
             isWindowUpAndRunning.set(false);
+            isBetInProgress.set(false);
 
-            // Stop health monitor before closing page
-            if (healthMonitor != null) {
-                try {
-                    healthMonitor.stop();
-                } catch (Exception e) {
-                    log.debug("Error stopping health monitor: {}", e.getMessage());
-                }
-            }
-
-            // Close the page explicitly
             if (page != null && !page.isClosed()) {
-                try {
-                    page.close();
-                    log.info("Page closed successfully");
-                } catch (Exception e) {
-                    log.warn("Error closing page: {}", e.getMessage());
-                }
+                try { page.close(); } catch (Exception ignored) {}
             }
 
-            // Save context (if still valid)
             if (currentContext != null) {
-                try {
-                    saveContext(currentContext);
-                    log.info("{} {} Context saved successfully", EMOJI_SUCCESS, EMOJI_INIT);
-                } catch (Exception e) {
-                    log.warn("Failed to save context: {}", e.getMessage());
-                }
+                try { saveContext(currentContext); } catch (Exception ignored) {}
             }
 
-            log.info("{} {} Window entry completed", EMOJI_SUCCESS, EMOJI_INIT);
+            log.info("{} {} Window entry completed", EMOJI_SUCCESS, EMOJI_SHUTDOWN);
         }
     }
 
@@ -977,24 +951,22 @@ public class MSport implements BettingWindow, Runnable {
 
     @Override
     public void pause() {
-        log.info("{} {} Pausing OneWin window...", EMOJI_WARNING, EMOJI_CLOCK);
+        log.info("{} {} Pausing MSport window...", EMOJI_WARNING, EMOJI_CLOCK);
         isPaused.set(true);
-        // TODO: Implementation for pause functionality
     }
 
     @Override
     public void resume() {
-        log.info("{} {} Resuming OneWin window...", EMOJI_SUCCESS, EMOJI_START);
+        log.info("{} {} Resuming MSport window...", EMOJI_SUCCESS, EMOJI_START);
         isPaused.set(false);
-        // TODO: Implementation for resume functionality
     }
 
     @Override
     public void stop() {
-        log.info("{} {} Stopping OneWin window...", EMOJI_SHUTDOWN, EMOJI_WARNING);
+        log.info("{} {} Stopping MSport window...", EMOJI_SHUTDOWN, EMOJI_WARNING);
         isRunning.set(false);
         isWindowUpAndRunning.set(false);
-        // TODO: Implementation for stop functionality
+        isBetInProgress.set(false);
     }
 
     @Override
@@ -1009,7 +981,7 @@ public class MSport implements BettingWindow, Runnable {
 
     @Override
     public void shutdown() {
-        log.info("{} {} Shutting down OneWin window...", EMOJI_SHUTDOWN, EMOJI_TRASH);
+        log.info("{} {} Shutting down MSport window...", EMOJI_SHUTDOWN, EMOJI_TRASH);
 
         try {
             stop();
@@ -1041,78 +1013,87 @@ public class MSport implements BettingWindow, Runnable {
     // BETTING TASK DATA CLASS
     // ========================================================================
 
-    /**
-     * Data class representing a betting task from the dispatcher
-     * Contains all information needed to locate and place a bet
-     */
-    public static class BettingTask {
-        private final String taskId;
-        private final String homeTeam;
-        private final String awayTeam;
-        private final String gameId;
-        private final String marketType;
-        private final String outcome;
-        private final double expectedOdds;
-        private final double minOdds;
-        private final double maxOdds;
-        private final double stakeAmount;
-        private final OneWin.SportType sportType;
-        private final long timestamp;
-
-        public BettingTask(String taskId, String homeTeam, String awayTeam, String gameId,
-                           String marketType, String outcome, double expectedOdds,
-                           double minOdds, double maxOdds, double stakeAmount,
-                           OneWin.SportType sportType, long timestamp) {
-            this.taskId = taskId;
-            this.homeTeam = homeTeam;
-            this.awayTeam = awayTeam;
-            this.gameId = gameId;
-            this.marketType = marketType;
-            this.outcome = outcome;
-            this.expectedOdds = expectedOdds;
-            this.minOdds = minOdds;
-            this.maxOdds = maxOdds;
-            this.stakeAmount = stakeAmount;
-            this.sportType = sportType;
-            this.timestamp = timestamp;
-        }
-
-        // Getters
-        public String getTaskId() { return taskId; }
-        public String getHomeTeam() { return homeTeam; }
-        public String getAwayTeam() { return awayTeam; }
-        public String getGameId() { return gameId; }
-        public String getMarketType() { return marketType; }
-        public String getOutcome() { return outcome; }
-        public double getExpectedOdds() { return expectedOdds; }
-        public double getMinOdds() { return minOdds; }
-        public double getMaxOdds() { return maxOdds; }
-        public double getStakeAmount() { return stakeAmount; }
-        public OneWin.SportType getSportType() { return sportType; }
-        public long getTimestamp() { return timestamp; }
-
-        @Override
-        public String toString() {
-            return String.format("BettingTask{id=%s, game=%s vs %s, market=%s, outcome=%s, odds=%.2f, stake=%.2f}",
-                    taskId, homeTeam, awayTeam, marketType, outcome, expectedOdds, stakeAmount);
-        }
-    }
+//    /**
+//     * Data class representing a betting task from the dispatcher
+//     * Contains all information needed to locate and place a bet
+//     */
+//    public static class BettingTask implements com.mouse.bet.interfaces.BettingTask {
+//
+//        @Getter
+//        private final String taskId;
+//        private final String homeTeam;
+//        private final String awayTeam;
+//        private final String gameId;
+//        private final String marketType;
+//        private final String outcome;
+//        private final double expectedOdds;
+//        private final double minOdds;
+//        private final double maxOdds;
+//        private final double stakeAmount;
+//        private final Sport sportType;
+//        private final long timestamp;
+//
+//        public BettingTask(String taskId, String homeTeam, String awayTeam, String gameId,
+//                           String marketType, String outcome, double expectedOdds,
+//                           double minOdds, double maxOdds, double stakeAmount,
+//                           Sport sportType, long timestamp) {
+//            this.taskId = taskId;
+//            this.homeTeam = homeTeam;
+//            this.awayTeam = awayTeam;
+//            this.gameId = gameId;
+//            this.marketType = marketType;
+//            this.outcome = outcome;
+//            this.expectedOdds = expectedOdds;
+//            this.minOdds = minOdds;
+//            this.maxOdds = maxOdds;
+//            this.stakeAmount = stakeAmount;
+//            this.sportType = sportType;
+//            this.timestamp = timestamp;
+//        }
+//
+//        // Getters
+//
+//        @Override
+//        public String getHomeTeam() { return homeTeam; }
+//
+//        @Override
+//        public String getAwayTeam() { return awayTeam; }
+//
+//
+//        public String getGameId() { return gameId; }
+//
+//        @Override
+//        public String getMarketType() { return marketType; }
+//
+//        @Override
+//        public String getOutcome() { return outcome; }
+//
+//        @Override
+//        public double getExpectedOdds() { return expectedOdds; }
+//
+//        @Override
+//        public double getMinOdds() { return minOdds; }
+//
+//        @Override
+//        public double getMaxOdds() { return maxOdds; }
+//
+//        @Override
+//        public double getStakeAmount() { return stakeAmount; }
+//
+//        public Sport getSportType() { return sportType; }
+//
+//        public long getTimestamp() { return timestamp; }
+//
+//        @Override
+//        public String toString() {
+//            return String.format("BettingTask{id=%s, game=%s vs %s, market=%s, outcome=%s, odds=%.2f, stake=%.2f}",
+//                    taskId, homeTeam, awayTeam, marketType, outcome, expectedOdds, stakeAmount);
+//        }
+//    }
 
     // ========================================================================
     // INNER CLASSES & ENUMS
     // ========================================================================
 
 
-    /**
-     * Custom exception for captcha detection
-     */
-    public static class CaptchaDetectedException extends Exception {
-        public CaptchaDetectedException(String message) {
-            super(message);
-        }
-
-        public CaptchaDetectedException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
 }
