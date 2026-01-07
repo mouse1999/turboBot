@@ -13,6 +13,7 @@ import com.mouse.bet.manager.ProfileManager;
 import com.mouse.bet.manager.WindowSyncManager;
 import com.mouse.bet.monitor.PageHealthMonitor;
 import com.mouse.bet.profile.UserAgentProfile;
+import com.mouse.bet.service.ArbOutcomeService;
 import com.mouse.bet.util.msport.MSportLoginUtil;
 import com.mouse.bet.util.msport.MSportMarketUtil;
 import com.mouse.bet.util.msport.MSportNavigationUtil;
@@ -72,6 +73,7 @@ public class MSport implements BettingWindow, Runnable {
     private final WindowSyncManager syncManager;
     private static final String CONTEXT_FILE = "msport-context.json";
     private PageHealthMonitor healthMonitor;
+    private final ArbOutcomeService arbOutcomeService;
 
     // State management
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
@@ -219,49 +221,18 @@ public class MSport implements BettingWindow, Runnable {
             // ========================================
             // STEP 3: FIND MARKET
             // ========================================
-            log.info("{} {} [2/4] Searching for market: {}",
-                    EMOJI_MARKET, EMOJI_SEARCH, task.getMarketType());
 
-            boolean marketFound = MSportMarketUtil.findMarket(page, task);
-            if (!marketFound) {
-                log.warn("{} {} Market not found: {}", EMOJI_WARNING, EMOJI_MARKET, arbId);
-                syncManager.notifyBetFailure(arbId, com.mouse.bet.enums.BookMaker.MSPORT,
-                        "Market not found: " + task.getMarketType());
-                syncManager.skipArbAndSync(arbId);
-                return false;
-            }
-            log.info("{} {} Market found successfully", EMOJI_SUCCESS, EMOJI_MARKET);
+            boolean selectAndVerify = MSportMarketUtil.selectAndVerifyBet(page, null, arbOutcomeService);
+            if(!selectAndVerify) {
+                log.warn("{} {} Bet selection and verification failed", EMOJI_WARNING, EMOJI_CART);
 
-            randomHumanDelay(400, 800);
-
-            // ========================================
-            // STEP 4: SELECT OUTCOME
-            // ========================================
-            log.info("{} {} [3/4] Selecting outcome: {} with odds: {}",
-                    EMOJI_TARGET, EMOJI_BET, task.getOutcome(), task.getExpectedOdds());
-
-            MSportMarketUtil.selectOutcome(page, task);
-            randomHumanDelay(600, 1200);
-            MSportNavigationUtil.waitForPageReady(page);
-            log.info("{} {} Outcome selected successfully", EMOJI_SUCCESS, EMOJI_TARGET);
-
-            randomHumanDelay(300, 600);
-
-            // ========================================
-            // STEP 5: VERIFY BETSLIP
-            // ========================================
-            log.info("{} {} [4/4] Verifying bet in betslip...", EMOJI_CART, EMOJI_SEARCH);
-
-            boolean betslipValid = MSportMarketUtil.verifyBetslip(page, task);
-            if (!betslipValid) {
-                log.warn("{} {} Betslip verification failed", EMOJI_WARNING, EMOJI_CART);
                 MSportMarketUtil.clearBetSlip(page);
                 syncManager.notifyBetFailure(arbId, com.mouse.bet.enums.BookMaker.MSPORT,
-                        "Betslip verification failed");
+                        "Bet selection and verification failed");
                 syncManager.skipArbAndSync(arbId);
                 return false;
+
             }
-            log.info("{} {} Betslip verified successfully", EMOJI_SUCCESS, EMOJI_CART);
 
             // ========================================
             // STEP 6: MARK DEPLOYMENT SUCCESS
@@ -824,7 +795,7 @@ public class MSport implements BettingWindow, Runnable {
 
                     // 4. PLACE THE BET (both sides are now synchronized and ready)
                     log.info("🚀 SIMULTANEOUS BETTING | ArbId: {} | Bookmaker: MSPORT", task.getTaskId());
-                    boolean betPlaced = MSportMarketUtil.placeBet(page, task);
+                    boolean betPlaced = MSportMarketUtil.placeBet(page, task, arbOutcomeService);
 
                     // Placeholder bet ID - replace with actual extraction logic
                     String betId = "BET_" + System.currentTimeMillis();

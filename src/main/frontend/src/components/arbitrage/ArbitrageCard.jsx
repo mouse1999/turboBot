@@ -3,11 +3,7 @@ import { Clock, MapPin, Trophy, Activity, ChevronDown, ChevronUp, Banknote } fro
 import Badge from '../common/Badge';
 import Button from '../common/Button';
 import BetAmountSelector from './BetAmountSelector.jsx';
-import {
-    calculateArbitrageStakes,
-    calculateArbitrageProfit,
-    formatCurrency
-} from '../../utils/stakeCalculator';
+import { calculateArbitrageStakes, calculateArbitrageProfit, formatCurrency } from '../../utils/stakeCalculator';
 
 const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
     const [selectedAmount, setSelectedAmount] = useState(100000); // Default 100k
@@ -23,12 +19,16 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
     }, [arbitrage.outcomes, selectedAmount]);
 
     // Determine profit percentage color
-    const profitColor = profitData.profitPercentage >= 5 ? 'text-green-600' :
-        profitData.profitPercentage >= 3 ? 'text-blue-600' :
-            profitData.profitPercentage >= 0 ? 'text-gray-600' : 'text-red-600';
+    const profitColor = arbitrage.profitPercentage >= 5
+        ? 'text-green-600'
+        : arbitrage.profitPercentage >= 3
+            ? 'text-blue-600'
+            : arbitrage.profitPercentage >= 0
+                ? 'text-gray-600'
+                : 'text-red-600';
 
     // Determine profit amount color
-    const profitAmountColor = profitData.profit >= 0 ? 'text-green-600' : 'text-red-600';
+    const profitAmountColor = arbitrage.profitPercentage >= 0 ? 'text-green-600' : 'text-red-600';
 
     // Determine ROI color
     const roiColor = arbitrage.roiPercentage >= 0 ? 'text-green-600' : 'text-red-600';
@@ -83,7 +83,7 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
                     {/* Profit - Desktop only inline */}
                     <div className="hidden sm:block text-center">
                         <div className={`text-xl font-bold ${profitColor}`}>
-                            {profitData.profitPercentage >= 0 ? '+' : ''}{profitData.profitPercentage.toFixed(2)}%
+                            {arbitrage.profitPercentage >= 0 ? '+' : ''}{arbitrage.profitPercentage.toFixed(2)}%
                         </div>
                         <div className="text-xs text-gray-500">Profit</div>
                         {arbitrage.confidenceScore && (
@@ -99,7 +99,7 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
                     <div className="sm:hidden flex items-center justify-between w-full mb-1">
                         <div className="text-center">
                             <div className={`text-xl font-bold ${profitColor}`}>
-                                {profitData.profitPercentage >= 0 ? '+' : ''}{profitData.profitPercentage.toFixed(2)}%
+                                {arbitrage.profitPercentage >= 0 ? '+' : ''}{arbitrage.profitPercentage.toFixed(2)}%
                             </div>
                             <div className="text-xs text-gray-500">Profit</div>
                         </div>
@@ -140,10 +140,14 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
                             <div className="flex items-start justify-between mb-1">
                                 <div className="flex-1 min-w-0">
                                     <div className="text-xs text-gray-500 mb-0.5">{outcome.outcomeName}</div>
-                                    <div className="font-bold text-sm text-gray-900 truncate">{outcome.bookmakerName}</div>
+                                    <div className="font-bold text-sm text-gray-900 truncate">
+                                        {outcome.bookmakerName}
+                                    </div>
                                 </div>
                                 <div className="text-right ml-2">
-                                    <div className="text-lg font-bold text-blue-600">{outcome.odds.toFixed(2)}</div>
+                                    <div className="text-lg font-bold text-blue-600">
+                                        {outcome.odds.toFixed(2)}
+                                    </div>
                                     {outcome.previousOdds && outcome.previousOdds !== outcome.odds && (
                                         <div className="text-xs text-gray-400 line-through">
                                             {outcome.previousOdds.toFixed(2)}
@@ -161,7 +165,7 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
                     ))}
                 </div>
 
-                {/* Total Summary - Using profitData from calculateArbitrageProfit */}
+                {/* Total Summary - Using profitData */}
                 <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
                     <div className="flex justify-between text-xs">
                         <span className="text-gray-600">Total Stake:</span>
@@ -169,21 +173,19 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
                     </div>
                     <div className="flex justify-between text-xs mt-1">
                         <span className="text-gray-600">Expected Return:</span>
-                        <span className="font-bold text-blue-600">
-                            {formatCurrency(profitData.potentialReturn)}
-                        </span>
+                        <span className="font-bold text-blue-600">{formatCurrency(profitData.potentialReturn)}</span>
                     </div>
                     <div className="flex justify-between text-xs mt-1">
                         <span className="text-gray-600">Profit:</span>
                         <span className={`font-bold ${profitAmountColor}`}>
-                            {profitData.profit >= 0 ? '+' : ''}{formatCurrency(profitData.profit)}
-                        </span>
+              {profitData.profit >= 0 ? '+' : ''}{formatCurrency(profitData.profit)}
+            </span>
                     </div>
                     <div className="flex justify-between text-xs mt-1">
                         <span className="text-gray-600">Profit %:</span>
                         <span className={`font-bold ${profitColor}`}>
-                            {profitData.profitPercentage >= 0 ? '+' : ''}{profitData.profitPercentage.toFixed(2)}%
-                        </span>
+              {profitData.profitPercentage >= 0 ? '+' : ''}{profitData.profitPercentage.toFixed(2)}%
+            </span>
                     </div>
                 </div>
 
@@ -231,9 +233,9 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
                             </div>
                             <div>
                                 <span className="text-gray-500">Market Type:</span>
-                                <div className="font-medium text-gray-700 mt-0.5">{arbitrage.marketType}</div>
+                                <div className="font-medium text-gray-700 mt-0.5">{arbitrage.marketType || 'N/A'}</div>
                             </div>
-                            {arbitrage.roiPercentage && (
+                            {arbitrage.roiPercentage !== null && (
                                 <div>
                                     <span className="text-gray-500">ROI:</span>
                                     <div className={`font-medium mt-0.5 ${roiColor}`}>
@@ -248,7 +250,6 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
                                 </div>
                             )}
                         </div>
-
                         <div className="text-xs text-gray-500 pt-1 border-t border-gray-100">
                             Last updated: {formatDate(arbitrage.lastCheckedAt)}
                         </div>

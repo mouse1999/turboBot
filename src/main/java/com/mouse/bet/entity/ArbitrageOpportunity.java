@@ -5,13 +5,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Normalized arbitrage entity with separate outcomes
- * This design prevents bookmaker position confusion
+ * Normalized arbitrage entity with age calculation
  */
 @Entity
 @Table(name = "arbitrage_opportunities", indexes = {
@@ -112,7 +112,6 @@ public class ArbitrageOpportunity {
     private Integer updateCount;
 
     // ✅ NORMALIZED: Separate outcomes collection
-    // Bookmaker positions don't matter - matched by bookmaker_id
     @OneToMany(mappedBy = "arbitrage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<ArbOutcome> outcomes = new ArrayList<>();
@@ -127,6 +126,8 @@ public class ArbitrageOpportunity {
         if (updateCount == null) {
             updateCount = 0;
         }
+        // Calculate initial age (will be 0)
+        calculateAge();
     }
 
     @PreUpdate
@@ -134,6 +135,66 @@ public class ArbitrageOpportunity {
         updatedAt = LocalDateTime.now();
         if (updateCount != null) {
             updateCount++;
+        }
+        // Recalculate age on every update
+        calculateAge();
+    }
+
+    /**
+     * Calculate arbitrage age in seconds
+     * Age = time elapsed since creation
+     */
+    public void calculateAge() {
+        if (createdAt != null) {
+            this.arbAgeSeconds = Duration.between(createdAt, LocalDateTime.now()).getSeconds();
+        } else {
+            this.arbAgeSeconds = 0L;
+        }
+    }
+
+    /**
+     * Get current age (call this for real-time age without saving)
+     */
+    public Long getCurrentAge() {
+        if (createdAt != null) {
+            return Duration.between(createdAt, LocalDateTime.now()).getSeconds();
+        }
+        return 0L;
+    }
+
+    /**
+     * Get age in minutes
+     */
+    public Long getAgeInMinutes() {
+        return arbAgeSeconds != null ? arbAgeSeconds / 60 : 0L;
+    }
+
+    /**
+     * Get age in hours
+     */
+    public Double getAgeInHours() {
+        return arbAgeSeconds != null ? arbAgeSeconds / 3600.0 : 0.0;
+    }
+
+    /**
+     * Check if arb is stale (older than threshold)
+     */
+    public boolean isStale(long thresholdSeconds) {
+        Long currentAge = getCurrentAge();
+        return currentAge > thresholdSeconds;
+    }
+
+    /**
+     * Get human-readable age string
+     */
+    public String getAgeFormatted() {
+        Long age = getCurrentAge();
+        if (age < 60) {
+            return age + " seconds";
+        } else if (age < 3600) {
+            return (age / 60) + " minutes";
+        } else {
+            return String.format("%.1f hours", age / 3600.0);
         }
     }
 
@@ -152,22 +213,8 @@ public class ArbitrageOpportunity {
                 (expiredAt == null || expiredAt.isAfter(LocalDateTime.now()));
     }
 
-//    public BigDecimal calculateProfitAmount() {
-//        if (outcomes == null || outcomes.isEmpty() || profitPercentage == null) {
-//            return BigDecimal.ZERO;
-//        }
-//
-//        BigDecimal totalStake = outcomes.stream()
-//                .map(ArbOutcome::getStake)
-//                .filter(stake -> stake != null)
-//                .reduce(BigDecimal.ZERO, BigDecimal::add);
-//
-//        return totalStake.multiply(profitPercentage)
-//                .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_HALF_UP);
-//    }
-
     public String getSummary() {
-        return String.format("%s vs %s | %s | %.2f%% profit",
-                homeTeam, awayTeam, sport, profitPercentage);
+        return String.format("%s vs %s | %s | %.2f%% profit | Age: %s",
+                homeTeam, awayTeam, sport, profitPercentage, getAgeFormatted());
     }
 }

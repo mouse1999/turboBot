@@ -7,7 +7,8 @@ import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import com.mouse.bet.entity.Wallet;
 import com.mouse.bet.enums.BookMaker;
-import com.mouse.bet.finance.WalletService;
+
+import com.mouse.bet.service.WalletService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +31,6 @@ public class MSportLoginUtil {
     private static final String EMOJI_SEARCH = "🔍";
     private static final String EMOJI_TARGET = "🎯";
     private static final String EMOJI_WARNING = "⚠️";
-
-    private final WalletService walletService;
 
     @Value("${msport.username:}")
     private static String msportUsername;
@@ -301,7 +300,7 @@ public class MSportLoginUtil {
      * @param page The Playwright Page object
      * @return true if balance was successfully updated, false otherwise
      */
-    public  static boolean updateWalletBalance(Page page) {
+    public  static boolean updateWalletBalance(Page page, WalletService walletService) {
         try {
             log.info("Updating wallet balance for MSport");
 
@@ -344,7 +343,7 @@ public class MSportLoginUtil {
     /**
      * Deduct bet stake from wallet balance
      */
-    public static void spendAmount(BigDecimal betAmount, String arbId) {
+    public static void spendAmount(BigDecimal betAmount, String arbId, WalletService walletService) {
         Wallet updatedWallet = walletService.spend(BookMaker.MSPORT, betAmount);
 
         if (updatedWallet != null) {
@@ -359,20 +358,20 @@ public class MSportLoginUtil {
     /**
      * Credit amount back to balance (for rollback scenarios)
      */
-    public static void creditAmount(double amount, String arbId) {
-        log.info("🔄 Crediting {} back to MSport balance (rollback) | ArbId: {}", amount, arbId);
-
-        BigDecimal creditAmount = BigDecimal.valueOf(amount);
-        Wallet updatedWallet = walletService.credit(BookMaker.MSPORT, creditAmount);
-
-        if (updatedWallet != null) {
-            log.info("SUCCESS: Rollback credit completed for arbId={}, bookmaker=M_SPORT: {} - New balance: {}",
-                    arbId, creditAmount, updatedWallet.getAvailableBalance());
-        } else {
-            log.error("FAILED: Could not credit rollback amount for arbId={}, bookmaker=M_SPORT: {}",
-                    arbId, creditAmount);
-        }
-    }
+//    public static void creditAmount(double amount, String arbId, WalletService walletService) {
+//        log.info("🔄 Crediting {} back to MSport balance (rollback) | ArbId: {}", amount, arbId);
+//
+//        BigDecimal creditAmount = BigDecimal.valueOf(amount);
+//        Wallet updatedWallet = walletService.credit(BookMaker.MSPORT, creditAmount);
+//
+//        if (updatedWallet != null) {
+//            log.info("SUCCESS: Rollback credit completed for arbId={}, bookmaker=M_SPORT: {} - New balance: {}",
+//                    arbId, creditAmount, updatedWallet.getAvailableBalance());
+//        } else {
+//            log.error("FAILED: Could not credit rollback amount for arbId={}, bookmaker=M_SPORT: {}",
+//                    arbId, creditAmount);
+//        }
+//    }
 
     // ========================================================================
     // HELPER METHODS

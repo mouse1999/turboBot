@@ -3,6 +3,7 @@ package com.mouse.bet.window;
 import com.microsoft.playwright.*;
 import com.mouse.bet.config.WindowConfig;
 import com.mouse.bet.exception.PageHealthException;
+import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.interfaces.BettingWindow;
 import com.mouse.bet.manager.ProfileManager;
 import com.mouse.bet.monitor.PageHealthMonitor;
@@ -193,7 +194,7 @@ public class Bet9ja implements BettingWindow, Runnable {
      * @return BettingTask object containing game info, market, outcome details, or null if no task available
      * @throws Exception if polling fails
      */
-    private OneWin.BettingTask pollTaskFromDispatcher() throws Exception {
+    private BettingTask pollTaskFromDispatcher() throws Exception {
         log.info("{} {} Polling for betting task from dispatcher...", EMOJI_POLL, EMOJI_SEARCH);
         // TODO: Implementation to poll task from dispatcher
         // This should communicate with your dispatcher service to get the next betting task
@@ -208,7 +209,7 @@ public class Bet9ja implements BettingWindow, Runnable {
      * @param task The betting task containing game information
      * @throws Exception if game navigation fails
      */
-    private void navigateToGame(Page page, OneWin.BettingTask task) throws Exception {
+    private void navigateToGame(Page page, BettingTask task) throws Exception {
         log.info("{} {} Navigating to game: {} vs {}",
                 EMOJI_GAME, EMOJI_NAVIGATION, task.getHomeTeam(), task.getAwayTeam());
         // TODO: Implementation to navigate to specific game
@@ -224,7 +225,7 @@ public class Bet9ja implements BettingWindow, Runnable {
      * @return true if market is found and visible, false otherwise
      * @throws Exception if market search fails
      */
-    private boolean findMarket(Page page, OneWin.BettingTask task) throws Exception {
+    private boolean findMarket(Page page, BettingTask task) throws Exception {
         log.info("{} {} Searching for market: {}",
                 EMOJI_MARKET, EMOJI_SEARCH, task.getMarketType());
         // TODO: Implementation to find specific market
@@ -240,7 +241,7 @@ public class Bet9ja implements BettingWindow, Runnable {
      * @param task The betting task containing outcome information
      * @throws Exception if outcome selection fails
      */
-    private void selectOutcome(Page page, OneWin.BettingTask task) throws Exception {
+    private void selectOutcome(Page page, BettingTask task) throws Exception {
         log.info("{} {} Selecting outcome: {} with odds: {}",
                 EMOJI_TARGET, EMOJI_BET, task.getOutcome(), task.getExpectedOdds());
         // TODO: Implementation to click specific outcome
@@ -256,7 +257,7 @@ public class Bet9ja implements BettingWindow, Runnable {
      * @return true if bet is correctly added to betslip, false otherwise
      * @throws Exception if verification fails
      */
-    private boolean verifyBetslip(Page page, OneWin.BettingTask task) throws Exception {
+    private boolean verifyBetslip(Page page, BettingTask task) throws Exception {
         log.info("{} {} Verifying bet added to betslip...", EMOJI_CART, EMOJI_SEARCH);
         // TODO: Implementation to verify betslip
         // Should check that the correct game, market, outcome, and odds are in betslip
@@ -272,7 +273,7 @@ public class Bet9ja implements BettingWindow, Runnable {
      * @return true if bet is successfully placed, false otherwise
      * @throws Exception if bet placement fails
      */
-    private boolean placeBet(Page page, OneWin.BettingTask task) throws Exception {
+    private boolean placeBet(Page page, BettingTask task) throws Exception {
         log.info("{} {} Placing bet with stake: {}",
                 EMOJI_MONEY, EMOJI_BET, task.getStakeAmount());
         // TODO: Implementation to place bet
@@ -316,7 +317,7 @@ public class Bet9ja implements BettingWindow, Runnable {
      * @param task The failed betting task
      * @param error The exception that caused the failure
      */
-    private void handleBetFailure(Page page, OneWin.BettingTask task, Exception error) {
+    private void handleBetFailure(Page page, BettingTask task, Exception error) {
         log.error("{} {} Bet placement failed for task {}: {}",
                 EMOJI_ERROR, EMOJI_BET, task.getTaskId(), error.getMessage());
 
@@ -337,7 +338,7 @@ public class Bet9ja implements BettingWindow, Runnable {
      *
      * @param task The successfully placed betting task
      */
-    private void handleBetSuccess(OneWin.BettingTask task) {
+    private void handleBetSuccess(BettingTask task) {
         log.info("{} {} Bet successfully placed for task {}",
                 EMOJI_SUCCESS, EMOJI_MONEY, task.getTaskId());
         // TODO: Notify dispatcher of success
@@ -747,7 +748,7 @@ public class Bet9ja implements BettingWindow, Runnable {
             int maxConsecutiveFailures = 5;
 
             while (isRunning.get() && !isPaused.get()) {
-                OneWin.BettingTask task = null;
+                BettingTask task = null;
 
                 try {
                     // Poll for next task from dispatcher

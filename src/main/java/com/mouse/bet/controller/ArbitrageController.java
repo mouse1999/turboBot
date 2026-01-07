@@ -92,6 +92,8 @@ public class ArbitrageController {
 
             ArbitrageListResponse response = ArbitrageListResponse.builder()
                     .success(false)
+
+
                     .count(0)
                     .message("Failed to retrieve arbitrage opportunities: " + e.getMessage())
                     .build();

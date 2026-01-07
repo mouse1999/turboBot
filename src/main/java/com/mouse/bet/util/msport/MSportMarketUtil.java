@@ -6,9 +6,11 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
 import com.microsoft.playwright.options.WaitForSelectorState;
 
+import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.enums.MarketType;
 import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.model.MarketBlockResult;
+import com.mouse.bet.service.ArbOutcomeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -44,6 +47,7 @@ public class MSportMarketUtil {
     private static final String EMOJI_BET = "🎯";
 
     private static final double TOLERANCE_PERCENT = 0.03; // 3% tolerance
+    private static final BookMaker BOOK_MAKER = BookMaker.MSPORT;
 
     /**
      * Find and expand market by title
@@ -214,9 +218,8 @@ public class MSportMarketUtil {
      * Place the bet from betslip
      * This is a simplified version - you should implement the full logic from your MSportWindow
      */
-    public static boolean placeBet(Page page, BettingTask bettingTask) {
-        BigDecimal stakeAmount = leg.getStake();
-        String arbId = arb.getArbId();
+    public static boolean placeBet(Page page, BettingTask bettingTask, ArbOutcomeService arbOutcomeService) {
+
         long startTime = System.currentTimeMillis();
 
         // ── CONFIGURABLE MAX DURATION ──
@@ -225,16 +228,16 @@ public class MSportMarketUtil {
 
         log.info("─────────────────────────────────────────────────────────────");
         log.info("START placeBet → {} → {} @ {} | Stake: {} | {}",
-                leg.getProviderMarketTitle(),
-                leg.getProviderMarketName(),
-                betLegService.getBetLegById(leg.getBetLegId()),
-                stakeAmount,
+                bettingTask.getMarketType(),
+                bettingTask.getOutcome(),
+                bettingTask,
+                bettingTask.getStakeAmount(),
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")));
 
         try {
             // ── 1. ENTER STAKE ──
             log.info("{} [1/5] Entering stake...", EMOJI_BET);
-            if (!enterStakeWithOverflowHandling(page, betLegService.getBetLegById(leg.getBetLegId()).getStake())) {
+            if (!enterStakeWithOverflowHandling(page, Objects.requireNonNull(arbOutcomeService.findByExternalIdAndBookmaker("", BOOK_MAKER.getBreakingBetId()).orElse(null)).getStake())) {
                 log.error("{} Failed to enter stake", EMOJI_ERROR);
                 return false;
             }
@@ -352,7 +355,8 @@ public class MSportMarketUtil {
                 String currentOddsText = (String) state.get("oddsText");
                 String buttonText = (String) state.getOrDefault("buttonText", "");
                 boolean buttonDisabled = Boolean.TRUE.equals(state.get("buttonDisabled"));
-                double expectedOdds = betLegService.getBetLegById(leg.getBetLegId()).getOdds().doubleValue();
+                double expectedOdds = Objects.requireNonNull(arbOutcomeService.findByExternalIdAndBookmaker("", BOOK_MAKER.getBreakingBetId())
+                        .orElse(null)).getOdds().doubleValue();
 
                 log.info("Button: \"{}\" | Disabled: {} | Current-Odds: {} | expected-Odds: {} |", buttonText, buttonDisabled, currentOddsText, expectedOdds);
 
@@ -395,7 +399,8 @@ public class MSportMarketUtil {
                 }
 
                 // ── STEP 2: RE-ENTER STAKE BEFORE FINAL PLACE BET ──
-                if (!enterStakeWithOverflowHandling(page, betLegService.getBetLegById(leg.getBetLegId()).getStake())){
+                if (!enterStakeWithOverflowHandling(page, Objects.requireNonNull(arbOutcomeService.findByExternalIdAndBookmaker("", BOOK_MAKER.getBreakingBetId()).
+                        orElse(null)).getStake())){
                     log.warn("Failed to re-enter stake before Place Bet → will retry");
                     randomHumanDelay(500, 800);
                     continue;
@@ -795,9 +800,9 @@ public class MSportMarketUtil {
     }
 
 
-    private static boolean selectAndVerifyBet(Page page, BetLeg leg, String arbId) {
-        String market = leg.getProviderMarketTitle();    // e.g. "Winner", "O/U Total Points", "Point Handicap"
-        String outcome = leg.getProviderMarketName();     // e.g. "Home", "Over 76.5", "+2.5"
+    public static boolean selectAndVerifyBet(Page page, BettingTask task, ArbOutcomeService arbOutcomeService) {
+        String market = task.getMarketType();    // e.g. "Winner", "O/U Total Points", "Point Handicap"
+        String outcome = task.getOutcome();     // e.g. "Home", "Over 76.5", "+2.5"
 
         try {
             log.info("Selecting: {} → {}", market, outcome);
@@ -835,9 +840,9 @@ public class MSportMarketUtil {
             log.info("FOUND: {} → {} @ {}", market, outcome, displayedOdds);
 
             // Optional: verify odds tolerance
-            if (!isOddsAcceptable(betLegService.getBetLegById(leg.getBetLegId()).getOdds().doubleValue(), displayedOdds)) {
-                log.warn("Odds drifted: expected {} → got {}", leg.getOdds(), displayedOdds);
-//                return false; todo
+            if (!isOddsAcceptable(Objects.requireNonNull(arbOutcomeService.findByExternalIdAndBookmaker("", BOOK_MAKER.getBreakingBetId()).orElse(null)).getBookmakerId().doubleValue(), displayedOdds)) {
+                log.warn("Odds drifted: expected {} → got {}", task.getExpectedOdds(), displayedOdds);
+//                return false; todo: enable this
             }
 
             // Human-like interaction and click

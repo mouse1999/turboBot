@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ArbOutcomeRepository extends JpaRepository<ArbOutcome, Long> {
@@ -17,6 +18,8 @@ public interface ArbOutcomeRepository extends JpaRepository<ArbOutcome, Long> {
     @Transactional
     @Modifying
     void deleteByArbitrageId(Long arbId);
+
+    Optional<ArbOutcome> findByArbitrageExternalIdAndBookmakerId(String externalId, Integer bookmakerId);
 
     // Alternative with @Query (more explicit)
     @Transactional

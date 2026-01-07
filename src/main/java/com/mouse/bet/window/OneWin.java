@@ -4,6 +4,7 @@ import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.ViewportSize;
 import com.mouse.bet.config.WindowConfig;
 import com.mouse.bet.exception.PageHealthException;
+import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.interfaces.BettingWindow;
 import com.mouse.bet.manager.ProfileManager;
 import com.mouse.bet.monitor.PageHealthMonitor;
