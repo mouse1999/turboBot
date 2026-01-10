@@ -30,6 +30,7 @@ public enum ArbStatus {
      * Old data that hasn't been updated recently
      */
     STALE,
+    IN_PROGRESS,
 
     /**
      * Manually ignored by user/system
@@ -39,5 +40,6 @@ public enum ArbStatus {
     /**
      * Pending execution (in queue)
      */
-    PENDING
+    PENDING,
+    COMPLETED
 }

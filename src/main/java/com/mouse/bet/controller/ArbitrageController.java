@@ -456,6 +456,7 @@ public class ArbitrageController {
                 .country(arb.getCountry())
                 .homeTeam(arb.getHomeTeam())
                 .awayTeam(arb.getAwayTeam())
+                .arbAge(arb.getArbAgeSeconds())
                 .matchStartTime(arb.getMatchStartTime())
                 .isLive(arb.getIsLive())
                 .matchProgress(arb.getMatchProgress())
@@ -536,6 +537,9 @@ public class ArbitrageController {
 
         @Schema(description = "Last checked timestamp")
         private LocalDateTime lastCheckedAt;
+
+        @Schema(description = "Arb's Age")
+        private long arbAge;
 
         @Schema(description = "Outcomes with bookmaker and odds information")
         private List<OutcomeDTO> outcomes;

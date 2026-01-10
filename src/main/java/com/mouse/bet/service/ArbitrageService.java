@@ -50,6 +50,11 @@ public class ArbitrageService {
         return arbitrageRepository.findAll(cutoff);
     }
 
+
+    public void saveArbitrageOpportunity(ArbitrageOpportunity arbitrageOpportunity) {
+        arbitrageRepository.save(arbitrageOpportunity);
+    }
+
     /**
      * Find all FRESH arbitrage opportunities with pagination and sorting
      */

@@ -33,6 +33,21 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
     // Determine ROI color
     const roiColor = arbitrage.roiPercentage >= 0 ? 'text-green-600' : 'text-red-600';
 
+    // Format arb age with color coding
+    const getArbAgeDisplay = (age) => {
+        if (age === null || age === undefined) return { text: 'N/A', color: 'text-gray-500' };
+
+        let color;
+        if (age <= 5) color = 'text-green-600';
+        else if (age <= 15) color = 'text-yellow-600';
+        else if (age <= 30) color = 'text-orange-600';
+        else color = 'text-red-600';
+
+        return { text: `${age}s`, color };
+    };
+
+    const arbAgeDisplay = getArbAgeDisplay(arbitrage.arbAge);
+
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
@@ -69,12 +84,18 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
                             <Activity size={11} className="flex-shrink-0" />
                             <span>{arbitrage.sport}</span>
                         </div>
-                        {arbitrage.matchStartTime && (
+                        {arbitrage.matchProgress && (
                             <div className="flex items-center gap-1">
-                                <Clock size={11} className="flex-shrink-0" />
-                                <span>{formatDate(arbitrage.matchStartTime)}</span>
+                                <Activity size={11} className="flex-shrink-0 text-orange-600" />
+                                <span className="font-medium text-orange-600">{arbitrage.matchProgress}</span>
                             </div>
                         )}
+                        <div className="flex items-center gap-1">
+                            <Clock size={11} className="flex-shrink-0" />
+                            <span className={`font-medium ${arbAgeDisplay.color}`}>
+                                Age: {arbAgeDisplay.text}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -243,12 +264,12 @@ const ArbitrageCard = ({ arbitrage, expanded, onToggle, onPlaceBet }) => {
                                     </div>
                                 </div>
                             )}
-                            {arbitrage.matchProgress && (
-                                <div>
-                                    <span className="text-gray-500">Progress:</span>
-                                    <div className="font-medium text-gray-700 mt-0.5">{arbitrage.matchProgress}</div>
+                            <div>
+                                <span className="text-gray-500">Arb Age:</span>
+                                <div className={`font-medium mt-0.5 ${arbAgeDisplay.color}`}>
+                                    {arbAgeDisplay.text}
                                 </div>
-                            )}
+                            </div>
                         </div>
                         <div className="text-xs text-gray-500 pt-1 border-t border-gray-100">
                             Last updated: {formatDate(arbitrage.lastCheckedAt)}

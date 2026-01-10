@@ -19,7 +19,14 @@ public enum Sport {
     TABLE_TENNIS(12, "Table Tennis"),
     BASEBALL(16, "Baseball"),
     AMERICAN_FOOTBALL(18, "American Football"),
-    E_SPORTS(91, "E-Sports");
+    E_SPORTS(91, "E-Sports"),
+    SOCCER(1000, ""),
+    CRICKET(2000, ""),
+    DOTA_2(3000, ""),
+    CS2(5000, ""),
+    COUNTER_STRIKE(4000, ""),
+
+    TOP(100, "");
 
     private final int breakingBetId;
     private final String displayName;

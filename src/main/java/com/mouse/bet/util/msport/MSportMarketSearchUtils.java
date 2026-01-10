@@ -244,7 +244,8 @@ public class MSportMarketSearchUtils {
 
         // Both Teams to Score
         if (marketLower.contains("both teams") ||
-                marketLower.contains("btts")) {
+                marketLower.contains("btts")
+        || marketLower.contains("gg/ng")) {
             return MarketType.BOTH_TEAMS_SCORE;
         }
 
@@ -255,24 +256,22 @@ public class MSportMarketSearchUtils {
             return MarketType.WINNER;
         }
 
+        if (marketLower.contains("draw no bet") ||
+                marketLower.contains("dnb")) {
+            return MarketType.DNB;
+        }
+
         return MarketType.UNKNOWN;
     }
 
     // Select outcome based on market type
     public static Locator selectOutcomeByType(List<MarketBlockResult> marketBlock,
                                               MarketType marketType, String outcome, Page page) {
-        switch (marketType) {
-            case OVER_UNDER:
-                return selectOverUnderOutcome(marketBlock, outcome, page);
-
-            case POINT_HANDICAP:
-                return selectHandicapOutcome(marketBlock, outcome, page);
-
-            case WINNER:
-            case BOTH_TEAMS_SCORE:
-            default:
-                return null; //selectStandardOutcome(marketBlock, outcome, page);
-        }
+        return switch (marketType) {
+            case OVER_UNDER -> selectOverUnderOutcome(marketBlock, outcome, page);
+            case POINT_HANDICAP -> selectHandicapOutcome(marketBlock, outcome, page);
+            default -> selectMultipleOutcomes(marketBlock, outcome, page);
+        };
     }
 
     // Standard selection for Winner/Home/Away/Draw markets
@@ -783,6 +782,285 @@ public class MSportMarketSearchUtils {
         }
 
         log.warn("Handicap '{}' NOT FOUND", outcomeInput);
+        return null;
+    }
+
+
+
+    private static Locator selectMultipleOutcomes(List<MarketBlockResult> marketResults,
+                                                  String outcomeInput,
+                                                  Page page) {
+        if (marketResults == null || marketResults.isEmpty()) {
+            log.warn("No market blocks provided for outcome '{}'", outcomeInput);
+            return null;
+        }
+
+        log.debug("Searching for outcome: '{}'", outcomeInput);
+
+        // Use ONLY the first market block — all duplicates have same content
+        MarketBlockResult result = marketResults.get(0);
+        log.debug("Using market block: '{}'", result.title);
+
+        try {
+            Locator freshBlock = result.refresh(page);
+            if (freshBlock.count() == 0) {
+                log.warn("Market block disappeared");
+                return null;
+            }
+
+            String baseMarker = "pw-outcome-" + System.nanoTime();
+
+            String jsFindAndMark = """
+    (el, args) => {
+        const { searchText, baseMarker } = args;
+        const allRows = el.querySelectorAll('.m-market-row');
+
+        let headers = [];
+        let headerRow = null;
+        let targetColIndex = null;
+
+        // Find header row (has multiple .m-title elements with "Home", "Away", "Draw", etc.)
+        for (let r of allRows) {
+            const titles = r.querySelectorAll('.m-title');
+            if (titles.length > 1) {
+                headerRow = r;
+                headers = Array.from(titles).map(t => t.textContent.trim().toLowerCase());
+                break;
+            }
+        }
+
+        const dataRows = headerRow ? Array.from(allRows).filter(r => r !== headerRow) : Array.from(allRows);
+        
+        let matchedMarkerId = null;
+        const available = [];
+
+        // Normalize text for comparison
+        const normalizeText = (text) => {
+            return text.toLowerCase()
+                       .replace(/\\s+/g, ' ')
+                       .trim();
+        };
+
+        const searchNormalized = normalizeText(searchText);
+
+        // Extract team/position keywords
+        const teamKeywords = {
+            home: ['home', '1', 'team 1', 'team1'],
+            away: ['away', '2', 'team 2', 'team2'],
+            draw: ['draw', 'x', 'tie'],
+            over: ['over', 'o'],
+            under: ['under', 'u'],
+            yes: ['yes', 'y', 'btts yes', 'gg', 'both teams to score'],
+            no: ['no', 'n', 'btts no', 'ng']
+        };
+
+        // Determine target position from search text
+        let targetPosition = null;
+        const searchLower = searchText.toLowerCase();
+        
+        for (const [position, keywords] of Object.entries(teamKeywords)) {
+            if (keywords.some(kw => searchLower.includes(kw))) {
+                targetPosition = position;
+                break;
+            }
+        }
+
+        // If position found in search text, try to match with headers
+        if (targetPosition && headerRow) {
+            headers.forEach((h, idx) => {
+                const headerMatches = teamKeywords[targetPosition]?.some(kw => h.includes(kw));
+                if (headerMatches) {
+                    targetColIndex = idx;
+                }
+            });
+        }
+
+        // Search all data rows for matching outcome
+        dataRows.forEach((row, rowIdx) => {
+            const outcomes = row.querySelectorAll('.m-outcome');
+            
+            outcomes.forEach((cell, colIdx) => {
+                const descEl = cell.querySelector('.desc');
+                const labelEl = cell.querySelector('.label');
+                const titleEl = cell.querySelector('.m-title');
+                
+                // Get text from desc, label, and title elements
+                const descText = descEl ? descEl.textContent.trim() : '';
+                const labelText = labelEl ? labelEl.textContent.trim() : '';
+                const titleText = titleEl ? titleEl.textContent.trim() : '';
+                const fullText = (descText + ' ' + labelText + ' ' + titleText).trim();
+                
+                const normDesc = normalizeText(descText);
+                const normLabel = normalizeText(labelText);
+                const normTitle = normalizeText(titleText);
+                const normFull = normalizeText(fullText);
+
+                const disabled = cell.classList.contains('disabled');
+                const oddsEl = cell.querySelector('.odds');
+                const odds = oddsEl ? oddsEl.textContent.trim() : 'N/A';
+                const header = colIdx < headers.length ? headers[colIdx] : '';
+
+                available.push({ 
+                    row: rowIdx, 
+                    col: colIdx, 
+                    desc: descText,
+                    label: labelText,
+                    title: titleText,
+                    full: fullText,
+                    normalized: normFull,
+                    header, 
+                    odds, 
+                    disabled 
+                });
+
+                // Skip if already found or disabled
+                if (matchedMarkerId || disabled) return;
+
+                let isMatch = false;
+
+                // Strategy 1: Exact match (normalized) - for simple outcomes
+                if (normDesc === searchNormalized || 
+                    normLabel === searchNormalized || 
+                    normTitle === searchNormalized ||
+                    normFull === searchNormalized) {
+                    isMatch = true;
+                }
+
+                // Strategy 2: Contains all words from search (for multi-word outcomes)
+                if (!isMatch) {
+                    const searchWords = searchNormalized.split(' ').filter(w => w.length > 0);
+                    const allWordsPresent = searchWords.every(word => normFull.includes(word));
+                    
+                    if (allWordsPresent && searchWords.length > 0) {
+                        // Verify column if position was specified
+                        if (targetColIndex !== null) {
+                            isMatch = (colIdx === targetColIndex);
+                        } else {
+                            isMatch = true;
+                        }
+                    }
+                }
+
+                // Strategy 3: Header-based matching (for DNB, 1X2, Winner markets)
+                if (!isMatch && targetColIndex !== null && colIdx === targetColIndex) {
+                    // For simple positional markets (Home, Away, Draw)
+                    // Just matching the column is enough
+                    const simpleMarkets = ['home', 'away', 'draw', '1', '2', 'x'];
+                    if (simpleMarkets.some(m => searchLower.includes(m))) {
+                        isMatch = true;
+                    }
+                }
+
+                if (isMatch) {
+                    // FOUND: mark this cell
+                    const markerId = baseMarker + '-match';
+                    cell.setAttribute('data-pw-marker', markerId);
+                    matchedMarkerId = markerId;
+                }
+            });
+        });
+
+        return {
+            found: matchedMarkerId !== null,
+            markerId: matchedMarkerId,
+            headers: headers,
+            targetColumn: targetColIndex,
+            targetPosition: targetPosition,
+            available: available
+        };
+    }
+    """;
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> jsResult = (Map<String, Object>) freshBlock.evaluate(jsFindAndMark,
+                    Map.of("searchText", outcomeInput,
+                            "baseMarker", baseMarker));
+
+            Boolean found = (Boolean) jsResult.get("found");
+            String matchedMarkerId = (String) jsResult.get("markerId");
+
+            log.debug("JS Result - found: {}, markerId: {}", found, matchedMarkerId);
+
+            if (found != null && found && matchedMarkerId != null) {
+                // Search from page root since marker might be deep in DOM
+                Locator outcomeCell = page.locator("[data-pw-marker='" + matchedMarkerId + "']").first();
+
+                log.debug("Searching for marker: {}", matchedMarkerId);
+                log.debug("Initial count: {}", outcomeCell.count());
+
+                try {
+                    // Ensure Playwright sees the marked element
+                    outcomeCell.waitFor(new Locator.WaitForOptions()
+                            .setState(WaitForSelectorState.ATTACHED)
+                            .setTimeout(5000));
+
+                    log.debug("After wait, count: {}", outcomeCell.count());
+                } catch (Exception e) {
+                    log.warn("Timeout waiting for marked element '{}': {}", matchedMarkerId, e.getMessage());
+                    // Try to see if marker exists in DOM
+                    String markerCheck = (String) page.evaluate("() => { const el = document.querySelector('[data-pw-marker=\"" + matchedMarkerId + "\"]'); return el ? 'EXISTS' : 'NOT FOUND'; }");
+                    log.warn("Marker check in DOM: {}", markerCheck);
+                    return null;
+                }
+
+                if (outcomeCell.count() > 0) {
+                    @SuppressWarnings("unchecked")
+                    List<String> headers = (List<String>) jsResult.get("headers");
+                    Integer targetCol = (Integer) jsResult.get("targetColumn");
+                    String targetPos = (String) jsResult.get("targetPosition");
+
+                    log.info("SUCCESS: Found outcome '{}' in block '{}', headers: {}, target col: {}, position: {}",
+                            outcomeInput, result.title, headers, targetCol, targetPos);
+
+                    // Get stable locator using position instead of marker
+                    String jsGetPosition = """
+            (el) => {
+                const row = el.closest('.m-market-row');
+                const allRows = Array.from(document.querySelectorAll('.m-market-row'));
+                const rowIndex = allRows.indexOf(row);
+                const outcomes = row.querySelectorAll('.m-outcome');
+                const colIndex = Array.from(outcomes).indexOf(el);
+                return { rowIndex, colIndex };
+            }
+            """;
+
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> position = (Map<String, Object>) outcomeCell.evaluate(jsGetPosition);
+                    Integer rowIdx = (Integer) position.get("rowIndex");
+                    Integer colIdx = (Integer) position.get("colIndex");
+
+                    log.debug("Outcome position: row {}, col {}", rowIdx, colIdx);
+
+                    // Cleanup marker
+                    outcomeCell.evaluate("el => el.removeAttribute('data-pw-marker')");
+
+                    // Return stable locator using position
+                    Locator stableOutcome = page.locator(".m-market-row").nth(rowIdx)
+                            .locator(".m-outcome").nth(colIdx);
+
+                    return stableOutcome;
+                } else {
+                    log.warn("JS marked cell but Playwright could not find it");
+                }
+            } else {
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> available = (List<Map<String, Object>>) jsResult.get("available");
+                @SuppressWarnings("unchecked")
+                List<String> headers = (List<String>) jsResult.get("headers");
+
+                log.debug("Outcome '{}' not found in block '{}', headers: {}, found {} outcomes",
+                        outcomeInput, result.title, headers, available != null ? available.size() : 0);
+
+                if (available != null && !available.isEmpty()) {
+                    log.debug("Sample outcomes: {}", available.stream().limit(5).collect(Collectors.toList()));
+                }
+            }
+
+        } catch (Exception e) {
+            log.warn("Error searching outcome '{}' in block '{}': {}", outcomeInput, result.title, e.getMessage());
+        }
+
+        log.warn("Outcome '{}' NOT FOUND", outcomeInput);
         return null;
     }
     /**

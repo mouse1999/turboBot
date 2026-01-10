@@ -11,9 +11,7 @@ import com.mouse.bet.enums.MarketType;
 import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.model.MarketBlockResult;
 import com.mouse.bet.service.ArbOutcomeService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -54,27 +52,27 @@ public class MSportMarketUtil {
      * Uses MSportMarketSearchUtils for robust market finding
      */
     public static boolean findMarket(Page page, BettingTask task) throws Exception {
-        log.info("{} {} Searching for market: {}", EMOJI_MARKET, EMOJI_SEARCH, task.getMarketType());
+        log.info("{} {} Searching for market: {}", EMOJI_MARKET, EMOJI_SEARCH, task.marketType());
 
         try {
             // Use the utility class to find and expand markets
             List<MarketBlockResult> marketBlocks = findAndExpandMarkets(
-                    page, task.getMarketType()
+                    page, task.marketType()
             );
 
             if (marketBlocks == null || marketBlocks.isEmpty()) {
                 log.warn("{} {} Market '{}' not found",
-                        EMOJI_WARNING, EMOJI_MARKET, task.getMarketType());
+                        EMOJI_WARNING, EMOJI_MARKET, task.marketType());
                 return false;
             }
 
             log.info("{} {} Market '{}' found and expanded successfully ({} block(s))",
-                    EMOJI_SUCCESS, EMOJI_MARKET, task.getMarketType(), marketBlocks.size());
+                    EMOJI_SUCCESS, EMOJI_MARKET, task.marketType(), marketBlocks.size());
             return true;
 
         } catch (Exception e) {
             log.error("{} {} Error finding market '{}': {}",
-                    EMOJI_ERROR, EMOJI_MARKET, task.getMarketType(), e.getMessage());
+                    EMOJI_ERROR, EMOJI_MARKET, task.marketType(), e.getMessage());
             throw e;
         }
     }
@@ -84,11 +82,11 @@ public class MSportMarketUtil {
      */
     public static void selectOutcome(Page page, BettingTask task) throws Exception {
         log.info("{} {} Selecting outcome: {} with odds: {}",
-                EMOJI_TARGET, EMOJI_BET, task.getOutcome(), task.getExpectedOdds());
+                EMOJI_TARGET, EMOJI_BET, task.outcome(), task.expectedOdds());
 
         try {
-            String market = task.getMarketType();
-            String outcome = task.getOutcome();
+            String market = task.marketType();
+            String outcome = task.outcome();
 
             // Find and expand markets
             List<MarketBlockResult> marketBlocks = findAndExpandMarkets(
@@ -126,8 +124,8 @@ public class MSportMarketUtil {
             log.info("FOUND: {} → {} @ {}", market, outcome, displayedOdds);
 
             // Verify odds are acceptable
-            if (!isOddsAcceptable(task.getExpectedOdds(), displayedOdds)) {
-                log.warn("Odds drifted: expected {} → got {}", task.getExpectedOdds(), displayedOdds);
+            if (!isOddsAcceptable(task.expectedOdds(), displayedOdds)) {
+                log.warn("Odds drifted: expected {} → got {}", task.expectedOdds(), displayedOdds);
                 // Continue anyway - odds check can be done in placeBet
             }
 
@@ -172,8 +170,8 @@ public class MSportMarketUtil {
                 return false;
             }
 
-            String normalizedMarket = normalizeText(task.getMarketType());
-            String normalizedOutcome = normalizeText(task.getOutcome());
+            String normalizedMarket = normalizeText(task.marketType());
+            String normalizedOutcome = normalizeText(task.outcome());
 
             // Check each selection
             for (ElementHandle selectionHandle : selections) {
@@ -205,7 +203,7 @@ public class MSportMarketUtil {
             }
 
             log.warn("{} {} Bet NOT found in betslip | Expected: {} | Market: {}",
-                    EMOJI_WARNING, EMOJI_CART, task.getOutcome(), task.getMarketType());
+                    EMOJI_WARNING, EMOJI_CART, task.outcome(), task.marketType());
             return false;
 
         } catch (Exception e) {
@@ -228,10 +226,10 @@ public class MSportMarketUtil {
 
         log.info("─────────────────────────────────────────────────────────────");
         log.info("START placeBet → {} → {} @ {} | Stake: {} | {}",
-                bettingTask.getMarketType(),
-                bettingTask.getOutcome(),
+                bettingTask.marketType(),
+                bettingTask.outcome(),
                 bettingTask,
-                bettingTask.getStakeAmount(),
+                bettingTask.stakeAmount(),
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")));
 
         try {
@@ -801,8 +799,8 @@ public class MSportMarketUtil {
 
 
     public static boolean selectAndVerifyBet(Page page, BettingTask task, ArbOutcomeService arbOutcomeService) {
-        String market = task.getMarketType();    // e.g. "Winner", "O/U Total Points", "Point Handicap"
-        String outcome = task.getOutcome();     // e.g. "Home", "Over 76.5", "+2.5"
+        String market = task.marketType();    // e.g. "Winner", "O/U Total Points", "Point Handicap"
+        String outcome = task.outcome();     // e.g. "Home", "Over 76.5", "+2.5"
 
         try {
             log.info("Selecting: {} → {}", market, outcome);
@@ -840,8 +838,13 @@ public class MSportMarketUtil {
             log.info("FOUND: {} → {} @ {}", market, outcome, displayedOdds);
 
             // Optional: verify odds tolerance
-            if (!isOddsAcceptable(Objects.requireNonNull(arbOutcomeService.findByExternalIdAndBookmaker("", BOOK_MAKER.getBreakingBetId()).orElse(null)).getBookmakerId().doubleValue(), displayedOdds)) {
-                log.warn("Odds drifted: expected {} → got {}", task.getExpectedOdds(), displayedOdds);
+//            if (!isOddsAcceptable(Objects.requireNonNull(arbOutcomeService.findByExternalIdAndBookmaker("", BOOK_MAKER.getBreakingBetId()).orElse(null)).getBookmakerId().doubleValue(), displayedOdds)) {
+//                log.warn("Odds drifted: expected {} → got {}", task.expectedOdds(), displayedOdds);
+////                return false; todo: enable this
+//            }
+
+            if (!isOddsAcceptable(task.expectedOdds(), displayedOdds)) {
+                log.warn("Odds drifted: expected {} → got {}", task.expectedOdds(), displayedOdds);
 //                return false; todo: enable this
             }
 

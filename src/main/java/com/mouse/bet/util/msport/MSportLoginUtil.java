@@ -32,14 +32,14 @@ public class MSportLoginUtil {
     private static final String EMOJI_TARGET = "🎯";
     private static final String EMOJI_WARNING = "⚠️";
 
-    @Value("${msport.username:}")
-    private static String msportUsername;
+//    @Value("${msport.username:}")
+//    private static String msportUsername;
 
-    @Value("${msport.password:}")
-    private static String msportPassword;
+//    @Value("${msport.password:}")
+//    private static String msportPassword;
 
-    @Value("${msport.login.url:https://www.msport.com/ng/web}")
-    private static String loginUrl;
+//    @Value("${msport.login.url:https://www.msport.com/ng/web}")
+//    private static String loginUrl;
 
     /**
      * Perform login to MSport site
@@ -47,7 +47,7 @@ public class MSportLoginUtil {
      * @param page The Playwright page instance
      * @throws Exception if login fails
      */
-    public static void performLogin(Page page) throws Exception {
+    public static void performLogin(Page page, String msportUsername, String msportPassword) throws Exception {
         log.info("{} {} Attempting to login with username: {}", EMOJI_LOGIN, EMOJI_TARGET, msportUsername);
 
         try {

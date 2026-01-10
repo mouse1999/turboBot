@@ -8,7 +8,7 @@ import com.mouse.bet.enums.ArbStatus;
 import com.mouse.bet.monitoring.ArbitrageDataValidator;
 import com.mouse.bet.repository.ArbOutcomeRepository;
 import com.mouse.bet.repository.ArbitrageRepository;
-import com.mouse.bet.util.BookMakerMapper;
+import com.mouse.bet.transformation.BookMakerMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -525,6 +525,9 @@ public class IngestionService {
                     .subEventId(outcomeData.getSubEventId())
                     .originalId(outcomeData.getOriginalId())
                     .sport(outcomeData.getSport())
+                    .awayTeam(outcomeData.getTeam1())
+                    .homeTeam(outcomeData.getTeam2())
+                    .leagueName(outcomeData.getLeague())
                     .progress(outcomeData.getProgress())
                     .reordered(outcomeData.getReordered())
                     .initiator(outcomeData.getInitiator())

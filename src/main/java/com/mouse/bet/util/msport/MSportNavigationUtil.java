@@ -34,8 +34,6 @@ public class MSportNavigationUtil {
     private static final String EMOJI_CLOCK = "⏰";
     private static final String EMOJI_HEALTH = "💚";
 
-    @Value("${msport.base.url:https://www.msport.com/ng/web}")
-    private static String baseUrl;
 
     @Value("${msport.login.url:https://www.msport.com/ng/web}")
     private static String loginUrl;
@@ -46,7 +44,7 @@ public class MSportNavigationUtil {
     /**
      * Navigate to MSport bookmaker's homepage
      */
-    public static void navigateToBookmaker(Page page) throws Exception {
+    public static void navigateToBookmaker(Page page, String baseUrl) throws Exception {
         log.info("{} {} Navigating to MSport homepage: {}", EMOJI_NAVIGATION, EMOJI_START, baseUrl);
 
         int maxAttempts = 3;
@@ -61,7 +59,7 @@ public class MSportNavigationUtil {
                         .setTimeout(60000)
                         .setWaitUntil(WaitUntilState.NETWORKIDLE));
 
-                page.evaluate("() => { document.body.style.zoom = '0.95'; window.scrollTo(0,0); }");
+//                page.evaluate("() => { document.body.style.zoom = '0.95'; window.scrollTo(0,0); }");
 
                 log.info("{} {} Successfully navigated to MSport", EMOJI_SUCCESS, EMOJI_BET);
                 return;
@@ -217,9 +215,9 @@ public class MSportNavigationUtil {
     /**
      * Navigate to a specific game/match
      */
-    public static void navigateToGame(Page page, BettingTask task) throws Exception {
-        String home = task.getHomeTeam().trim();
-        String away = task.getAwayTeam().trim();
+    public static boolean navigateToGame(Page page, BettingTask task)  {
+        String home = task.homeTeam().trim();
+        String away = task.awayTeam().trim();
         String fullMatch = home + " vs " + away;
 
         log.info("{} Navigating to: {}", EMOJI_BET, fullMatch);
@@ -227,8 +225,10 @@ public class MSportNavigationUtil {
         randomHumanDelay(500, 1500);
 
         if (!tryDirectNavigation(page, home, away, task)) {
-            throw new Exception("Failed to navigate to game: " + fullMatch);
+            log.info("Failed to navigate to game: {} " , fullMatch);
+            return false;
         }
+        return true;
     }
 
     /**
@@ -238,9 +238,9 @@ public class MSportNavigationUtil {
         log.info("🎯 Searching for match: {} vs {}", home, away);
 
         try {
-            if (tryClickByAriaLabel(page, home, away)) return true;
-            if (tryClickByHref(page, home, away)) return true;
-            if (tryClickByTeamText(page, home, away)) return true;
+//            if (tryClickByAriaLabel(page, home, away)) return true;
+//            if (tryClickByHref(page, home, away)) return true;
+//            if (tryClickByTeamText(page, home, away)) return true;
             if (tryClickByPartialMatch(page, home, away)) return true;
             if (tryClickByFuzzyMatch(page, home, away)) return true;
 
@@ -509,8 +509,8 @@ public class MSportNavigationUtil {
     public static void waitForPageReady(Page page) throws Exception {
         log.info("{} {} Waiting for page to be ready...", EMOJI_CLOCK, EMOJI_HEALTH);
 
-        page.waitForLoadState(LoadState.NETWORKIDLE);
-        page.waitForFunction("document.readyState === 'complete'");
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+//        page.waitForFunction("document.readyState === 'complete'");
         page.waitForSelector("body", new Page.WaitForSelectorOptions().setTimeout(10000));
     }
 

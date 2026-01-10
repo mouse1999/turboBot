@@ -42,6 +42,14 @@ public class ArbOutcome {
     @Column(name = "bookmaker_name", nullable = false, length = 100)
     private BookMaker bookmakerName;
 
+    @Column(name = "home_team", nullable = false, length = 200)
+    private String homeTeam;
+
+    @Column(name = "away_team", nullable = false, length = 200)
+    private String awayTeam;
+
+    private String marketType;
+
     // Outcome details
     @Column(name = "outcome_name", length = 200)
     private String outcomeName;
@@ -73,6 +81,7 @@ public class ArbOutcome {
 
     @Column
     private Boolean initiator;
+    private String leagueName;
 
     // Timestamps
     @Column(name = "updated_at")

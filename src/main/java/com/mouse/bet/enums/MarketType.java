@@ -5,5 +5,5 @@ public enum MarketType {
     OVER_UNDER,       // Over/Under with line values - has descriptor column
     POINT_HANDICAP,   // Handicap markets - similar structure to O/U
     BOTH_TEAMS_SCORE, // Yes/No markets
-    UNKNOWN           // Fallback
+    DNB, UNKNOWN           // Fallback
 }

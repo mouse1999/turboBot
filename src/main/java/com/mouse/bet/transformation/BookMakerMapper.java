@@ -1,4 +1,4 @@
-package com.mouse.bet.util;
+package com.mouse.bet.transformation;
 
 
 import com.mouse.bet.enums.BookMaker;
@@ -17,7 +17,7 @@ public class BookMakerMapper {
 
     static {
         BOOKMAKER_BY_ID.put(21, BookMaker._1XBET);
-        BOOKMAKER_BY_ID.put(79, BookMaker.BET365);
+        BOOKMAKER_BY_ID.put(110, BookMaker.BET365);
         BOOKMAKER_BY_ID.put(3, BookMaker.WILLIAM_HILL);
         BOOKMAKER_BY_ID.put(6, BookMaker.UNIBET);
         BOOKMAKER_BY_ID.put(10, BookMaker.PINNACLE);
@@ -31,7 +31,7 @@ public class BookMakerMapper {
         BOOKMAKER_BY_ID.put(49, BookMaker.BETVICTOR);
         BOOKMAKER_BY_ID.put(53, BookMaker.CORAL);
         BOOKMAKER_BY_ID.put(82, BookMaker._22BET);
-        BOOKMAKER_BY_ID.put(83, BookMaker._1WIN);
+        BOOKMAKER_BY_ID.put(79, BookMaker._1WIN);
         BOOKMAKER_BY_ID.put(84, BookMaker.MELBET);
         BOOKMAKER_BY_ID.put(85, BookMaker.PARIMATCH);
         BOOKMAKER_BY_ID.put(89, BookMaker.LEOVEGAS);
@@ -40,21 +40,21 @@ public class BookMakerMapper {
         BOOKMAKER_BY_ID.put(94, BookMaker.MATCHBOOK);
 
         // TODO: Add MSport and SportyBet when their IDs are discovered
-        // BOOKMAKER_BY_ID.put(XXX, BookMaker.MSPORT);
-        // BOOKMAKER_BY_ID.put(YYY, BookMaker.SPORTYBET);
+         BOOKMAKER_BY_ID.put(80, BookMaker.MSPORT);
+         BOOKMAKER_BY_ID.put(43, BookMaker.SPORTYBET);
     }
 
     private static final Map<Integer, Sport> SPORT_BY_ID = new HashMap<>();
 
     static {
         SPORT_BY_ID.put(1, Sport.FOOTBALL);
-        SPORT_BY_ID.put(2, Sport.TENNIS);
-        SPORT_BY_ID.put(3, Sport.BASKETBALL);
-        SPORT_BY_ID.put(4, Sport.ICE_HOCKEY);
-        SPORT_BY_ID.put(5, Sport.VOLLEYBALL);
-        SPORT_BY_ID.put(6, Sport.HANDBALL);
-        SPORT_BY_ID.put(12, Sport.TABLE_TENNIS);
-        SPORT_BY_ID.put(16, Sport.BASEBALL);
+        SPORT_BY_ID.put(5, Sport.BASKETBALL);
+        SPORT_BY_ID.put(3, Sport.BASEBALL);
+        SPORT_BY_ID.put(0, Sport.ICE_HOCKEY);
+        SPORT_BY_ID.put(4, Sport.VOLLEYBALL);
+        SPORT_BY_ID.put(16, Sport.HANDBALL);
+        SPORT_BY_ID.put(11, Sport.TABLE_TENNIS);
+        SPORT_BY_ID.put(6, Sport.TENNIS);
         SPORT_BY_ID.put(18, Sport.AMERICAN_FOOTBALL);
         SPORT_BY_ID.put(91, Sport.E_SPORTS);
     }

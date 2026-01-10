@@ -1,21 +1,24 @@
 package com.mouse.bet.interfaces;
 
+import com.mouse.bet.enums.BookMaker;
+
 public interface BettingTask {
 
     /* ===================== BOOKMAKER ===================== */
 
-    String getBookmaker();      // e.g. "Bet365", "1xBet"
-    Integer getBookmakerId();   // internal / DB ID
-    String getMarketType();
-    String getOutcome();
+    BookMaker bookmaker();      // e.g. "Bet365", "1xBet"
+    Integer bookmakerId();   // internal / DB ID
+    String marketType();
+    String outcome();
 
-    double getExpectedOdds();
-    double getMinOdds();
-    double getMaxOdds();
+    double expectedOdds();
+    double minOdds();
+    double maxOdds();
 
-    double getStakeAmount();
+    double stakeAmount();
+    String leagueName();
 
-    String getHomeTeam();
-    String getAwayTeam();
-    String getTaskId();
+    String homeTeam();
+    String awayTeam();
+    String taskId();
 }

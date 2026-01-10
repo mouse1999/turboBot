@@ -11,6 +11,7 @@ import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.interfaces.BettingWindow;
 import com.mouse.bet.manager.ProfileManager;
 import com.mouse.bet.manager.WindowSyncManager;
+import com.mouse.bet.mock.MockBettingTask;
 import com.mouse.bet.monitor.PageHealthMonitor;
 import com.mouse.bet.profile.UserAgentProfile;
 import com.mouse.bet.service.ArbOutcomeService;
@@ -18,7 +19,6 @@ import com.mouse.bet.util.msport.MSportLoginUtil;
 import com.mouse.bet.util.msport.MSportMarketUtil;
 import com.mouse.bet.util.msport.MSportNavigationUtil;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -84,6 +85,19 @@ public class MSport implements BettingWindow, Runnable {
     // BETTING INDICATOR - Shows when a bet placement is in progress
     private final AtomicBoolean isBetInProgress = new AtomicBoolean(false);
 
+    @Value("${msport.username:}")
+    private String msportUsername;
+
+    @Value("${msport.password:}")
+    private String msportPassword;
+
+    @Value("${msport.login.url:https://www.msport.com/ng/web}")
+    private String loginUrl;
+
+    @Value("${msport.base.url:https://www.msport.com/ng/web}")
+    private String baseUrl;
+
+
     @Value("${msport.context.path:./playwright-context}")
     private String contextPath;
 
@@ -105,10 +119,10 @@ public class MSport implements BettingWindow, Runnable {
     @Value("${fetch.enabled.football:false}")
     private boolean fetchFootballEnabled;
 
-    @Value("${fetch.enabled.basketball:false}")
+    @Value("${fetch.enabled.basketball:true}")
     private boolean fetchBasketballEnabled;
 
-    @Value("${fetch.enabled.table-tennis:true}")
+    @Value("${fetch.enabled.table-tennis:false}")
     private boolean fetchTableTennisEnabled;
 
     /**
@@ -116,12 +130,17 @@ public class MSport implements BettingWindow, Runnable {
      */
     @PostConstruct
     public void init() {
-        log.info("{} {} Initializing MSport with Playwright...", EMOJI_INIT, EMOJI_BET);
+        log.info("{} {} Initializing MSport with Playwright... ", EMOJI_INIT, EMOJI_BET);
         try {
             playwright = Playwright.create();
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setHeadless(true)
-                    .setArgs(windowConfig.getBROWSER_FlAGS())
+                    .setHeadless(false)
+                    .setArgs(Arrays.asList(
+                            "--start-maximized",  // Start maximized
+                            "--window-size=2560,1440",  // Larger window size to prevent wrapping
+                            "--force-device-scale-factor=1",  // Prevent scaling issues
+                            "--disable-blink-features=AutomationControlled"  // Hide automation indicators
+                    ))
                     .setSlowMo(0));
 
             log.info("{} {} Playwright initialized successfully", EMOJI_SUCCESS, EMOJI_INIT);
@@ -130,6 +149,9 @@ public class MSport implements BettingWindow, Runnable {
             log.error("{} {} Failed to initialize Playwright: {}", EMOJI_ERROR, EMOJI_INIT, e.getMessage(), e);
             throw new RuntimeException("Playwright initialization failed", e);
         }
+
+
+        run();
     }
 
     // ========================================================================
@@ -147,7 +169,7 @@ public class MSport implements BettingWindow, Runnable {
         log.info("{} {} Polling for betting task from dispatcher...", EMOJI_POLL, EMOJI_SEARCH);
         // TODO: Implementation to poll task from dispatcher
         // This should communicate with your dispatcher service to get the next betting task
-        return null;
+        return MockBettingTask.createSampleSoftBookTask();
     }
 
     // ========================================================================
@@ -170,7 +192,7 @@ public class MSport implements BettingWindow, Runnable {
      * @throws Exception if deployment fails
      */
     private boolean deployBet(Page page, BettingTask task) throws Exception {
-        String arbId = task.getTaskId();
+        String arbId = task.taskId();
         log.info("{} {} Starting bet deployment for task: {}",
                 EMOJI_START, EMOJI_TARGET, arbId);
 
@@ -181,7 +203,7 @@ public class MSport implements BettingWindow, Runnable {
             boolean intentRegistered = syncManager.registerIntent(
                     arbId,
                     BookMaker.MSPORT,
-                    task.getExpectedOdds()
+                    task.expectedOdds()
             );
 
             if (!intentRegistered) {
@@ -196,15 +218,15 @@ public class MSport implements BettingWindow, Runnable {
             // STEP 2: NAVIGATE TO GAME
             // ========================================
             log.info("{} {} [1/4] Navigating to game: {} vs {}",
-                    EMOJI_GAME, EMOJI_NAVIGATION, task.getHomeTeam(), task.getAwayTeam());
+                    EMOJI_GAME, EMOJI_NAVIGATION, task.homeTeam(), task.awayTeam());
 
-            MSportNavigationUtil.navigateToGame(page, task);
+            boolean gameAvailable = MSportNavigationUtil.navigateToGame(page, task);
             randomHumanDelay(800, 1500);
             MSportNavigationUtil.waitForPageReady(page);
 
             // Check if game is available
-            boolean gameAvailable = page.locator(".m-event--main, .m-teams, .m-market-box")
-                    .count() > 0;
+//            boolean gameAvailable = page.locator(".m-event--main, .m-teams, .m-market-box")
+//                    .count() > 0;
 
             if (!gameAvailable) {
                 log.warn("{} {} Game not available: {}", EMOJI_WARNING, EMOJI_GAME, arbId);
@@ -222,7 +244,7 @@ public class MSport implements BettingWindow, Runnable {
             // STEP 3: FIND MARKET
             // ========================================
 
-            boolean selectAndVerify = MSportMarketUtil.selectAndVerifyBet(page, null, arbOutcomeService);
+            boolean selectAndVerify = MSportMarketUtil.selectAndVerifyBet(page, task, arbOutcomeService);
             if(!selectAndVerify) {
                 log.warn("{} {} Bet selection and verification failed", EMOJI_WARNING, EMOJI_CART);
 
@@ -323,7 +345,7 @@ public class MSport implements BettingWindow, Runnable {
      */
     private void handleBetSuccess(BettingTask task) {
         log.info("{} {} Bet successfully placed for task {}",
-                EMOJI_SUCCESS, EMOJI_MONEY, task.getTaskId());
+                EMOJI_SUCCESS, EMOJI_MONEY, task.taskId());
         // TODO: Notify dispatcher of success
         // TODO: Update task status to completed
     }
@@ -338,7 +360,7 @@ public class MSport implements BettingWindow, Runnable {
      */
     private void handleBetFailure(Page page, BettingTask task, Exception error) {
         log.error("{} {} Bet placement failed for task {}: {}",
-                EMOJI_ERROR, EMOJI_BET, task.getTaskId(), error.getMessage());
+                EMOJI_ERROR, EMOJI_BET, task.taskId(), error.getMessage());
 
         try {
             MSportMarketUtil.clearBetSlip(page);
@@ -528,6 +550,8 @@ public class MSport implements BettingWindow, Runnable {
                 BrowserContext context = browser.newContext(new Browser.NewContextOptions()
                         .setUserAgent(profile.getUserAgent())
                         .setLocale("en-US")
+                        .setViewportSize(null)
+                        .setIgnoreHTTPSErrors(true)
                         .setStorageStatePath(contextFilePath));
 
                 if (context != null) {
@@ -734,7 +758,7 @@ public class MSport implements BettingWindow, Runnable {
             log.info("{} {} New page created successfully", EMOJI_SUCCESS, EMOJI_INIT);
 
             // Navigate to bookmaker
-            MSportNavigationUtil.navigateToBookmaker(page);
+            MSportNavigationUtil.navigateToBookmaker(page, baseUrl);
             MSportNavigationUtil.waitForPageReady(page);
             log.info("{} {} Navigation to bookmaker completed", EMOJI_SUCCESS, EMOJI_NAVIGATION);
 
@@ -742,7 +766,7 @@ public class MSport implements BettingWindow, Runnable {
             boolean loggedIn = MSportLoginUtil.checkIfLoggedIn(page);
             if (!loggedIn) {
                 log.info("{} {} User not logged in, attempting login...", EMOJI_INFO, EMOJI_LOGIN);
-                MSportLoginUtil.performLogin(page);
+                MSportLoginUtil.performLogin(page, msportUsername, msportPassword);
                 MSportNavigationUtil.waitForPageReady(page);
                 if (!MSportLoginUtil.checkIfLoggedIn(page)) {
                     throw new RuntimeException("Login verification failed");
@@ -774,38 +798,39 @@ public class MSport implements BettingWindow, Runnable {
                 BettingTask task = null;
                 try {
                     // 1. Poll for task
-                    log.info("{} {} Polling for new betting task...", EMOJI_POLL, EMOJI_CLOCK);
+                    log.info("{} {} Polling for new betting task... ", EMOJI_POLL, EMOJI_CLOCK);
                     task = pollTaskFromDispatcher();
                     if (task == null) {
                         Thread.sleep(pollIntervalMs);
                         continue;
                     }
-                    log.info("{} {} Received betting task: {}", EMOJI_SUCCESS, EMOJI_POLL, task.getTaskId());
+                    log.info("{} {} Received betting task: {}", EMOJI_SUCCESS, EMOJI_POLL, task.taskId());
 
                     // 2. Mark bet in progress
                     isBetInProgress.set(true);
 
                     // 3. DEPLOY: Full pre-placement + sync with partner
                     if (!deployBet(page, task)) {
-                        log.warn("{} {} Deployment failed or cancelled - skipping task {}", EMOJI_WARNING, EMOJI_TARGET, task.getTaskId());
+                        log.warn("{} {} Deployment failed or cancelled - skipping task {}", EMOJI_WARNING, EMOJI_TARGET, task.taskId());
                         isBetInProgress.set(false);
                         consecutiveFailures++;
-                        continue;
+//                        continue;
+                        return;
                     }
 
                     // 4. PLACE THE BET (both sides are now synchronized and ready)
-                    log.info("🚀 SIMULTANEOUS BETTING | ArbId: {} | Bookmaker: MSPORT", task.getTaskId());
+                    log.info("🚀 SIMULTANEOUS BETTING | ArbId: {} | Bookmaker: MSPORT", task.taskId());
                     boolean betPlaced = MSportMarketUtil.placeBet(page, task, arbOutcomeService);
 
                     // Placeholder bet ID - replace with actual extraction logic
                     String betId = "BET_" + System.currentTimeMillis();
 
                     if (!betPlaced) {
-                        log.warn("❌ Bet placement failed | ArbId: {}", task.getTaskId());
-                        syncManager.notifyBetFailure(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT, "Placement failed");
+                        log.warn("❌ Bet placement failed | ArbId: {}", task.taskId());
+                        syncManager.notifyBetFailure(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT, "Placement failed");
 
                         syncManager.waitForPartnerBetCompletion(
-                                task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT,
+                                task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT,
                                 java.time.Duration.ofSeconds(betTimeoutSeconds + 5));
 
                         MSportMarketUtil.clearBetSlip(page);
@@ -814,10 +839,10 @@ public class MSport implements BettingWindow, Runnable {
                         continue;
                     }
 
-                    log.info("✅ Bet PLACED | ArbId: {} | Stake: {} | Odds: {}", task.getTaskId(),
-                            task.getStakeAmount(), task.getExpectedOdds());
+                    log.info("✅ Bet PLACED | ArbId: {} | Stake: {} | Odds: {}", task.taskId(),
+                            task.stakeAmount(), task.expectedOdds());
 
-                    syncManager.notifyBetPlaced(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT);
+                    syncManager.notifyBetPlaced(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT);
 
                     // Close success modal if present
                     randomHumanDelay(2000, 3000);
@@ -828,23 +853,23 @@ public class MSport implements BettingWindow, Runnable {
                     } catch (Exception ignored) {}
 
                     // 5. Wait for partner result & handle rollback if needed
-                    log.info("⏳ Waiting for partner to complete | ArbId: {}", task.getTaskId());
+                    log.info("⏳ Waiting for partner to complete | ArbId: {}", task.taskId());
                     WindowSyncManager.PartnerBetResult partnerResult = syncManager.waitForPartnerBetCompletion(
-                            task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT,
+                            task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT,
                             java.time.Duration.ofSeconds(betTimeoutSeconds + 5));
 
                     if (partnerResult.isSuccess()) {
-                        log.info("✅ BOTH BETS PLACED SUCCESSFULLY | ArbId: {}", task.getTaskId());
+                        log.info("✅ BOTH BETS PLACED SUCCESSFULLY | ArbId: {}", task.taskId());
                         handleBetSuccess(task);
                         consecutiveFailures = 0;
                     } else {
-                        log.warn("⚠️ PARTNER FAILED - INITIATING ROLLBACK | ArbId: {}", task.getTaskId());
-                        syncManager.requestRollback(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT,
+                        log.warn("⚠️ PARTNER FAILED - INITIATING ROLLBACK | ArbId: {}", task.taskId());
+                        syncManager.requestRollback(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT,
                                 "Partner failed: " + partnerResult.getMessage());
-                        boolean rollbackSuccess = performRollback(page, task.getTaskId(), betId);
-                        syncManager.notifyRollbackCompleted(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT, rollbackSuccess);
+                        boolean rollbackSuccess = performRollback(page, task.taskId(), betId);
+                        syncManager.notifyRollbackCompleted(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT, rollbackSuccess);
                         if (!rollbackSuccess) {
-                            log.error("❌ ROLLBACK FAILED - MANUAL INTERVENTION REQUIRED | ArbId: {}", task.getTaskId());
+                            log.error("❌ ROLLBACK FAILED - MANUAL INTERVENTION REQUIRED | ArbId: {}", task.taskId());
                         }
                     }
 
@@ -862,7 +887,7 @@ public class MSport implements BettingWindow, Runnable {
                 } finally {
                     isBetInProgress.set(false);
                     if (task != null) {
-                        syncManager.unRegisterIntent(task.getTaskId(), com.mouse.bet.enums.BookMaker.MSPORT);
+                        syncManager.unRegisterIntent(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT);
                     }
                 }
 
