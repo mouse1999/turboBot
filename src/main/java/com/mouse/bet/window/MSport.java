@@ -151,7 +151,7 @@ public class MSport implements BettingWindow, Runnable {
         }
 
 
-        run();
+//        run();
     }
 
     // ========================================================================
