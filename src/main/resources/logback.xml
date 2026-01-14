@@ -27,6 +27,36 @@
         </encoder>
     </appender>
 
+    <!-- IngestionService Main Logs -->
+    <appender name="SPORTY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/window/sporty.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>ogs/window/sporty.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="ARBCONTROLLER_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/controller/arbitrage-controller.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/controller/arbitrage-controller.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- IngestionService Statistics Logs (separate for monitoring) -->
     <appender name="INGESTION_STATS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/ingestion/ingestion-stats.log</file>
@@ -54,6 +84,16 @@
     <logger name="com.mouse.bet.ingestion.IngestionService" level="DEBUG" additivity="false">
         <appender-ref ref="INGESTION_FILE"/>
         <appender-ref ref="INGESTION_STATS_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="com.mouse.bet.window.SportyBet" level="DEBUG" additivity="false">
+        <appender-ref ref="SPORTY_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="com.mouse.bet.controller.ArbitrageController" level="DEBUG" additivity="false">
+        <appender-ref ref="ARBCONTROLLER_FILE"/>
         <appender-ref ref="CONSOLE"/>
     </logger>
 

@@ -125,8 +125,8 @@ public class MSportNavigationUtil {
     /**
      * Navigate to a specific sport page
      */
-    public static void navigateToSportPage(Page page, Sport Sport) throws Exception {
-        log.info("{} {} Navigating to sport page: {}", EMOJI_NAVIGATION, EMOJI_SEARCH, Sport);
+    public static void navigateToSportPage(Page page, Sport sport) throws Exception {
+        log.info("{} {} Navigating to sport page: {}", EMOJI_NAVIGATION, EMOJI_SEARCH, sport);
 
         String currentUrl = page.url();
         if (!currentUrl.contains("/default/live_matches")) {
@@ -134,10 +134,9 @@ public class MSportNavigationUtil {
         }
 
         log.info("✅ Sport Page loaded: {}", currentUrl);
-        randomHumanDelay(1500, 3000);
 
         // Navigate to target sport
-        switch (Sport) {
+        switch (sport) {
             case BASKETBALL:
                 switchToLiveSport(page, "Basketball");
                 break;
@@ -545,7 +544,7 @@ public class MSportNavigationUtil {
         }
     }
 
-    private static void randomHumanDelay(long minMs, long maxMs) {
+    public static void randomHumanDelay(long minMs, long maxMs) {
         try {
             long delay = minMs + ThreadLocalRandom.current().nextLong(maxMs - minMs + 1);
             Thread.sleep(delay);

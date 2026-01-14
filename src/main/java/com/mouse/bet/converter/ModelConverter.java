@@ -52,7 +52,7 @@ public class ModelConverter {
                 .bookmaker(bookmakerEnum)
                 .bookmakerId(arbOutcome.getBookmakerId())
                 .marketType(arbOutcome.getMarketType())
-                .outcome(arbOutcome.getOutcomeName() != null ? arbOutcome.getOutcomeName() : "Unknown")
+                .outcome(arbOutcome.getOutComeName() != null ? arbOutcome.getOutComeName() : "Unknown")
                 .expectedOdds(expectedOdds)
                 .minOdds(minOdds)
                 .maxOdds(maxOdds)

@@ -51,8 +51,7 @@ public class ArbOutcome {
     private String marketType;
 
     // Outcome details
-    @Column(name = "outcome_name", length = 200)
-    private String outcomeName;
+    private String outComeName;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal odds;

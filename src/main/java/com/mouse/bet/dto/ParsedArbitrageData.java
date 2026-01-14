@@ -21,6 +21,8 @@ public class ParsedArbitrageData {
     private BigDecimal roi;
     private LocalDateTime created;
     private List<Integer> groupsIds;
+    private String generalMarketType;
+    private String generalOutcomeName;
 
     // From Event
     private Integer sportId;

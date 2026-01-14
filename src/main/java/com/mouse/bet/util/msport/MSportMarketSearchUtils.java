@@ -170,7 +170,7 @@ public class MSportMarketSearchUtils {
     }
     // Utility methods (kept mostly unchanged, just cleaned up)
 
-    private static void takeMarketScreenshot(Page page, String suffix) {
+    public static void takeMarketScreenshot(Page page, String suffix) {
         try {
             Path dir = Paths.get("screenshots", "markets");
             Files.createDirectories(dir);

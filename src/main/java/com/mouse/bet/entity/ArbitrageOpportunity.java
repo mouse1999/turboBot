@@ -71,6 +71,8 @@ public class ArbitrageOpportunity {
     @Column(name = "market_type", nullable = false, length = 100)
     private String marketType;
 
+    private String outCome;
+
     // Profit Calculation
     @Column(name = "profit_percentage", nullable = false, precision = 10, scale = 4)
     private BigDecimal profitPercentage;

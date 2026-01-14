@@ -37,18 +37,18 @@ const ArbitrageHeader = ({
     };
 
     return (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
-                    <TrendingUp className="text-blue-600" size={28} />
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <TrendingUp className="text-blue-600" size={20} />
                     Arbitrage Opportunities
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-xs text-gray-600 mt-0.5">
                     {filteredCount} of {totalCount} opportunities showing
                 </p>
             </div>
 
-            <div className="flex gap-2 w-full sm:w-auto">
+            <div className="flex gap-1.5 w-full sm:w-auto">
                 <Button
                     variant="primary"
                     icon={RefreshCw}
@@ -65,7 +65,7 @@ const ArbitrageHeader = ({
                         variant="secondary"
                         icon={Menu}
                         onClick={() => setShowMenu(!showMenu)}
-                        className="px-3"
+                        className="px-2"
                     />
 
                     {/* Dropdown Menu */}
@@ -78,8 +78,8 @@ const ArbitrageHeader = ({
                             />
 
                             {/* Menu */}
-                            <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                                <div className="py-2">
+                            <div className="absolute right-0 mt-1 w-52 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                <div className="py-1">
                                     <MenuItem
                                         icon={Settings}
                                         label="Configuration"
@@ -132,13 +132,13 @@ const ArbitrageHeader = ({
 const MenuItem = ({ icon: Icon, label, description, onClick, danger = false }) => (
     <button
         onClick={onClick}
-        className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
+        className={`w-full px-3 py-2 flex items-start gap-2 hover:bg-gray-50 transition-colors ${
             danger ? 'hover:bg-red-50' : ''
         }`}
     >
-        <Icon className={`mt-0.5 flex-shrink-0 ${danger ? 'text-red-600' : 'text-gray-600'}`} size={20} />
+        <Icon className={`mt-0.5 flex-shrink-0 ${danger ? 'text-red-600' : 'text-gray-600'}`} size={16} />
         <div className="text-left flex-1">
-            <div className={`font-medium ${danger ? 'text-red-900' : 'text-gray-900'}`}>
+            <div className={`text-sm font-medium ${danger ? 'text-red-900' : 'text-gray-900'}`}>
                 {label}
             </div>
             <div className="text-xs text-gray-500 mt-0.5">{description}</div>
@@ -146,6 +146,6 @@ const MenuItem = ({ icon: Icon, label, description, onClick, danger = false }) =
     </button>
 );
 
-const MenuDivider = () => <div className="border-t border-gray-200 my-1" />;
+const MenuDivider = () => <div className="border-t border-gray-200 my-0.5" />;
 
 export default ArbitrageHeader;

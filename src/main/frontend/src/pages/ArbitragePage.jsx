@@ -224,12 +224,15 @@ const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
                                     <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
                                         <h3 className="font-semibold text-gray-900">Troubleshooting Guide</h3>
                                     </div>
-                                    <div className="divide-y divide-gray-100">
+                                    <div className="divide-y divide-gray-1s00">
                                         {[
                                             { text: "Check if the arbitrage opportunity is still active", icon: Clock },
                                             { text: "Wait a moment and try again if the queue is full", icon: RefreshCw },
                                             { text: "Refresh the page to see updated opportunities", icon: Zap },
-                                            { text: "Contact support if the problem persists", icon: Shield }
+                                            {
+                                                text: "Contact the developer if the problem persists: kufreedward26@gmail.com",
+                                                icon: Shield
+                                            }
                                         ].map((item, index) => (
                                             <div key={index} className="px-5 py-3 hover:bg-gray-50 transition-colors">
                                                 <div className="flex items-center gap-3">

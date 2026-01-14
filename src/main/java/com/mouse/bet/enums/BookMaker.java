@@ -18,7 +18,7 @@ public enum BookMaker {
     BETFAIR(14, "Betfair"),
     MARATHON_BET(23, "Marathon Bet"),
     _888SPORT(31, "888Sport"),
-    BWIN(33, "Bwin"),
+    BWIN(91, "Bwin"),
     BETWAY(36, "Betway"),
     LADBROKES(39, "Ladbrokes"),
     POINTSBET(48, "PointsBet"),
@@ -32,7 +32,9 @@ public enum BookMaker {
     BETANO(92, "Betano"),
     BETFRED(93, "Betfred"),
     MATCHBOOK(94, "Matchbook"),
+    BET9JA(33, "Bet9ja"),
     UNKNOWN(0, "unknown"),
+
 
     // === YOUR TARGET BOOKMAKERS ===
     // TODO: Replace with actual IDs once you find them in the API response or token

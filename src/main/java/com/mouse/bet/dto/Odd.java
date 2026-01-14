@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 
 @Data
@@ -31,5 +32,6 @@ public class Odd {
     private List<Integer> rulesIds;
 
     private Boolean initiator;
-    private Object crumbs;
+    private Map<String, String> crumbs;
+
 }

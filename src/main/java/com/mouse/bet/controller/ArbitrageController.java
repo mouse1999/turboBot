@@ -437,7 +437,7 @@ public class ArbitrageController {
                             .id(outcome.getId())
                             .bookmakerId(outcome.getBookmakerId())
                             .bookmakerName(outcome.getBookmakerName())
-                            .outcomeName(outcome.getOutcomeName())
+                            .outComeName(outcome.getOutComeName())
                             .odds(outcome.getOdds())
                             .previousOdds(outcome.getPreviousOdds())
                             .stake(outcome.getStake())
@@ -460,7 +460,8 @@ public class ArbitrageController {
                 .matchStartTime(arb.getMatchStartTime())
                 .isLive(arb.getIsLive())
                 .matchProgress(arb.getMatchProgress())
-                .marketType(arb.getMarketType())
+                .marketType(arb.getMarketType() != null ? arb.getMarketType() :"unknown")
+                .outCome(arb.getOutCome() != null ? arb.getOutCome() : "unknown outcome")
                 .profitPercentage(arb.getProfitPercentage())
                 .roiPercentage(arb.getRoiPercentage())
                 .status(arb.getStatus().name())
@@ -517,6 +518,9 @@ public class ArbitrageController {
         @Schema(description = "Market type")
         private String marketType;
 
+        @Schema(description = "Outcome")
+        private String outCome;
+
         @Schema(description = "Profit percentage")
         private BigDecimal profitPercentage;
 
@@ -559,7 +563,7 @@ public class ArbitrageController {
         private BookMaker bookmakerName;
 
         @Schema(description = "Outcome name (e.g., Side 1, Side 2)")
-        private String outcomeName;
+        private String outComeName;
 
         @Schema(description = "Current odds")
         private BigDecimal odds;

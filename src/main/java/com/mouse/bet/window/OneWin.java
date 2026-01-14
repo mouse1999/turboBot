@@ -12,6 +12,8 @@ import com.mouse.bet.manager.ProfileManager;
 import com.mouse.bet.manager.WindowSyncManager;
 import com.mouse.bet.mock.MockBettingTask;
 import com.mouse.bet.monitor.PageHealthMonitor;
+import com.mouse.bet.orchestrator.Orchestrator;
+import com.mouse.bet.orchestrator.model.BetLegTask;
 import com.mouse.bet.profile.UserAgentProfile;
 import com.mouse.bet.service.ArbOutcomeService;
 
@@ -19,6 +21,7 @@ import com.mouse.bet.util.onewin.OneWinLoginUtil;
 import com.mouse.bet.util.onewin.OneWinMarketUtil;
 import com.mouse.bet.util.onewin.OneWinNavigationUtil;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +34,8 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -81,6 +86,13 @@ public class OneWin implements BettingWindow, Runnable {
 
     // BETTING INDICATOR - Shows when a bet placement is in progress
     private final AtomicBoolean isBetInProgress = new AtomicBoolean(false);
+    private final Orchestrator orchestrator;
+    private static final BookMaker BOOKMAKER = BookMaker._1WIN;
+    @Getter
+    private final BlockingQueue<BetLegTask> taskQueue = new LinkedBlockingQueue<>();
+
+
+
 
     @Value("${onewin.username:7063442030}")
     private String oneUsername;
@@ -144,6 +156,8 @@ public class OneWin implements BettingWindow, Runnable {
                     .setSlowMo(0));
 
             log.info("{} {} Playwright initialized successfully", EMOJI_SUCCESS, EMOJI_INIT);
+            log.info("Registering SportyBet Window for Bet placing");
+            orchestrator.registerWorker(BOOKMAKER, taskQueue);
 
         } catch (Exception e) {
             log.error("{} {} Failed to initialize Playwright: {}", EMOJI_ERROR, EMOJI_INIT, e.getMessage(), e);
@@ -199,7 +213,7 @@ public class OneWin implements BettingWindow, Runnable {
             // ========================================
             boolean intentRegistered = syncManager.registerIntent(
                     arbId,
-                    BookMaker.MSPORT,
+                    BOOKMAKER,
                     task.expectedOdds()
             );
 
@@ -224,7 +238,7 @@ public class OneWin implements BettingWindow, Runnable {
 
             if (!gameAvailable) {
                 log.warn("{} {} Game not available: {}", EMOJI_WARNING, EMOJI_GAME, arbId);
-                syncManager.notifyBetFailure(arbId, com.mouse.bet.enums.BookMaker.MSPORT,
+                syncManager.notifyBetFailure(arbId, BOOKMAKER,
                         "Game not available");
                 syncManager.skipArbAndSync(arbId);
                 return false;
@@ -243,7 +257,7 @@ public class OneWin implements BettingWindow, Runnable {
                 log.warn("{} {} Bet selection and verification failed", EMOJI_WARNING, EMOJI_CART);
 
                 OneWinMarketUtil.clearBetSlip(page);
-                syncManager.notifyBetFailure(arbId, com.mouse.bet.enums.BookMaker.MSPORT,
+                syncManager.notifyBetFailure(arbId, BOOKMAKER,
                         "Bet selection and verification failed");
                 syncManager.skipArbAndSync(arbId);
                 return false;
@@ -255,7 +269,7 @@ public class OneWin implements BettingWindow, Runnable {
             // ========================================
 //            boolean markedDeployed = syncManager.markDeploymentSuccess(
 //                    arbId,
-//                    BookMaker.MSPORT
+//                    BOOKMAKER
 //            );
 //
 //            if (!markedDeployed) {
@@ -274,7 +288,7 @@ public class OneWin implements BettingWindow, Runnable {
 //
 //            boolean partnerDeployed = syncManager.waitForPartnerDeploymentOrTimeout(
 //                    arbId,
-//                    com.mouse.bet.enums.BookMaker.MSPORT,
+//                    BOOKMAKER,
 //                    Duration.ofSeconds(deployTimeout)
 //            );
 //
@@ -299,7 +313,7 @@ public class OneWin implements BettingWindow, Runnable {
                     EMOJI_ERROR, EMOJI_BET, e.getMessage(), e);
 
             // Notify failure and sync
-            syncManager.notifyBetFailure(arbId, com.mouse.bet.enums.BookMaker.MSPORT,
+            syncManager.notifyBetFailure(arbId, BOOKMAKER,
                     "Deployment exception: " + e.getMessage());
             syncManager.skipArbAndSync(arbId);
 
@@ -813,10 +827,10 @@ public class OneWin implements BettingWindow, Runnable {
 
                     if (!betPlaced) {
                         log.warn("❌ Bet placement failed | ArbId: {}", task.taskId());
-                        syncManager.notifyBetFailure(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT, "Placement failed");
+                        syncManager.notifyBetFailure(task.taskId(), BOOKMAKER, "Placement failed");
 
                         syncManager.waitForPartnerBetCompletion(
-                                task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT,
+                                task.taskId(), BOOKMAKER,
                                 Duration.ofSeconds(betTimeoutSeconds + 5));
 
                         OneWinMarketUtil.clearBetSlip(page);
@@ -828,7 +842,7 @@ public class OneWin implements BettingWindow, Runnable {
                     log.info("✅ Bet PLACED | ArbId: {} | Stake: {} | Odds: {}", task.taskId(),
                             task.stakeAmount(), task.expectedOdds());
 
-                    syncManager.notifyBetPlaced(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT);
+                    syncManager.notifyBetPlaced(task.taskId(), BOOKMAKER);
 
                     // Close success modal if present
                     randomHumanDelay(2000, 3000);
@@ -841,7 +855,7 @@ public class OneWin implements BettingWindow, Runnable {
                     // 5. Wait for partner result & handle rollback if needed
                     log.info("⏳ Waiting for partner to complete | ArbId: {}", task.taskId());
                     WindowSyncManager.PartnerBetResult partnerResult = syncManager.waitForPartnerBetCompletion(
-                            task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT,
+                            task.taskId(), BOOKMAKER,
                             java.time.Duration.ofSeconds(betTimeoutSeconds + 5));
 
                     if (partnerResult.isSuccess()) {
@@ -850,10 +864,10 @@ public class OneWin implements BettingWindow, Runnable {
                         consecutiveFailures = 0;
                     } else {
                         log.warn("⚠️ PARTNER FAILED - INITIATING ROLLBACK | ArbId: {}", task.taskId());
-                        syncManager.requestRollback(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT,
+                        syncManager.requestRollback(task.taskId(), BOOKMAKER,
                                 "Partner failed: " + partnerResult.getMessage());
                         boolean rollbackSuccess = performRollback(page, task.taskId(), betId);
-                        syncManager.notifyRollbackCompleted(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT, rollbackSuccess);
+                        syncManager.notifyRollbackCompleted(task.taskId(), BOOKMAKER, rollbackSuccess);
                         if (!rollbackSuccess) {
                             log.error("❌ ROLLBACK FAILED - MANUAL INTERVENTION REQUIRED | ArbId: {}", task.taskId());
                         }
@@ -873,7 +887,7 @@ public class OneWin implements BettingWindow, Runnable {
                 } finally {
                     isBetInProgress.set(false);
                     if (task != null) {
-                        syncManager.unRegisterIntent(task.taskId(), com.mouse.bet.enums.BookMaker.MSPORT);
+                        syncManager.unRegisterIntent(task.taskId(), BOOKMAKER);
                     }
                 }
 
@@ -927,34 +941,69 @@ public class OneWin implements BettingWindow, Runnable {
         }
     }
 
+
     @Override
     public void pause() {
+        log.info("{} {} Pausing MSport window...", EMOJI_WARNING, EMOJI_CLOCK);
+        isPaused.set(true);
+    }
 
+    public boolean isWindowUpAndRunning() {
+        return !isPaused.get() && isWindowUpAndRunning.get();
     }
 
     @Override
     public void resume() {
-
+        log.info("{} {} Resuming MSport window...", EMOJI_SUCCESS, EMOJI_START);
+        isPaused.set(false);
     }
 
     @Override
     public void stop() {
-
+        log.info("{} {} Stopping MSport window...", EMOJI_SHUTDOWN, EMOJI_WARNING);
+        isRunning.set(false);
+        isWindowUpAndRunning.set(false);
+        isBetInProgress.set(false);
     }
 
     @Override
     public boolean isRunning() {
-        return false;
+        return isRunning.get();
     }
 
     @Override
     public boolean isPaused() {
-        return false;
+        return isPaused.get();
     }
 
     @Override
     public void shutdown() {
+        log.info("{} {} Shutting down MSport window...", EMOJI_SHUTDOWN, EMOJI_TRASH);
 
+        try {
+            stop();
+
+            if (healthMonitor != null) {
+                healthMonitor.stop();
+            }
+
+            if (currentContext != null) {
+                saveContext(currentContext);
+                currentContext.close();
+            }
+
+            if (browser != null) {
+                browser.close();
+            }
+
+            if (playwright != null) {
+                playwright.close();
+            }
+
+            log.info("{} {} Shutdown completed successfully", EMOJI_SUCCESS, EMOJI_SHUTDOWN);
+        } catch (Exception e) {
+            log.error("{} {} Error during shutdown: {}", EMOJI_ERROR, EMOJI_SHUTDOWN, e.getMessage(), e);
+        }
     }
 
 

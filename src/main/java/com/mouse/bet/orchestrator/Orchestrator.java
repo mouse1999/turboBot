@@ -232,7 +232,7 @@ public class Orchestrator {
                 legsByBookmaker.put(bookmaker, betLeg);
 
                 log.debug("Converted outcome to BetLeg | ArbId: {} | Bookmaker: {} | Outcome: {} | Odds: {} | Stake: {}",
-                        arb.getId(), bookmaker, outcome.getOutcomeName(), outcome.getOdds(), outcome.getStake());
+                        arb.getId(), bookmaker, outcome.getOutComeName(), outcome.getOdds(), outcome.getStake());
 
             } catch (Exception e) {
                 log.error("Failed to convert outcome to BetLeg | ArbId: {} | OutcomeId: {} | Error: {}",

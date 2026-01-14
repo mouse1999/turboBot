@@ -42,7 +42,7 @@ public class OutcomeData {
     private String team2;
 
     /** Description of the outcome (e.g., "Home Win", "Over 2.5", "Side 1") */
-    private String outcomeName;
+    private String outComeName;
 
     /** Current decimal odds value */
     private BigDecimal odds;
@@ -64,6 +64,8 @@ public class OutcomeData {
 
     /** Indicates if the event was reordered or postponed */
     private Boolean reordered;
+
+    private String marketType;
 
     // ==================== Additional useful fields ====================
 

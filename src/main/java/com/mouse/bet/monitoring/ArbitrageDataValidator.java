@@ -392,7 +392,7 @@ public class ArbitrageDataValidator {
         }
 
         // Check outcome name
-        if (outcome.getOutcomeName() == null || outcome.getOutcomeName().isEmpty()) {
+        if (outcome.getOutComeName() == null || outcome.getOutComeName().isEmpty()) {
             result.addWarning(prefix + ": Missing outcome name");
         }
 

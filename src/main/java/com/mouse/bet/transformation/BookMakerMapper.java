@@ -24,7 +24,7 @@ public class BookMakerMapper {
         BOOKMAKER_BY_ID.put(14, BookMaker.BETFAIR);
         BOOKMAKER_BY_ID.put(23, BookMaker.MARATHON_BET);
         BOOKMAKER_BY_ID.put(31, BookMaker._888SPORT);
-        BOOKMAKER_BY_ID.put(33, BookMaker.BWIN);
+        BOOKMAKER_BY_ID.put(91, BookMaker.BWIN);
         BOOKMAKER_BY_ID.put(36, BookMaker.BETWAY);
         BOOKMAKER_BY_ID.put(39, BookMaker.LADBROKES);
         BOOKMAKER_BY_ID.put(48, BookMaker.POINTSBET);
@@ -38,10 +38,9 @@ public class BookMakerMapper {
         BOOKMAKER_BY_ID.put(92, BookMaker.BETANO);
         BOOKMAKER_BY_ID.put(93, BookMaker.BETFRED);
         BOOKMAKER_BY_ID.put(94, BookMaker.MATCHBOOK);
-
-        // TODO: Add MSport and SportyBet when their IDs are discovered
          BOOKMAKER_BY_ID.put(80, BookMaker.MSPORT);
          BOOKMAKER_BY_ID.put(43, BookMaker.SPORTYBET);
+        BOOKMAKER_BY_ID.put(33, BookMaker.BET9JA);
     }
 
     private static final Map<Integer, Sport> SPORT_BY_ID = new HashMap<>();

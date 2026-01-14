@@ -39,15 +39,15 @@ public record MockBettingTask(BookMaker bookmaker, Integer bookmakerId, String m
                 .taskId("arb-20260108-001-counter")
                 .bookmaker(BookMaker._1WIN) // or whatever soft book corresponds to ID 80
                 .bookmakerId(80)
-                .marketType("Odd/Even (incl. overtime)")
+                .marketType("Odd/even (incl. overtime)")
                 .outcome("Odd")
-                .expectedOdds(1.85 )
+                .expectedOdds(1.85)
                 .minOdds(1.80)
                 .maxOdds(2.05)
                 .stakeAmount(15)
                 .leagueName("Paranaense")
-                .homeTeam("Pato")
-                .awayTeam("Caxias Do Sul")
+                .homeTeam("Rasta Vechta")
+                .awayTeam("Wurzburg Baskets")
                 .build();
     }
 }

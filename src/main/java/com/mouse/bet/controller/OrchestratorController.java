@@ -6,6 +6,7 @@ import com.mouse.bet.entity.ArbitrageOpportunity;
 import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.orchestrator.Orchestrator;
 import com.mouse.bet.repository.ArbitrageRepository;
+import com.mouse.bet.util.ArbCalculator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +67,7 @@ public class OrchestratorController {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Invalid request");
             errorResponse.put("message", "Stakes are required");
-            errorResponse.put("timestamp", java.time.LocalDateTime.now());
+            errorResponse.put("timestamp", LocalDateTime.now());
 
             return ResponseEntity.badRequest().body(errorResponse);
         }
@@ -124,7 +125,7 @@ public class OrchestratorController {
                     BigDecimal newStake = request.getStakeForBookmaker(bookmaker);
                     BigDecimal oldStake = outcome.getStake();
 
-                    outcome.setStake(newStake);
+                    outcome.setStake(ArbCalculator.roundStakeForAntiDetection(newStake));
                     updatedStakes.put(bookmaker, newStake);
 
                     log.info("Updated stake | ArbId: {} | Bookmaker: {} | OldStake: {} | NewStake: {}",
@@ -146,7 +147,7 @@ public class OrchestratorController {
                 errorResponse.put("message", "Stakes required for all bookmakers: " + missingStakes);
                 errorResponse.put("missingBookmakers", missingStakes);
                 errorResponse.put("arbId", arb.getId());
-                errorResponse.put("timestamp", java.time.LocalDateTime.now());
+                errorResponse.put("timestamp", LocalDateTime.now());
 
                 return ResponseEntity.badRequest().body(errorResponse);
             }
@@ -177,7 +178,7 @@ public class OrchestratorController {
                 response.put("stakes", updatedStakes);
                 response.put("totalStake", request.getTotalStake());
                 response.put("queueStats", orchestrator.getQueueStats());
-                response.put("timestamp", java.time.LocalDateTime.now());
+                response.put("timestamp", LocalDateTime.now());
 
                 return ResponseEntity.ok(response);
 
