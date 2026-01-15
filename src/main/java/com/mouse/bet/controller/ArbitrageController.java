@@ -3,6 +3,7 @@ package com.mouse.bet.controller;
 import com.mouse.bet.entity.ArbitrageOpportunity;
 import com.mouse.bet.entity.ArbOutcome;
 import com.mouse.bet.enums.BookMaker;
+import com.mouse.bet.orchestrator.model.LegResult;
 import com.mouse.bet.service.ArbitrageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -423,6 +426,69 @@ public class ArbitrageController {
                 .status("UP")
                 .service("ArbitrageService")
                 .build());
+    }
+
+
+
+    @GetMapping("/{arbitrageId}/bet-results")
+    @Operation(summary = "Get bet placement results for an arbitrage")
+    public ResponseEntity<Map<BookMaker, LegResult>> getBetResults(
+            @PathVariable String arbitrageId) {
+
+        // Try to find arbitrage by external ID or numeric ID
+        ArbitrageOpportunity arbitrage = findArbitrage(arbitrageId);
+
+        if (arbitrage == null) {
+            log.warn("Arbitrage not found for ID: {}", arbitrageId);
+            return ResponseEntity.ok(Collections.emptyMap());
+        }
+
+        // Get bet results
+        Map<BookMaker, LegResult> results = arbitrage.getResultMap();
+
+        if (results == null || results.isEmpty()) {
+            log.debug("No bet results available yet for arbitrage: {}", arbitrageId);
+            return ResponseEntity.ok(Collections.emptyMap());
+        }
+
+        log.info("Retrieved bet results for arbitrage {}: {} bookmakers",
+                arbitrageId, results.size());
+        return ResponseEntity.ok(results);
+    }
+
+    /**
+     * Find arbitrage by external ID (string) or database ID (numeric)
+     */
+    private ArbitrageOpportunity findArbitrage(String arbitrageId) {
+        // First try as external ID
+        Optional<ArbitrageOpportunity> arbitrage = arbitrageService.findByExternalId(arbitrageId);
+
+        if (arbitrage.isPresent()) {
+            return arbitrage.get();
+        }
+
+        // If not found and ID is numeric, try as database ID
+        if (isNumeric(arbitrageId)) {
+            try {
+                Long id = Long.parseLong(arbitrageId);
+                return arbitrageService.findById(id).orElse(null);
+            } catch (NumberFormatException e) {
+                log.warn("Invalid numeric ID format: {}", arbitrageId);
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if string is numeric
+     */
+    private boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        return str.matches("\\d+");
     }
 
     // ============= Helper Method =============

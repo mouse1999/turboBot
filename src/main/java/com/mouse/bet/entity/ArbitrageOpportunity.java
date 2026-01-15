@@ -1,6 +1,9 @@
 package com.mouse.bet.entity;
 
+import com.mouse.bet.converter.ResultMapConverter;
 import com.mouse.bet.enums.ArbStatus;
+import com.mouse.bet.enums.BookMaker;
+import com.mouse.bet.orchestrator.model.LegResult;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +11,9 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Normalized arbitrage entity with age calculation
@@ -79,6 +84,12 @@ public class ArbitrageOpportunity {
 
     @Column(name = "roi_percentage", precision = 10, scale = 4)
     private BigDecimal roiPercentage;
+
+    @Convert(converter = ResultMapConverter.class)
+    @Column(name = "result_map_json", columnDefinition = "TEXT")
+    @Builder.Default
+    private Map<BookMaker, LegResult> resultMap = new HashMap<>();
+
 
     // Status and Tracking
     @Enumerated(EnumType.STRING)

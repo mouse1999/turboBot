@@ -19,7 +19,7 @@ import java.util.Set;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/arb-polling")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ArbPollingController {
 
@@ -30,7 +30,7 @@ public class ArbPollingController {
      * Get current polling service status
      * GET /api/arb-polling/status
      */
-    @GetMapping("/status")
+    @GetMapping("/arb-polling/status")
     public ResponseEntity<ArbPollingService.PollingStatus> getStatus() {
         log.info("Fetching polling service status");
         ArbPollingService.PollingStatus status = arbPollingService.getStatus();
@@ -41,7 +41,7 @@ public class ArbPollingController {
      * Get detailed system status including orchestrator
      * GET /api/arb-polling/system-status
      */
-    @GetMapping("/system-status")
+    @GetMapping("/arb-polling/system-status")
     public ResponseEntity<Map<String, Object>> getSystemStatus() {
         log.info("Fetching system status");
 
@@ -65,7 +65,7 @@ public class ArbPollingController {
      * Start the polling service
      * POST /api/arb-polling/start
      */
-    @PostMapping("/start")
+    @PostMapping("/arb-polling/start")
     public ResponseEntity<Map<String, Object>> startPolling() {
         log.info("Starting polling service via API");
 
@@ -95,7 +95,7 @@ public class ArbPollingController {
      * Stop the polling service
      * POST /api/arb-polling/stop
      */
-    @PostMapping("/stop")
+    @PostMapping("/arb-polling/stop")
     public ResponseEntity<Map<String, Object>> stopPolling() {
         log.info("Stopping polling service via API");
 
@@ -125,7 +125,7 @@ public class ArbPollingController {
      * Restart the polling service
      * POST /api/arb-polling/restart
      */
-    @PostMapping("/restart")
+    @PostMapping("/arb-polling/restart")
     public ResponseEntity<Map<String, Object>> restartPolling() {
         log.info("Restarting polling service via API");
 
@@ -155,7 +155,7 @@ public class ArbPollingController {
      * Manually trigger a poll cycle
      * POST /api/arb-polling/trigger
      */
-    @PostMapping("/trigger")
+    @PostMapping("/arb-polling/trigger")
     public ResponseEntity<Map<String, Object>> triggerPoll() {
         log.info("Manually triggering poll cycle via API");
 
@@ -186,7 +186,7 @@ public class ArbPollingController {
      * PUT /api/arb-polling/bookmakers
      * Body: ["BET365", "BETWAY", "SPORTYBET"]
      */
-    @PutMapping("/bookmakers")
+    @PutMapping("/arb-polling/bookmakers")
     public ResponseEntity<Map<String, Object>> updateBookmakers(@RequestBody Set<String> bookmakerNames) {
         log.info("Updating allowed bookmakers via API | Bookmakers: {}", bookmakerNames);
 
@@ -240,7 +240,7 @@ public class ArbPollingController {
      * PUT /api/arb-polling/min-profit
      * Body: { "minProfit": 2.5 }
      */
-    @PutMapping("/min-profit")
+    @PutMapping("/arb-polling/min-profit")
     public ResponseEntity<Map<String, Object>> updateMinProfit(@RequestBody Map<String, Double> request) {
         log.info("Updating minimum profit percentage via API | Request: {}", request);
 
@@ -282,7 +282,7 @@ public class ArbPollingController {
      * Force cleanup of orchestrator queues
      * POST /api/arb-polling/cleanup
      */
-    @PostMapping("/cleanup")
+    @PostMapping("/arb-polling/cleanup")
     public ResponseEntity<Map<String, Object>> forceCleanup() {
         log.info("Forcing orchestrator queue cleanup via API");
 
@@ -315,7 +315,7 @@ public class ArbPollingController {
      * Health check endpoint
      * GET /api/arb-polling/health
      */
-    @GetMapping("/health")
+    @GetMapping("/arb-polling/health")
     public ResponseEntity<Map<String, Object>> health() {
         ArbPollingService.PollingStatus status = arbPollingService.getStatus();
         Orchestrator.QueueStats queueStats = orchestrator.getQueueStats();

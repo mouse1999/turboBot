@@ -21,6 +21,7 @@ import {
     ChevronRight,
     Sparkles
 } from 'lucide-react';
+import BetTrackingModal from "../components/common/BetTrackingModal.jsx";
 
 // Bet Result Modal Component
 const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
@@ -39,56 +40,56 @@ const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
             {/* Modal */}
             <div className="relative min-h-screen flex items-center justify-center p-4">
                 <div
-                    className="relative bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-scale-in"
+                    className="relative bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-2xl max-w-md w-full overflow-hidden max-h-[85vh] flex flex-col"
                     onClick={e => e.stopPropagation()}
                 >
                     {/* Header with gradient */}
                     <div className={`relative overflow-hidden ${isSuccess ? 'bg-gradient-to-r from-emerald-500 to-green-500' : 'bg-gradient-to-r from-rose-500 to-red-500'}`}>
                         <div className="absolute inset-0 bg-black/10" />
-                        <div className="relative p-6">
-                            <div className="flex items-center gap-4">
-                                <div className={`p-3 rounded-xl ${isSuccess ? 'bg-white/20' : 'bg-white/20'} backdrop-blur-sm`}>
+                        <div className="relative p-4">
+                            <div className="flex items-center gap-3">
+                                <div className={`p-2 rounded-lg ${isSuccess ? 'bg-white/20' : 'bg-white/20'} backdrop-blur-sm`}>
                                     {isSuccess ? (
-                                        <CheckCircle2 className="w-8 h-8 text-white" />
+                                        <CheckCircle2 className="w-6 h-6 text-white" />
                                     ) : (
-                                        <XCircle className="w-8 h-8 text-white" />
+                                        <XCircle className="w-6 h-6 text-white" />
                                     )}
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold text-white">
-                                        {isSuccess ? 'Bet Placed Successfully!' : 'Bet Failed'}
+                                    <h2 className="text-lg font-bold text-white">
+                                        {isSuccess ? 'Bet Placed!' : 'Bet Failed'}
                                     </h2>
-                                    <p className="text-white/90 mt-1">
-                                        {isSuccess ? 'Your arbitrage bet has been queued' : 'There was an issue placing your bet'}
+                                    <p className="text-xs text-white/90">
+                                        {isSuccess ? 'Queued for processing' : 'Unable to place bet'}
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Body */}
-                    <div className="p-6 space-y-4">
+                    {/* Body - Scrollable */}
+                    <div className="p-4 space-y-3 overflow-y-auto flex-1">
                         {isSuccess && betResult ? (
                             <>
                                 {/* Arbitrage Summary */}
-                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                                            <Target className="w-4 h-4" />
+                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-100">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                                            <Target className="w-3.5 h-3.5" />
                                             Arbitrage Summary
                                         </h3>
-                                        <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                                            ID: {betResult.arbitrage?.externalId?.slice(0, 8) || '—'}
+                                        <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                                            {betResult.arbitrage?.externalId?.slice(0, 8) || '—'}
                                         </span>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="space-y-1">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
                                             <p className="text-xs text-gray-500">Status</p>
-                                            <p className="font-semibold text-blue-600">{betResult.arbitrage?.status}</p>
+                                            <p className="text-sm font-semibold text-blue-600">{betResult.arbitrage?.status}</p>
                                         </div>
-                                        <div className="space-y-1">
+                                        <div>
                                             <p className="text-xs text-gray-500">Profit</p>
-                                            <p className="font-bold text-green-600 text-lg">
+                                            <p className="text-base font-bold text-green-600">
                                                 {betResult.arbitrage?.profitPercentage}%
                                             </p>
                                         </div>
@@ -96,28 +97,26 @@ const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
                                 </div>
 
                                 {/* Financial Overview */}
-                                <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-5 border border-emerald-100">
-                                    <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                        <Wallet className="w-4 h-4" />
+                                <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg p-3 border border-emerald-100">
+                                    <h3 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1.5">
+                                        <Wallet className="w-3.5 h-3.5" />
                                         Financial Overview
                                     </h3>
-                                    <div className="space-y-3">
+                                    <div className="space-y-2">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-sm text-gray-600">Total Stake</p>
-                                                <p className="text-xs text-gray-500">Amount invested across all bookmakers</p>
+                                                <p className="text-xs text-gray-600">Total Stake</p>
                                             </div>
-                                            <p className="text-xl font-bold text-gray-900">
+                                            <p className="text-base font-bold text-gray-900">
                                                 ₦{betResult.totalStake?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </p>
                                         </div>
                                         <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-sm text-gray-600">Expected Profit</p>
-                                                <p className="text-xs text-gray-500">Estimated return on investment</p>
+                                                <p className="text-xs text-gray-600">Expected Profit</p>
                                             </div>
-                                            <p className="text-xl font-bold text-green-600">
+                                            <p className="text-base font-bold text-green-600">
                                                 ₦{((betResult.totalStake * betResult.arbitrage?.profitPercentage) / 100)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </p>
                                         </div>
@@ -125,34 +124,28 @@ const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
                                 </div>
 
                                 {/* Stakes Breakdown */}
-                                <div className="rounded-xl border border-gray-200 overflow-hidden">
-                                    <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-                                        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                                            <BarChart3 className="w-4 h-4" />
+                                <div className="rounded-lg border border-gray-200 overflow-hidden">
+                                    <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
+                                        <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                                            <BarChart3 className="w-3.5 h-3.5" />
                                             Stakes Breakdown
                                         </h3>
                                     </div>
                                     <div className="divide-y divide-gray-100">
                                         {Object.entries(betResult.stakes || {}).map(([bookmaker, stake]) => (
-                                            <div key={bookmaker} className="px-5 py-3 hover:bg-gray-50 transition-colors">
+                                            <div key={bookmaker} className="px-3 py-2 hover:bg-gray-50 transition-colors">
                                                 <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 rounded bg-blue-100 flex items-center justify-center">
                                                             <span className="text-xs font-bold text-blue-600">
                                                                 {bookmaker.slice(0, 2)}
                                                             </span>
                                                         </div>
-                                                        <div>
-                                                            <p className="font-medium text-gray-900">{bookmaker}</p>
-                                                            <p className="text-xs text-gray-500">Bookmaker</p>
-                                                        </div>
+                                                        <p className="text-sm font-medium text-gray-900">{bookmaker}</p>
                                                     </div>
-                                                    <div className="text-right">
-                                                        <p className="font-semibold text-gray-900">
-                                                            ₦{stake.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                                        </p>
-                                                        <p className="text-xs text-gray-500">Stake</p>
-                                                    </div>
+                                                    <p className="text-sm font-semibold text-gray-900">
+                                                        ₦{stake.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </p>
                                                 </div>
                                             </div>
                                         ))}
@@ -161,24 +154,20 @@ const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
 
                                 {/* Queue Status */}
                                 {betResult.queueStats && (
-                                    <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl p-5 border border-violet-100">
-                                        <div className="flex items-center justify-between">
+                                    <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg p-3 border border-violet-100">
+                                        <div className="flex items-center justify-between mb-2">
                                             <div>
-                                                <h3 className="font-semibold text-gray-900 mb-1">Queue Status</h3>
-                                                <p className="text-xs text-gray-600">Processing status</p>
+                                                <h3 className="text-sm font-semibold text-gray-900">Queue Status</h3>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-sm font-semibold text-violet-700">
+                                                <p className="text-xs font-semibold text-violet-700">
                                                     {betResult.queueStats.arbQueueSize}/{betResult.queueStats.workerQueueCount} slots
-                                                </p>
-                                                <p className="text-xs text-violet-600">
-                                                    {betResult.queueStats.totalLegTasks} active tasks
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
+                                        <div className="w-full bg-gray-200 rounded-full h-1.5">
                                             <div
-                                                className="bg-gradient-to-r from-violet-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+                                                className="bg-gradient-to-r from-violet-500 to-purple-500 h-1.5 rounded-full transition-all duration-500"
                                                 style={{
                                                     width: `${(betResult.queueStats.arbQueueSize / betResult.queueStats.workerQueueCount) * 100}%`
                                                 }}
@@ -188,15 +177,15 @@ const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
                                 )}
 
                                 {/* Success Message */}
-                                <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-xl p-4">
-                                    <div className="flex items-start gap-3">
-                                        <div className="p-2 bg-emerald-100 rounded-lg">
-                                            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                                <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-3">
+                                    <div className="flex items-start gap-2">
+                                        <div className="p-1.5 bg-emerald-100 rounded">
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                                         </div>
                                         <div>
-                                            <p className="font-medium text-emerald-900">Bet Queued Successfully</p>
-                                            <p className="text-sm text-emerald-700 mt-1">
-                                                Your arbitrage bet has been added to the processing queue. You can track its progress in your bets history.
+                                            <p className="text-sm font-medium text-emerald-900">Queued Successfully</p>
+                                            <p className="text-xs text-emerald-700 mt-0.5">
+                                                Track progress in your bets history
                                             </p>
                                         </div>
                                     </div>
@@ -205,14 +194,14 @@ const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
                         ) : (
                             <>
                                 {/* Error Details */}
-                                <div className="bg-gradient-to-r from-rose-50 to-red-50 rounded-xl p-5 border border-rose-100">
-                                    <div className="flex items-start gap-3">
-                                        <div className="p-2 bg-rose-100 rounded-lg flex-shrink-0">
-                                            <AlertTriangle className="w-5 h-5 text-rose-600" />
+                                <div className="bg-gradient-to-r from-rose-50 to-red-50 rounded-lg p-3 border border-rose-100">
+                                    <div className="flex items-start gap-2">
+                                        <div className="p-1.5 bg-rose-100 rounded flex-shrink-0">
+                                            <AlertTriangle className="w-4 h-4 text-rose-600" />
                                         </div>
-                                        <div className="space-y-2">
-                                            <h3 className="font-semibold text-rose-900">Bet Placement Failed</h3>
-                                            <p className="text-rose-800 whitespace-pre-line leading-relaxed text-sm">
+                                        <div>
+                                            <h3 className="text-sm font-semibold text-rose-900">Placement Failed</h3>
+                                            <p className="text-xs text-rose-800 whitespace-pre-line leading-relaxed mt-1">
                                                 {betError}
                                             </p>
                                         </div>
@@ -220,26 +209,23 @@ const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
                                 </div>
 
                                 {/* Troubleshooting Guide */}
-                                <div className="rounded-xl border border-gray-200 overflow-hidden">
-                                    <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-                                        <h3 className="font-semibold text-gray-900">Troubleshooting Guide</h3>
+                                <div className="rounded-lg border border-gray-200 overflow-hidden">
+                                    <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
+                                        <h3 className="text-sm font-semibold text-gray-900">Troubleshooting</h3>
                                     </div>
-                                    <div className="divide-y divide-gray-1s00">
+                                    <div className="divide-y divide-gray-100">
                                         {[
-                                            { text: "Check if the arbitrage opportunity is still active", icon: Clock },
-                                            { text: "Wait a moment and try again if the queue is full", icon: RefreshCw },
-                                            { text: "Refresh the page to see updated opportunities", icon: Zap },
-                                            {
-                                                text: "Contact the developer if the problem persists: kufreedward26@gmail.com",
-                                                icon: Shield
-                                            }
+                                            { text: "Check if opportunity is still active", icon: Clock },
+                                            { text: "Wait and retry if queue is full", icon: RefreshCw },
+                                            { text: "Refresh page for updates", icon: Zap },
+                                            { text: "Contact: kufreedward26@gmail.com", icon: Shield }
                                         ].map((item, index) => (
-                                            <div key={index} className="px-5 py-3 hover:bg-gray-50 transition-colors">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="p-2 bg-gray-100 rounded-lg">
-                                                        <item.icon className="w-4 h-4 text-gray-600" />
+                                            <div key={index} className="px-3 py-2 hover:bg-gray-50 transition-colors">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="p-1.5 bg-gray-100 rounded">
+                                                        <item.icon className="w-3.5 h-3.5 text-gray-600" />
                                                     </div>
-                                                    <span className="text-sm text-gray-700">{item.text}</span>
+                                                    <span className="text-xs text-gray-700">{item.text}</span>
                                                 </div>
                                             </div>
                                         ))}
@@ -250,10 +236,10 @@ const BetResultModal = ({ isOpen, onClose, betResult, betError }) => {
                     </div>
 
                     {/* Footer */}
-                    <div className="px-6 py-5 bg-gray-50 border-t border-gray-200">
+                    <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
                         <button
                             onClick={onClose}
-                            className="w-full py-3 bg-gradient-to-r from-gray-900 to-black text-white rounded-xl hover:shadow-lg transition-all duration-300 font-medium flex items-center justify-center gap-2 group"
+                            className="w-full py-2.5 bg-gradient-to-r from-gray-900 to-black text-white rounded-lg hover:shadow-lg transition-all duration-300 text-sm font-medium flex items-center justify-center gap-2 group"
                         >
                             <span>Continue Exploring</span>
                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -365,6 +351,23 @@ const EmptyState = ({ filter, onRefresh }) => {
     );
 };
 
+
+// **
+// * Format stakes from calculated outcomes to API format
+//     * Converts: [{ bookmakerName: 'BET365', stake: 476.19, ... }, ...]
+//     * To: { BET365: 476.19, BETWAY: 285.71, ... }
+// */
+export const formatStakesForAPI = (outcomesWithStakes) => {
+    const stakes = {};
+
+    outcomesWithStakes.forEach(outcome => {
+        // Use bookmakerName as the key (this is what backend expects)
+        stakes[outcome.bookmakerName] = parseFloat(outcome.stake.toFixed(2));
+    });
+
+    return stakes;
+};
+
 // Main ArbitragePage Component
 const ArbitragePage = () => {
     const { arbitrages, loading, error, refresh, isPolling } = useArbitrages();
@@ -378,6 +381,11 @@ const ArbitragePage = () => {
     const [betError, setBetError] = useState(null);
     const [showBetModal, setShowBetModal] = useState(false);
     const [placingBet, setPlacingBet] = useState(false);
+
+    // NEW: Bet tracking modal states
+    const [showTrackingModal, setShowTrackingModal] = useState(false);
+    const [trackingArbitrageId, setTrackingArbitrageId] = useState(null);
+
 
     // Animation state
     const [animateRefresh, setAnimateRefresh] = useState(false);
@@ -398,34 +406,31 @@ const ArbitragePage = () => {
         setBetError(null);
         setBetResult(null);
 
+
         try {
-            // Transform outcomesWithStakes to the format expected by the API
-            const outcomes = outcomesWithStakes.map(outcome => ({
-                bookmaker: outcome.bookmakerName,
-                odds: outcome.odds
-            }));
+
 
             const arbitrageId = arbitrage.externalId || arbitrage.id;
 
-            console.log('🎯 Placing bet:', {
-                arbitrageId,
-                amount,
-                outcomes
-            });
+            const stakes = formatStakesForAPI(outcomesWithStakes);
 
-            const response = await arbitrageApi.placeBetWithAmount(
-                arbitrageId,
-                amount,
-                outcomes
-            );
+            console.log('🎯 Placing bet:', {stakes});
+
+              const response = await arbitrageApi.placeBet(
+                              arbitrageId,
+                            stakes,
+                     { validateAllStakes: true }
+                );
 
             console.log('✅ Bet placed successfully:', response);
+            setTrackingArbitrageId(arbitrageId);
 
             // Show success with animation delay
             setTimeout(() => {
-                setBetResult(response);
-                setShowBetModal(true);
-            }, 300);
+                setShowBetModal(false);
+                setTrackingArbitrageId(arbitrageId);
+                setShowTrackingModal(true);
+            }, 3000);
 
             // Refresh arbitrages list after successful bet
             setTimeout(() => {
@@ -467,6 +472,15 @@ const ArbitragePage = () => {
             setPlacingBet(false);
         }
     }, [refresh]);
+
+
+    const handleCloseTrackingModal = useCallback(() => {
+        setShowTrackingModal(false);
+        setTimeout(() => {
+            setTrackingArbitrageId(null);
+        }, 300);
+    }, []);
+
 
     const handleCloseModal = useCallback(() => {
         setShowBetModal(false);
@@ -615,6 +629,12 @@ const ArbitragePage = () => {
                 onClose={handleCloseModal}
                 betResult={betResult}
                 betError={betError}
+            />
+
+            <BetTrackingModal
+                isOpen={showTrackingModal}
+                onClose={handleCloseTrackingModal}
+                arbitrageId={trackingArbitrageId}
             />
 
             {/* Global Loading Overlay */}

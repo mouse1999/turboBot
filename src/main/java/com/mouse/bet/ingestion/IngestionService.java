@@ -7,6 +7,8 @@ import com.mouse.bet.entity.ArbOutcome;
 import com.mouse.bet.enums.ArbStatus;
 import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.mapper.MSportBetMapper;
+import com.mouse.bet.mapper.OneWinMapper;
+import com.mouse.bet.mapper.OppositeOutcomeMapper;
 import com.mouse.bet.mapper.SportyBetMapper;
 import com.mouse.bet.mapper.model.MarketOutcome;
 import com.mouse.bet.monitoring.ArbitrageDataValidator;
@@ -16,6 +18,7 @@ import com.mouse.bet.transformation.BookMakerMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
-import java.awt.print.Book;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -63,6 +65,12 @@ public class IngestionService {
     private static final String EMOJI_MARKET = "🎯";
 
 
+    List<BookMaker> PREFERRED_BOOKMAKERS = Arrays.asList(
+            BookMaker.SPORTYBET,  // First priority
+            BookMaker.MSPORT // Second priority
+    );
+
+
     private final BreakingBetClient breakingBetClient;
     private final ArbitrageRepository arbitrageRepository;
     private final ArbOutcomeRepository arbOutcomeRepository;
@@ -77,6 +85,7 @@ public class IngestionService {
     private volatile boolean isRunning = false;
     private SportyBetMapper sportyBetMapper;
     private MSportBetMapper mSportBetMapper;
+    private OneWinMapper oneWinMapper;
     @Getter
     private int pollCount = 0;
 
@@ -108,6 +117,7 @@ public class IngestionService {
         log.info("");
         sportyBetMapper = new SportyBetMapper();
         mSportBetMapper = new MSportBetMapper();
+        oneWinMapper = new OneWinMapper();
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -381,18 +391,24 @@ public class IngestionService {
 
         String marketType = "";
         String outCome = "";
+        Map<String, String> crumbs = null;
+        String oid = "";
+
+
+        // Sort sub-events by bookmaker priority
+        List<SubEvent> sortedSubEvents = getSortedSubEvents(event);
 
         // Convert each SubEvent to Outcome
         log.trace("{} {} Processing {} sub-events for event {}...",
-                EMOJI_TRANSFORM, EMOJI_INFO, event.getSubEvents().size(), event.getId());
+                EMOJI_TRANSFORM, EMOJI_INFO, sortedSubEvents.size(), event.getId());
 
         List<OutcomeData> outcomes = new ArrayList<>();
         int subEventIndex = 0;
 
-        for (SubEvent subEvent : event.getSubEvents()) {
+        for (SubEvent subEvent : sortedSubEvents) {
             subEventIndex++;
             log.info("{} {} Processing sub-event {}/{} (ID: {})...",
-                    EMOJI_TRANSFORM, EMOJI_INFO, subEventIndex, event.getSubEvents().size(), subEvent.getId());
+                    EMOJI_TRANSFORM, EMOJI_INFO, subEventIndex, sortedSubEvents.size(), subEvent.getId());
 
             // Find odds for this sub-event
             Odd odd = oddsMap.get(subEvent.getId());
@@ -406,8 +422,7 @@ public class IngestionService {
             Boolean initiator = false;
             LocalDateTime updated = null;
             String index = "";
-            Map<String, String> crumbs;
-            String oid = "";
+
 
             MarketOutcome marketOutcome = null;
 
@@ -426,7 +441,12 @@ public class IngestionService {
                 previousOdds = odd.getPrev();
                 initiator = odd.getInitiator();
                 index = odd.getIndex();
-                crumbs = odd.getCrumbs();
+
+                if (!bookMaker.equals(BookMaker._1WIN)) {
+//                    log.info("skip oneWin crumb by using the previous crumb");
+                    crumbs = odd.getCrumbs();
+
+                }
 
                 log.info("{} {} {} Extracting crumbs for sub-event {} (bookmaker: {})...",
                         EMOJI_CRUMBS, EMOJI_MARKET, EMOJI_INFO, subEvent.getId(), bookMaker);
@@ -437,6 +457,7 @@ public class IngestionService {
                     oid = crumbs.get("oid");
                     log.trace("{} {} Extracted oid from crumbs: {}", EMOJI_CRUMBS, EMOJI_INFO, oid);
 
+
                     log.info("{} {} Attempting to get market outcome for bookmaker: {}",
                             EMOJI_MARKET, EMOJI_INFO, bookMaker);
 
@@ -445,7 +466,13 @@ public class IngestionService {
 
                         if (marketOutcome != null) {
                             marketType = marketOutcome.getName();
-                            outCome = marketOutcome.getOutcome(oid);
+                            if (bookMaker.equals(BookMaker._1WIN)) {
+                                outCome = marketOutcome.getOutcome(OppositeOutcomeMapper.getOppositeKey(oid));
+
+                            }else {
+                                outCome = marketOutcome.getOutcome(oid);
+                            }
+
 
                             log.info("{} {} {} Market outcome resolved: marketType='{}', outcome='{}'",
                                     EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, outCome);
@@ -485,7 +512,8 @@ public class IngestionService {
                     .progress(subEvent.getProgress())
                     .originalId(subEvent.getOriginalId())
                     .reordered(subEvent.getReordered())
-                    .outComeName(outCome)
+                    .outComeName(bookMaker == BookMaker._1WIN ?
+                            oneWinOutcomeStyle(outCome, subEvent.getTeam1(), subEvent.getTeam2()) : outCome)
                     .updated(updated)
                     .build();
 
@@ -532,15 +560,109 @@ public class IngestionService {
         return parsed;
     }
 
+    private String oneWinOutcomeStyle(String outCome, String homeTeam, String awayTeam) {
+        if (outCome == null) {
+            return null;
+        }
+
+        String trimmed = outCome.trim();
+
+        // Exact match (fast path)
+        if (homeTeam != null && trimmed.equalsIgnoreCase("home")) {
+            return homeTeam;
+        }
+        if (awayTeam != null && trimmed.equalsIgnoreCase("away")) {
+            return awayTeam;
+        }
+
+        // Partial replacement (case-insensitive)
+        String result = outCome;
+
+        if (homeTeam != null) {
+            result = replaceIgnoreCase(result, "home", homeTeam);
+        }
+
+        if (awayTeam != null) {
+            result = replaceIgnoreCase(result, "away", awayTeam);
+        }
+
+        return result;
+    }
+
+    private String replaceIgnoreCase(String source, String target, String replacement) {
+        StringBuilder sb = new StringBuilder(source.length());
+        String lowerSource = source.toLowerCase();
+        String lowerTarget = target.toLowerCase();
+
+        int fromIndex = 0;
+        int index;
+
+        while ((index = lowerSource.indexOf(lowerTarget, fromIndex)) != -1) {
+            sb.append(source, fromIndex, index);
+            sb.append(replacement);
+            fromIndex = index + target.length();
+        }
+
+        sb.append(source.substring(fromIndex));
+        return sb.toString();
+    }
+
+
+
+    private @NonNull List<SubEvent> getSortedSubEvents(Event event) {
+        List<SubEvent> sortedSubEvents = new ArrayList<>(event.getSubEvents());
+        sortedSubEvents.sort((se1, se2) -> {
+            BookMaker bm1 = BookMakerMapper.getBookmakerName(se1.getBookmakerId());
+            BookMaker bm2 = BookMakerMapper.getBookmakerName(se2.getBookmakerId());
+
+            int index1 = PREFERRED_BOOKMAKERS.indexOf(bm1);
+            int index2 = PREFERRED_BOOKMAKERS.indexOf(bm2);
+
+            // If bookmaker not in preferred list, assign high index
+            if (index1 == -1) index1 = Integer.MAX_VALUE;
+            if (index2 == -1) index2 = Integer.MAX_VALUE;
+
+            return Integer.compare(index1, index2);
+        });
+        return sortedSubEvents;
+    }
+
     private MarketOutcome getMarketOutcome(BookMaker bookMaker, Map<String, String> crumbs) {
         log.debug("{} {} {} Getting market outcome for bookmaker: {}",
                 EMOJI_MARKET, EMOJI_CRUMBS, EMOJI_INFO, bookMaker);
 
         switch (bookMaker) {
             case _1WIN -> {
-                log.debug("{} {} Bookmaker _1WIN - no market outcome mapping implemented",
-                        EMOJI_INFO, EMOJI_MARKET);
-                return null;
+                log.debug("{} {} Processing MSport crumbs....", EMOJI_MARKET, EMOJI_CRUMBS);
+
+                String mid = crumbs.get("mid");
+                String spec = crumbs.get("spec");
+
+                log.debug("{} {} Extracted crumbs:-- mid='{}', spec='{}'",
+                        EMOJI_CRUMBS, EMOJI_INFO, mid, spec);
+
+                if (mid == null || spec == null) {
+                    log.error("{} {} {} Missing required crumbs for oneWin: mid={}, spec={}",
+                            EMOJI_ERROR, EMOJI_MARKET, EMOJI_CRUMBS, mid, spec);
+                    throw new IllegalArgumentException("Missing required crumbs for SPORTYBET: mid, spec");
+                }
+
+                log.info("{} {} Searching oneWinBetMapper for market: mid='{}', spec='{}'",
+                        EMOJI_MARKET, EMOJI_INFO, mid, spec);
+
+                MarketOutcome result = oneWinMapper.searchMarket(mid, spec);
+
+                if (result != null) {
+                    log.info("{} {} {} Market found: name='{}', outcomes={}",
+                            EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS,
+                            result.getName(), result.getOutcomes().size());
+                } else {
+                    log.warn("{} {} {} No market found for mid='{}', spec='{}'",
+                            EMOJI_WARNING, EMOJI_MARKET, EMOJI_CRUMBS, mid, spec);
+                }
+
+                return result;
+
             }
             case MSPORT -> {
                 log.debug("{} {} Processing MSport crumbs...", EMOJI_MARKET, EMOJI_CRUMBS);
@@ -551,10 +673,10 @@ public class IngestionService {
                 log.debug("{} {} Extracted crumbs:- mid='{}', spec='{}'",
                         EMOJI_CRUMBS, EMOJI_INFO, mid, spec);
 
-                if (mid == null || spec == null) {
-                    log.error("{} {} {} Missing required crumbs for SPORTYBET: mid={}, spec={}",
+                if (mid == null) {
+                    log.error("{} {} {} Missing required crumbs for MSport: mid={}, spec={}",
                             EMOJI_ERROR, EMOJI_MARKET, EMOJI_CRUMBS, mid, spec);
-                    throw new IllegalArgumentException("Missing required crumbs for SPORTYBET: mid, spec");
+                    throw new IllegalArgumentException("Missing required crumbs for MSport: mid, spec");
                 }
 
                 log.info("{} {} Searching MSportBetMapper for market: mid='{}', spec='{}'",
@@ -584,7 +706,7 @@ public class IngestionService {
                 log.debug("{} {} Extracted crumbs: mid='{}', spec='{}'",
                         EMOJI_CRUMBS, EMOJI_INFO, mid, spec);
 
-                if (mid == null || spec == null) {
+                if (mid == null) {
                     log.error("{} {} {} Missing required crumbs for SPORTYBET: mid={}, spec={}",
                             EMOJI_ERROR, EMOJI_MARKET, EMOJI_CRUMBS, mid, spec);
                     throw new IllegalArgumentException("Missing required crumbs for SPORTYBET: mid, spec");

@@ -43,6 +43,7 @@ public class BreakingBetClient {
     private static final String EMOJI_TOKEN = "🔑";
     private static final String EMOJI_CLOCK = "⏰";
     private static final String EMOJI_BROWSER = "🌐";
+    private static final String EMOJI_DEBUG = "🔍";
 
     // Playwright components
     private Playwright playwright;
@@ -59,10 +60,10 @@ public class BreakingBetClient {
 
     private ScheduledExecutorService tokenRefreshScheduler;
 
-    @Value("${breaking-bet.api.prematch.url:https://arbs.prematch.api.breaking-bet.com/v1/users/bb-51233/filter/items}")
+    @Value("${breaking-bet.api.prematch.url:https://arbs.prematch.app-api.breaking-bet.com/v1/users/bb-51233/filter/items}")
     private String prematchApiUrl;
 
-    @Value("${breaking-bet.api.live.url:https://arbs.live.api.breaking-bet.com/v1/users/bb-51233/filter/items}")
+    @Value("${breaking-bet.api.live.url:https://arbs.live.app-api.breaking-bet.com/v1/users/bb-51233/filter/items}")
     private String liveApiUrl;
 
     @Value("${breaking-bet.connection.timeout:30}")
@@ -80,7 +81,7 @@ public class BreakingBetClient {
     @Value("${breaking-bet.token.refresh.interval:120}")
     private int tokenRefreshIntervalSeconds;
 
-    @Value("${breaking-bet.headless:false}")  // Changed default to false so you can see & interact with the browser
+    @Value("${breaking-bet.headless:true}")
     private boolean headless;
 
     private final ProfileManager profileManager;
@@ -89,17 +90,20 @@ public class BreakingBetClient {
 
     private static final String LOGIN_URL = "https://breaking-bet.com/en/users/sign_in";
     private static final String LIVE_ARBS_URL = "https://breaking-bet.com/en/arbs/live";
-    private static final String TARGET_XHR_URL = "https://arbs.live.api.breaking-bet.com/v1/users/bb-51233/filter/items";
+    // FIXED: Changed from api.breaking-bet.com to app-api.breaking-bet.com
+    private static final String TARGET_XHR_URL = "https://arbs.live.app-api.breaking-bet.com/v1/users/bb-51233/filter/items";
 
     @Value("${breaking-bet.login.wait.seconds:60}")
     private int loginWaitSeconds;
-
 
     @Value("${breaking-bet.token.refresh.max-retries:3}")
     private int maxRefreshRetries;
 
     @Value("${breaking-bet.token.refresh.retry-delay:2000}")
     private int retryDelayMillis;
+
+    @Value("${breaking-bet.token.capture.max-wait:30}")
+    private int tokenCaptureMaxWaitSeconds;
 
     @PostConstruct
     public void init() {
@@ -121,22 +125,20 @@ public class BreakingBetClient {
         profile = profileManager.getProfile(DEVICE_ID);
 
         Browser.NewContextOptions contextOptions = new Browser.NewContextOptions()
-                .setViewportSize(null)  // null viewport = no fixed size, adapts to window
+                .setViewportSize(null)
                 .setUserAgent(profile.getUserAgent())
                 .setIgnoreHTTPSErrors(true);
 
-        // Launch with channel="chrome" to use regular Chrome instead of Chromium test browser
         browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                 .setHeadless(headless)
-                .setChannel("chrome")  // Use installed Chrome instead of Chromium
+                .setChannel("chrome")
                 .setArgs(java.util.Arrays.asList(
-                        "--start-maximized",  // Start maximized
-                        "--window-size=2560,1440",  // Larger window size to prevent wrapping
-                        "--force-device-scale-factor=1",  // Prevent scaling issues
-                        "--disable-blink-features=AutomationControlled"  // Hide automation indicators
+                        "--start-maximized",
+                        "--window-size=2560,1440",
+                        "--force-device-scale-factor=1",
+                        "--disable-blink-features=AutomationControlled"
                 )));
 
-        // Check if context file exists before trying to load it
         Path contextFilePath = Paths.get(contextPath);
         if (Files.exists(contextFilePath)) {
             try {
@@ -146,20 +148,16 @@ public class BreakingBetClient {
             } catch (Exception e) {
                 log.warn("{} {} Failed to load context from {}: {}", EMOJI_WARNING, EMOJI_BROWSER, contextPath, e.getMessage());
                 log.info("{} {} Creating new context instead", EMOJI_INFO, EMOJI_BROWSER);
-                // Don't set viewport size when creating context after failure, let it be maximized
                 contextOptions.setViewportSize(null);
                 context = browser.newContext(contextOptions);
             }
         } else {
             log.info("{} {} No existing context found at {} – creating new context", EMOJI_INFO, EMOJI_BROWSER, contextPath);
-            // Don't set viewport size when creating new context, let it be maximized
             contextOptions.setViewportSize(null);
             context = browser.newContext(contextOptions);
         }
 
         page = context.newPage();
-
-        // Don't set viewport - let it adapt to window size naturally
 
         setupTokenCapture();
 
@@ -167,16 +165,15 @@ public class BreakingBetClient {
         log.info("{} {} Navigating to login page: {}", EMOJI_BROWSER, EMOJI_INFO, LOGIN_URL);
         try {
             page.navigate(LOGIN_URL, new Page.NavigateOptions().setTimeout(60000));
-            page.waitForLoadState(LoadState.DOMCONTENTLOADED);  // Just wait for DOM, not full network idle
+            page.waitForLoadState(LoadState.DOMCONTENTLOADED);
         } catch (Exception e) {
             log.warn("{} {} Navigation/load warning (this is normal): {}", EMOJI_WARNING, EMOJI_BROWSER, e.getMessage());
         }
 
         log.info("{} {} Please log in manually in the browser window...", EMOJI_BROWSER, EMOJI_INFO);
         log.info("{} {} Waiting {} seconds for manual login (page may navigate after login)...", EMOJI_BROWSER, EMOJI_CLOCK, loginWaitSeconds);
-        page.waitForTimeout(loginWaitSeconds * 1000);  // Wait for user to login
+        page.waitForTimeout(loginWaitSeconds * 1000);
 
-        // Save context immediately after login wait period
         saveContext();
 
         // Now navigate to live arbs page
@@ -184,13 +181,42 @@ public class BreakingBetClient {
         try {
             page.navigate(LIVE_ARBS_URL, new Page.NavigateOptions().setTimeout(60000));
             page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+            log.info("{} {} Page loaded, current URL: {}", EMOJI_DEBUG, EMOJI_BROWSER, page.url());
         } catch (Exception e) {
-            log.warn("{} {} Navigation/load warning (this is normal) : {}", EMOJI_WARNING, EMOJI_BROWSER, e.getMessage());
+            log.warn("{} {} Navigation/load warning: {}", EMOJI_WARNING, EMOJI_BROWSER, e.getMessage());
+            log.info("{} {} Current URL after error: {}", EMOJI_DEBUG, EMOJI_BROWSER, page.url());
         }
 
-        // Wait a bit for XHR requests to fire and capture token
-        page.waitForTimeout(4000);
+        // Wait for token to be captured (with timeout)
+        log.info("{} {} Waiting for bearer token to be captured...", EMOJI_BROWSER, EMOJI_TOKEN);
+        log.info("{} {} Watching for requests to: {}", EMOJI_DEBUG, EMOJI_TOKEN, TARGET_XHR_URL);
 
+        int waited = 0;
+        while (currentBearerToken.get() == null && waited < tokenCaptureMaxWaitSeconds) {
+            page.waitForTimeout(1000);
+            waited++;
+            if (waited % 5 == 0) {
+                log.info("{} {} Still waiting for token... ({}/{} seconds)",
+                        EMOJI_CLOCK, EMOJI_TOKEN, waited, tokenCaptureMaxWaitSeconds);
+                log.info("{} {} Current page URL: {}", EMOJI_DEBUG, EMOJI_BROWSER, page.url());
+                log.info("{} {} Current page title: {}", EMOJI_DEBUG, EMOJI_BROWSER, page.title());
+            }
+        }
+
+        if (currentBearerToken.get() == null) {
+            log.error("{} {} No bearer token captured after {} seconds!",
+                    EMOJI_ERROR, EMOJI_TOKEN, tokenCaptureMaxWaitSeconds);
+            log.error("{} {} Final page URL: {}", EMOJI_ERROR, EMOJI_BROWSER, page.url());
+            log.error("{} {} Final page title: {}", EMOJI_ERROR, EMOJI_BROWSER, page.title());
+            log.error("{} {} Possible causes:", EMOJI_ERROR, EMOJI_INFO);
+            log.error("   1. Not logged in - check if you can see the arbs page");
+            log.error("   2. Page didn't make XHR request to: {}", TARGET_XHR_URL);
+            log.error("   3. Authorization header format changed");
+            log.error("   4. Need to interact with page to trigger request (click filter, refresh, etc.)");
+            throw new RuntimeException("Failed to capture bearer token - please ensure you're logged in and the page loaded correctly");
+        }
+
+        log.info("{} {} Bearer token successfully captured!", EMOJI_SUCCESS, EMOJI_TOKEN);
         log.info("{} {} Browser ready - token capture active", EMOJI_SUCCESS, EMOJI_BROWSER);
     }
 
@@ -205,22 +231,30 @@ public class BreakingBetClient {
 
     private void setupTokenCapture() {
         page.onRequest(request -> {
-            if (TARGET_XHR_URL.equals(request.url())) {
+            String url = request.url();
+
+            // Check if it's the exact target URL we're looking for
+            if (TARGET_XHR_URL.equals(url)) {
+                log.info("{} {} TARGET URL MATCHED! {}", EMOJI_SUCCESS, EMOJI_TOKEN, url);
                 String authHeader = request.headers().get("authorization");
                 if (authHeader != null && authHeader.startsWith("Bearer ")) {
                     String token = authHeader.substring(7);
+                    log.info("{} {} Token extracted from Authorization header", EMOJI_SUCCESS, EMOJI_TOKEN);
                     updateBearerToken(token);
+                } else {
+                    log.warn("{} {} Target URL matched but no Bearer token in Authorization header!", EMOJI_WARNING, EMOJI_TOKEN);
+                    log.warn("{} {} Authorization header value: {}", EMOJI_WARNING, EMOJI_TOKEN, authHeader);
                 }
             }
         });
 
+        log.info("{} {} Request interceptor set up - watching for token", EMOJI_SUCCESS, EMOJI_TOKEN);
         log.info("{} {} Listening for Authorization header on: {}", EMOJI_SUCCESS, EMOJI_TOKEN, TARGET_XHR_URL);
     }
 
     private void startTokenRefreshScheduler() {
         tokenRefreshScheduler = Executors.newScheduledThreadPool(1);
         tokenRefreshScheduler.scheduleAtFixedRate(this::refreshToken, 10, tokenRefreshIntervalSeconds, TimeUnit.SECONDS);
-        // Initial delay 10s to give user time to log in
         log.info("{} {} Token refresh scheduler started (every {}s)", EMOJI_SUCCESS, EMOJI_CLOCK, tokenRefreshIntervalSeconds);
     }
 
@@ -237,7 +271,6 @@ public class BreakingBetClient {
                 page.navigate(LIVE_ARBS_URL, new Page.NavigateOptions().setTimeout(30000));
                 page.waitForLoadState(LoadState.DOMCONTENTLOADED);
 
-                // Wait a bit so XHR requests have time to fire
                 page.waitForTimeout(4000);
 
                 success = true;

@@ -90,7 +90,15 @@ public class Orchestrator {
     /** Non-blocking: put an ArbitrageOpportunity into the single slot; returns false if busy. */
     public boolean tryLoadArb(ArbitrageOpportunity arb) {
         Objects.requireNonNull(arb, "ArbitrageOpportunity cannot be null");
-        boolean loaded = arbQueue.offer(arb);
+        boolean loaded = false;
+
+        if (running.get()) {
+            loaded = arbQueue.offer(arb);
+
+        }else{
+            log.info("The orchestrator has not yet started");
+;        }
+
 
         if (loaded) {
             log.info("Arb loaded into queue (non-blocking) | ArbId: {} | ExternalId: {} | ArbStatus: {}",
@@ -159,7 +167,7 @@ public class Orchestrator {
                 arbQueue.clear();
 
                 // Random human delay between arbs
-                randomHumanDelay(15000, 25000);
+                randomHumanDelay(15000, 25000); //todo
 
             } catch (InterruptedException ie) {
                 log.warn("Orchestrator loop interrupted", ie);
@@ -315,6 +323,7 @@ public class Orchestrator {
 
         ArbStatus finalArbStatus = allSuccess ? ArbStatus.COMPLETED : ArbStatus.FAILED;
         arb.setStatus(finalArbStatus);
+        arb.setResultMap(results);
         arbitrageService.saveArbitrageOpportunity(arb);
 
         if (allSuccess) {

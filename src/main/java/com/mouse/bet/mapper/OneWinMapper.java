@@ -29,26 +29,26 @@ public class OneWinMapper extends SimilarBookieMapper {
         match1x2.put("1", "Home");
         match1x2.put("2", "Draw");
         match1x2.put("3", "Away");
-        addMarket("1", null, "1X2", match1x2);
+        addMarket("1", null, "Full time result", match1x2);
 
         // Double Chance
         Map<String, String> doubleChance = new HashMap<>();
         doubleChance.put("9", "Home or Draw");
         doubleChance.put("10", "Home or Away");
         doubleChance.put("11", "Draw or Away");
-        addMarket("10", null, "Double Chance", doubleChance);
+        addMarket("10", null, "Double chance", doubleChance);
 
         // Draw No Bet
         Map<String, String> drawNoBet = new HashMap<>();
         drawNoBet.put("4", "Home");
         drawNoBet.put("5", "Away");
-        addMarket("11", null, "Draw No Bet", drawNoBet);
+        addMarket("11", null, "Draw no bet", drawNoBet);
 
         // Both Teams to Score (GG/NG)
         Map<String, String> btts = new HashMap<>();
         btts.put("74", "Yes");
         btts.put("76", "No");
-        addMarket("29", null, "GG/NG", btts);
+        addMarket("29", null, "Both teams to score", btts);
 
         // Odd/Even
         Map<String, String> oddEven = new HashMap<>();
@@ -76,12 +76,12 @@ public class OneWinMapper extends SimilarBookieMapper {
         secondGoal.put("8", "Away");
         addMarket("8", "goalnr=2", "2nd Goal", secondGoal);
 
-        // Rest of the Match (current score 0:1)
-        Map<String, String> restOfMatch = new HashMap<>();
-        restOfMatch.put("1", "Home");
-        restOfMatch.put("2", "Draw");
-        restOfMatch.put("3", "Away");
-        addMarket("7", "score=0:1", "Rest of the Match (current score 0:1)", restOfMatch);
+//        // Rest of the Match (current score 0:1)
+//        Map<String, String> restOfMatch = new HashMap<>();
+//        restOfMatch.put("1", "Home");
+//        restOfMatch.put("2", "Draw");
+//        restOfMatch.put("3", "Away");
+//        addMarket("7", "score=0:1", "Rest of the Match (current score 0:1)", restOfMatch);
 
         // Football Over/Under and Handicaps
         generateFootballOverUnder();
@@ -94,7 +94,7 @@ public class OneWinMapper extends SimilarBookieMapper {
         generate1X2Variants();
         generateFirstGoal();
         generateAwayHandicaps();
-        generateRestOfMatchVariants();
+//        generateRestOfMatchVariants();
         generateGGNGVariants();
         generateGoalsInRowMarkets();
         generateLeadByGoalsMarkets();
@@ -138,8 +138,8 @@ public class OneWinMapper extends SimilarBookieMapper {
         generateQuarterDrawNoBet();
 
         // Additional Basketball Markets
-        generateTeamTotalsIncludingOvertime("227", "Mobis Phoebus");
-        generateTeamTotalsIncludingOvertime("228", "Samsung Thunders");
+        generateTeamTotalsIncludingOvertime("227", "Home team");
+        generateTeamTotalsIncludingOvertime("228", "Away team");
         generateAllQuarter1X2();
         generateAllQuarterWinningMargin();
         generateAllQuarterOddEven();
@@ -180,7 +180,7 @@ public class OneWinMapper extends SimilarBookieMapper {
             Map<String, String> map = new HashMap<>();
             map.put("12", "Over " + line);
             map.put("13", "Under " + line);
-            addMarket("18", "total=" + line, "Over/Under", map);
+            addMarket("18", "total=" + line, "Total", map);
         }
     }
 
@@ -221,40 +221,40 @@ public class OneWinMapper extends SimilarBookieMapper {
         }
     }
 
-    private void generateRestOfMatchVariants() {
-        // Rest of Match score 0:0
-        Map<String, String> map = new HashMap<>();
-        map.put("1", "Home");
-        map.put("2", "Draw");
-        map.put("3", "Away");
-        addMarket("7", "score=0:0", "Rest of the Match (current score 0:0)", map);
-
-        // Rest of Match Total Goals
-        double[] totals = {1.5, 2.5, 3.5};
-        for (double total : totals) {
-            String line = formatDecimal(total);
-            Map<String, String> mapTotal = new HashMap<>();
-            mapTotal.put("30", "Over " + line);
-            mapTotal.put("31", "Under " + line);
-            addMarket("900028", "total=" + line + "|score=0:0",
-                    "Rest of Match Total Goals (current score 0:0)", mapTotal);
-        }
-
-        // Rest of Match Asian Handicap
-        double[] handicaps = {-1.5, -0.5, 0.5, 1.5};
-        for (double hcp : handicaps) {
-            Map<String, String> mapHcp = new HashMap<>();
-            if (hcp < 0) {
-                mapHcp.put("1", "Home " + formatDecimal(hcp));
-                mapHcp.put("3", "Away +" + formatDecimal(Math.abs(hcp)));
-            } else {
-                mapHcp.put("1", "Home +" + formatDecimal(hcp));
-                mapHcp.put("3", "Away " + formatDecimal(-hcp));
-            }
-            addMarket("900035", "hcp=" + formatDecimal(hcp) + "|score=0:0",
-                    "Rest of Match Asian Handicap (current score 0:0)", mapHcp);
-        }
-    }
+//    private void generateRestOfMatchVariants() {
+//        // Rest of Match score 0:0
+//        Map<String, String> map = new HashMap<>();
+//        map.put("1", "Home");
+//        map.put("2", "Draw");
+//        map.put("3", "Away");
+//        addMarket("7", "score=0:0", "Rest of the Match (current score 0:0)", map);
+//
+//        // Rest of Match Total Goals
+//        double[] totals = {1.5, 2.5, 3.5};
+//        for (double total : totals) {
+//            String line = formatDecimal(total);
+//            Map<String, String> mapTotal = new HashMap<>();
+//            mapTotal.put("30", "Over " + line);
+//            mapTotal.put("31", "Under " + line);
+//            addMarket("900028", "total=" + line + "|score=0:0",
+//                    "Rest of Match Total Goals (current score 0:0)", mapTotal);
+//        }
+//
+//        // Rest of Match Asian Handicap
+//        double[] handicaps = {-1.5, -0.5, 0.5, 1.5};
+//        for (double hcp : handicaps) {
+//            Map<String, String> mapHcp = new HashMap<>();
+//            if (hcp < 0) {
+//                mapHcp.put("1", "Home " + formatDecimal(hcp));
+//                mapHcp.put("3", "Away +" + formatDecimal(Math.abs(hcp)));
+//            } else {
+//                mapHcp.put("1", "Home +" + formatDecimal(hcp));
+//                mapHcp.put("3", "Away " + formatDecimal(-hcp));
+//            }
+//            addMarket("900035", "hcp=" + formatDecimal(hcp) + "|score=0:0",
+//                    "Rest of Match Asian Handicap (current score 0:0)", mapHcp);
+//        }
+//    }
 
     private void generateGGNGVariants() {
         // GG/NG 2+
@@ -503,7 +503,7 @@ public class OneWinMapper extends SimilarBookieMapper {
         map1X2.put("1", "Home");
         map1X2.put("2", "Draw");
         map1X2.put("3", "Away");
-        addMarket("60", null, "1st Half - 1X2", map1X2);
+        addMarket("60", null, "1st half. Result", map1X2);
 
         // 1st Half Over/Under
         double[] totals = {0.5, 1.5, 2.5};
@@ -512,7 +512,7 @@ public class OneWinMapper extends SimilarBookieMapper {
             Map<String, String> map = new HashMap<>();
             map.put("12", "Over " + line);
             map.put("13", "Under " + line);
-            addMarket("68", "total=" + line, "1st Half - Over/Under", map);
+            addMarket("68", "total=" + line, "1st half. Total", map);
         }
 
         // 1st Half Double Chance
@@ -520,17 +520,17 @@ public class OneWinMapper extends SimilarBookieMapper {
         mapDC.put("9", "Home or Draw");
         mapDC.put("10", "Home or Away");
         mapDC.put("11", "Draw or Away");
-        addMarket("63", null, "1st Half - Double Chance", mapDC);
+        addMarket("63", null, "1st half. Double chance", mapDC);
 
-        // 1st Half Handicap
-        int[] handicaps = {1};
-        for (int hcp : handicaps) {
-            Map<String, String> map = new HashMap<>();
-            map.put("1711", "Home (0:" + hcp + ")");
-            map.put("1712", "Draw (0:" + hcp + ")");
-            map.put("1713", "Away (0:" + hcp + ")");
-            addMarket("65", "hcp=0:" + hcp, "1st Half - Handicap", map);
-        }
+//        // 1st Half Handicap
+//        int[] handicaps = {1};
+//        for (int hcp : handicaps) {
+//            Map<String, String> map = new HashMap<>();
+//            map.put("1711", "Home (0:" + hcp + ")");
+//            map.put("1712", "Draw (0:" + hcp + ")");
+//            map.put("1713", "Away (0:" + hcp + ")");
+//            addMarket("65", "hcp=0:" + hcp, "1st Half. Handicap", map);
+//        }
 
         // 1st Half Asian Handicap
         double[] asianHcps = {-0.5, 0.5};
@@ -538,20 +538,20 @@ public class OneWinMapper extends SimilarBookieMapper {
             String line = formatDecimal(Math.abs(hcp));
             Map<String, String> map = new HashMap<>();
             if (hcp < 0) {
-                map.put("1714", "Home (-" + line + ")");
-                map.put("1715", "Away (+" + line + ")");
+                map.put("1714", "Home -" + line + " ");
+                map.put("1715", "Away " + line + " ");
             } else {
-                map.put("1714", "Home (+" + line + ")");
-                map.put("1715", "Away (-" + line + ")");
+                map.put("1714", "Home " + line + " ");
+                map.put("1715", "Away -" + line + " ");
             }
-            addMarket("66", "hcp=" + formatDecimal(hcp), "1st Half - Asian Handicap", map);
+            addMarket("66", "hcp=" + formatDecimal(hcp), "1st Half. Handicap", map);
         }
 
         // 1st Half GG/NG
         Map<String, String> mapGG = new HashMap<>();
         mapGG.put("74", "Yes");
         mapGG.put("76", "No");
-        addMarket("75", null, "1st Half - GG/NG", mapGG);
+        addMarket("75", null, "1st Half. Both teams to score", mapGG);
 
         // 1st Half Correct Score
         Map<String, String> mapCS = new HashMap<>();
@@ -716,9 +716,9 @@ public class OneWinMapper extends SimilarBookieMapper {
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(Math.abs(hcp));
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (-" + line + ")");
-            map.put("1715", "Away (+" + line + ")");
-            addMarket("16", "hcp=" + formatDecimal(hcp), "Asian Handicap", map);
+            map.put("1714", "Home -" + line + " ");
+            map.put("1715", "Away +" + line + " ");
+            addMarket("16", "hcp=" + formatDecimal(hcp), "Handicap", map);
         }
 
         // Positive handicaps: +0.5 to +5.5
@@ -794,7 +794,7 @@ public class OneWinMapper extends SimilarBookieMapper {
     }
 
     private void generateGameWinner(int game) {
-        String marketName = game + getOrdinalSuffix(game) + " game - winner";
+        String marketName = game + getOrdinalSuffix(game) + " set. Winner";
         Map<String, String> map = new HashMap<>();
         map.put("4", "Home");
         map.put("5", "Away");
@@ -803,8 +803,8 @@ public class OneWinMapper extends SimilarBookieMapper {
 
     private void generateMatchTotalPoints() {
         // Match total points: 50.5 to 120.5
-        double start = 50.5;
-        double end = 120.5;
+        double start = 40.5;
+        double end = 130.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -812,15 +812,15 @@ public class OneWinMapper extends SimilarBookieMapper {
             Map<String, String> map = new HashMap<>();
             map.put("12", "Over " + line);
             map.put("13", "Under " + line);
-            addMarket("238", "total=" + line, "Total points", map);
+            addMarket("238", "total=" + line, "Total", map);
         }
     }
 
     private void generateGameTotalPoints(int game) {
-        String marketName = game + getOrdinalSuffix(game) + " game - total points";
+        String marketName = game + getOrdinalSuffix(game) + " set. Total";
 
         // Game total points: 15.5 to 30.5
-        double start = 15.5;
+        double start = 10.5;
         double end = 30.5;
         double step = 0.5;
 
@@ -836,7 +836,7 @@ public class OneWinMapper extends SimilarBookieMapper {
 
     private void generateGameHandicaps() {
         // Game handicaps: -2.5 to +2.5 (0.5 increments)
-        double start = -2.5;
+        double start = -5.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -844,29 +844,29 @@ public class OneWinMapper extends SimilarBookieMapper {
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(Math.abs(hcp));
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (-" + line + ")");
-            map.put("1715", "Away (+" + line + ")");
+            map.put("1714", "Home -" + line + " ");
+            map.put("1715", "Away " + line + " ");
             addMarket("187", "hcp=" + formatDecimal(hcp), "Game handicap", map);
         }
 
         // Positive handicaps
         start = 0.5;
-        end = 2.5;
+        end = 5.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (+" + line + ")");
-            map.put("1715", "Away (-" + line + ")");
+            map.put("1714", "Home " + line + " ");
+            map.put("1715", "Away -" + line + " ");
             addMarket("187", "hcp=" + line, "Game handicap", map);
         }
     }
 
     private void generateGamePointHandicaps(int game) {
-        String marketName = game + getOrdinalSuffix(game) + " game - point handicap";
+        String marketName = game + getOrdinalSuffix(game) + " set. Handicap";
 
         // Negative handicaps: -10.5 to -0.5
-        double start = -10.5;
+        double start = -15.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -874,8 +874,8 @@ public class OneWinMapper extends SimilarBookieMapper {
             String line = formatDecimal(Math.abs(hcp));
             String param = "hcp=" + formatDecimal(hcp) + "|gamenr=" + game;
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (-" + line + ")");
-            map.put("1715", "Away (+" + line + ")");
+            map.put("1714", "Home -" + line + " ");
+            map.put("1715", "Away " + line + " ");
             addMarket("246", param, marketName, map);
         }
 
@@ -887,8 +887,8 @@ public class OneWinMapper extends SimilarBookieMapper {
             String line = formatDecimal(hcp);
             String param = "hcp=" + line + "|gamenr=" + game;
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (+" + line + ")");
-            map.put("1715", "Away (-" + line + ")");
+            map.put("1714", "Home " + line + " ");
+            map.put("1715", "Away -" + line + " ");
             addMarket("246", param, marketName, map);
         }
     }
@@ -922,7 +922,7 @@ public class OneWinMapper extends SimilarBookieMapper {
     }
 
     private void generateGameOddEven(int game) {
-        String marketName = game + getOrdinalSuffix(game) + " game - odd/even";
+        String marketName = game + getOrdinalSuffix(game) + " set. Odd/Even";
         Map<String, String> map = new HashMap<>();
         map.put("70", "Odd");
         map.put("72", "Even");
@@ -931,7 +931,7 @@ public class OneWinMapper extends SimilarBookieMapper {
 
     private void generateMatchPointHandicaps() {
         // Match-level point handicaps: -20.5 to +20.5
-        double start = -20.5;
+        double start = -25.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -939,8 +939,8 @@ public class OneWinMapper extends SimilarBookieMapper {
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(Math.abs(hcp));
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (-" + line + ")");
-            map.put("1715", "Away (+" + line + ")");
+            map.put("1714", "Home -" + line + " ");
+            map.put("1715", "Away " + line + " ");
             addMarket("237", "hcp=" + formatDecimal(hcp), "Point handicap", map);
         }
 
@@ -951,8 +951,8 @@ public class OneWinMapper extends SimilarBookieMapper {
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (+" + line + ")");
-            map.put("1715", "Away (-" + line + ")");
+            map.put("1714", "Home " + line + " ");
+            map.put("1715", "Away -" + line + " ");
             addMarket("237", "hcp=" + line, "Point handicap", map);
         }
     }
@@ -962,7 +962,7 @@ public class OneWinMapper extends SimilarBookieMapper {
 // ──────────────────────────────────────────────────────────────
 
     private void generateFullGameTotals() {
-        double start = 150.5;
+        double start = 60.5;
         double end = 280.5;
         double step = 0.5;
 
@@ -971,13 +971,13 @@ public class OneWinMapper extends SimilarBookieMapper {
             Map<String, String> map = new HashMap<>();
             map.put("12", "Over " + line);
             map.put("13", "Under " + line);
-            addMarket("225", "total=" + line, "Over/Under (incl. overtime)", map);
+            addMarket("225", "total=" + line, "Total (incl. OT)", map);
         }
     }
 
     private void generateFirstHalfTotals() {
         double start = 60.5;
-        double end = 140.5;
+        double end = 160.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -985,13 +985,13 @@ public class OneWinMapper extends SimilarBookieMapper {
             Map<String, String> map = new HashMap<>();
             map.put("12", "Over " + line);
             map.put("13", "Under " + line);
-            addMarket("68", "total=" + line, "1st Half - Over/Under", map);
+            addMarket("68", "total=" + line, "1st half. Total", map);
         }
     }
 
     private void generateSecondHalfTotals() {
         double start = 60.5;
-        double end = 140.5;
+        double end = 150.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -999,7 +999,7 @@ public class OneWinMapper extends SimilarBookieMapper {
             Map<String, String> map = new HashMap<>();
             map.put("12", "Over " + line);
             map.put("13", "Under " + line);
-            addMarket("232", "total=" + line, "2nd half - total (incl. overtime)", map);
+            addMarket("232", "total=" + line, "2nd half. Total", map);
         }
     }
 
@@ -1009,7 +1009,7 @@ public class OneWinMapper extends SimilarBookieMapper {
             double end = 70.5;
             double step = 0.5;
 
-            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter - Over/Under";
+            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter. Total";
 
             for (double total = start; total <= end; total += step) {
                 String line = formatDecimal(total);
@@ -1035,9 +1035,9 @@ public class OneWinMapper extends SimilarBookieMapper {
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(Math.abs(hcp));
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (-" + line + ")");
-            map.put("1715", "Away (+" + line + ")");
-            addMarket("223", "hcp=" + formatDecimal(hcp), "Handicap (incl. overtime)", map);
+            map.put("1714", "Home -" + line + " ");
+            map.put("1715", "Away " + line + " ");
+            addMarket("223", "hcp=" + formatDecimal(hcp), "Handicap (incl. OT)", map);
         }
 
         // Positive handicaps: +0.5 to +30.5
@@ -1047,9 +1047,9 @@ public class OneWinMapper extends SimilarBookieMapper {
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (+" + line + ")");
-            map.put("1715", "Away (-" + line + ")");
-            addMarket("223", "hcp=" + line, "Handicap (incl. overtime)", map);
+            map.put("1714", "Home " + line + " ");
+            map.put("1715", "Away -" + line + " ");
+            addMarket("223", "hcp=" + line, "Handicap (incl. OT)", map);
         }
     }
 
@@ -1062,8 +1062,8 @@ public class OneWinMapper extends SimilarBookieMapper {
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(Math.abs(hcp));
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (-" + line + ")");
-            map.put("1715", "Away (+" + line + ")");
+            map.put("1714", "Home -" + line + " ");
+            map.put("1715", "Away " + line + " ");
             addMarket("16", "hcp=" + formatDecimal(hcp), "Asian Handicap", map);
         }
 
@@ -1082,28 +1082,28 @@ public class OneWinMapper extends SimilarBookieMapper {
 
     private void generateFirstHalfHandicaps() {
         // Negative handicaps: -15.5 to -0.5
-        double start = -15.5;
+        double start = -20.5;
         double end = -0.5;
         double step = 0.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(Math.abs(hcp));
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (-" + line + ")");
-            map.put("1715", "Away (+" + line + ")");
-            addMarket("230", "hcp=" + formatDecimal(hcp), "1st half - handicap", map);
+            map.put("1714", "Home -" + line + " ");
+            map.put("1715", "Away " + line + " ");
+            addMarket("230", "hcp=" + formatDecimal(hcp), "1st half. Handicap", map);
         }
 
         // Positive handicaps: +0.5 to +15.5
         start = 0.5;
-        end = 15.5;
+        end = 20.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (+" + line + ")");
-            map.put("1715", "Away (-" + line + ")");
-            addMarket("230", "hcp=" + line, "1st half - handicap", map);
+            map.put("1714", "Home " + line + " ");
+            map.put("1715", "Away -" + line + " ");
+            addMarket("230", "hcp=" + line, "1st half. Handicap", map);
         }
     }
 
@@ -1116,8 +1116,8 @@ public class OneWinMapper extends SimilarBookieMapper {
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(Math.abs(hcp));
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (-" + line + ")");
-            map.put("1715", "Away (+" + line + ")");
+            map.put("1714", "Home -" + line + " ");
+            map.put("1715", "Away " + line + " ");
             addMarket("66", "hcp=" + formatDecimal(hcp), "1st Half - Asian Handicap", map);
         }
 
@@ -1136,16 +1136,16 @@ public class OneWinMapper extends SimilarBookieMapper {
 
     private void generateSecondHalfHandicaps() {
         // Negative handicaps: -15.5 to -0.5
-        double start = -15.5;
+        double start = -20.5;
         double end = -0.5;
         double step = 0.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(Math.abs(hcp));
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (-" + line + ")");
-            map.put("1715", "Away (+" + line + ")");
-            addMarket("231", "hcp=" + formatDecimal(hcp), "2nd half - handicap (incl. overtime)", map);
+            map.put("1714", "Home -" + line + " ");
+            map.put("1715", "Away " + line + " ");
+            addMarket("231", "hcp=" + formatDecimal(hcp), "2nd half. Handicap", map);
         }
 
         // Positive handicaps: +0.5 to +15.5
@@ -1155,15 +1155,15 @@ public class OneWinMapper extends SimilarBookieMapper {
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
             Map<String, String> map = new HashMap<>();
-            map.put("1714", "Home (+" + line + ")");
-            map.put("1715", "Away (-" + line + ")");
-            addMarket("231", "hcp=" + line, "2nd half - handicap (incl. overtime)", map);
+            map.put("1714", "Home " + line + " ");
+            map.put("1715", "Away -" + line + " ");
+            addMarket("231", "hcp=" + line, "2nd half. Handicap", map);
         }
     }
 
     private void generateAllQuarterHandicaps() {
         for (int quarter = 1; quarter <= 4; quarter++) {
-            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter - handicap";
+            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter. Handicap";
 
             // Negative handicaps: -10.5 to -0.5
             double start = -10.5;
@@ -1174,8 +1174,8 @@ public class OneWinMapper extends SimilarBookieMapper {
                 String line = formatDecimal(Math.abs(hcp));
                 String param = "hcp=" + formatDecimal(hcp) + "|quarternr=" + quarter;
                 Map<String, String> map = new HashMap<>();
-                map.put("1714", "Home (-" + line + ")");
-                map.put("1715", "Away (+" + line + ")");
+                map.put("1714", "Home -" + line + " ");
+                map.put("1715", "Away " + line + " ");
                 addMarket("303", param, marketName, map);
             }
 
@@ -1187,8 +1187,8 @@ public class OneWinMapper extends SimilarBookieMapper {
                 String line = formatDecimal(hcp);
                 String param = "hcp=" + line + "|quarternr=" + quarter;
                 Map<String, String> map = new HashMap<>();
-                map.put("1714", "Home (+" + line + ")");
-                map.put("1715", "Away (-" + line + ")");
+                map.put("1714", "Home " + line + " ");
+                map.put("1715", "Away -" + line + " ");
                 addMarket("303", param, marketName, map);
             }
         }
@@ -1200,7 +1200,7 @@ public class OneWinMapper extends SimilarBookieMapper {
 
     private void generateQuarterDrawNoBet() {
         for (int quarter = 1; quarter <= 4; quarter++) {
-            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter - draw no bet";
+            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter. draw no bet";
             Map<String, String> map = new HashMap<>();
             map.put("4", "Home");
             map.put("5", "Away");
@@ -1223,13 +1223,13 @@ public class OneWinMapper extends SimilarBookieMapper {
             Map<String, String> map = new HashMap<>();
             map.put("12", "Over " + line);
             map.put("13", "Under " + line);
-            addMarket(marketId, "total=" + line, teamName + " Over/Under (incl. overtime)", map);
+            addMarket(marketId, "total=" + line, teamName + " total (incl. OT)", map);
         }
     }
 
     private void generateAllQuarter1X2() {
         for (int quarter = 1; quarter <= 4; quarter++) {
-            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter - 1x2";
+            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter. Result";
             Map<String, String> map = new HashMap<>();
             map.put("1", "Home");
             map.put("2", "Draw");
@@ -1238,7 +1238,7 @@ public class OneWinMapper extends SimilarBookieMapper {
         }
     }
 
-    private void generateAllQuarterWinningMargin() {
+    private void generateAllQuarterWinningMargin() { //todo:
         for (int quarter = 1; quarter <= 4; quarter++) {
             String marketName = quarter + getOrdinalSuffix(quarter) + " quarter - winning margin";
             Map<String, String> map = new HashMap<>();
@@ -1251,7 +1251,7 @@ public class OneWinMapper extends SimilarBookieMapper {
 
     private void generateAllQuarterOddEven() {
         for (int quarter = 1; quarter <= 4; quarter++) {
-            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter - odd/even";
+            String marketName = quarter + getOrdinalSuffix(quarter) + " quarter. Odd/Even";
             Map<String, String> map = new HashMap<>();
             map.put("70", "Odd");
             map.put("72", "Even");
@@ -1289,21 +1289,21 @@ public class OneWinMapper extends SimilarBookieMapper {
         map.put("1", "Home");
         map.put("2", "Draw");
         map.put("3", "Away");
-        addMarket("60", null, "1st Half - 1X2", map);
+        addMarket("60", null, "1st Half. Result", map);
     }
 
     private void generateFirstHalfDrawNoBet() {
         Map<String, String> map = new HashMap<>();
         map.put("4", "Home");
         map.put("5", "Away");
-        addMarket("64", null, "1st Half - Draw No Bet", map);
+        addMarket("64", null, "1st Half. Draw No Bet", map);
     }
 
     private void generateFirstHalfOddEven() {
         Map<String, String> map = new HashMap<>();
         map.put("70", "Odd");
         map.put("72", "Even");
-        addMarket("74", null, "1st Half - Odd/Even", map);
+        addMarket("74", null, "1st Half. Odd/Even", map);
     }
 
     private void generateSecondHalf1X2() {
@@ -1311,21 +1311,21 @@ public class OneWinMapper extends SimilarBookieMapper {
         map.put("1", "Home");
         map.put("2", "Draw");
         map.put("3", "Away");
-        addMarket("293", null, "2nd half - 1x2 (incl. overtime)", map);
+        addMarket("293", null, "2nd half. Result (incl. OT)", map);
     }
 
     private void generateSecondHalfDrawNoBet() {
         Map<String, String> map = new HashMap<>();
         map.put("4", "Home");
         map.put("5", "Away");
-        addMarket("294", null, "2nd half - draw no bet (incl. overtime)", map);
+        addMarket("294", null, "2nd half. draw no bet (incl. OT)", map);
     }
 
     private void generateSecondHalfOddEven() {
         Map<String, String> map = new HashMap<>();
         map.put("70", "Odd");
         map.put("72", "Even");
-        addMarket("295", null, "2nd half - odd/even (incl. overtime)", map);
+        addMarket("295", null, "2nd half. Odd/Even ((incl. OT)", map);
     }
 
     private void generateRaceToPointsIncludingOvertime() {

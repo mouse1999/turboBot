@@ -6,17 +6,14 @@ import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.enums.Sport;
 import com.mouse.bet.exception.CaptchaDetectedException;
 import com.mouse.bet.exception.PageHealthException;
-import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.interfaces.BettingWindow;
 import com.mouse.bet.manager.ProfileManager;
 import com.mouse.bet.manager.WindowSyncManager;
-import com.mouse.bet.mock.MockBettingTask;
 import com.mouse.bet.monitor.PageHealthMonitor;
 import com.mouse.bet.orchestrator.Orchestrator;
 import com.mouse.bet.orchestrator.model.BetLegTask;
 import com.mouse.bet.profile.UserAgentProfile;
 import com.mouse.bet.service.ArbOutcomeService;
-
 import com.mouse.bet.util.onewin.OneWinLoginUtil;
 import com.mouse.bet.util.onewin.OneWinMarketUtil;
 import com.mouse.bet.util.onewin.OneWinNavigationUtil;
@@ -37,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -76,30 +74,24 @@ public class OneWin implements BettingWindow, Runnable {
     private final ProfileManager profileManager;
     private final ArbOutcomeService arbOutcomeService;
     private final WindowSyncManager syncManager;
-    
-
 
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final AtomicBoolean isWindowUpAndRunning = new AtomicBoolean(false);
     private final AtomicBoolean isPaused = new AtomicBoolean(false);
     private final AtomicBoolean isLoggedIn = new AtomicBoolean(false);
-
-    // BETTING INDICATOR - Shows when a bet placement is in progress
     private final AtomicBoolean isBetInProgress = new AtomicBoolean(false);
+
     private final Orchestrator orchestrator;
     private static final BookMaker BOOKMAKER = BookMaker._1WIN;
+
     @Getter
     private final BlockingQueue<BetLegTask> taskQueue = new LinkedBlockingQueue<>();
-
-
-
 
     @Value("${onewin.username:7063442030}")
     private String oneUsername;
 
     @Value("${onewin.password:Victor?!$#070}")
     private String onePassword;
-
 
     @Value("${onewin.context.path:./playwright-context}")
     private String contextPath;
@@ -119,13 +111,13 @@ public class OneWin implements BettingWindow, Runnable {
     @Value("${deploy.timeout.seconds:3}")
     private int deployTimeout;
 
-    @Value("${fetch.enabled.football:true}")
+    @Value("${fetch.enabled.football:false}")
     private boolean fetchFootballEnabled;
 
     @Value("${fetch.enabled.basketball:false}")
     private boolean fetchBasketballEnabled;
 
-    @Value("${fetch.enabled.table-tennis:false}")
+    @Value("${fetch.enabled.table-tennis:true}")
     private boolean fetchTableTennisEnabled;
 
     @Value("${onewin.base.url:https://1win.ng/betting/live}")
@@ -137,84 +129,84 @@ public class OneWin implements BettingWindow, Runnable {
     @Value("${onewin.live.events.url:https://1win.com/live}")
     private String liveEventsUrl;
 
-    /**
-     * Initialize Playwright and browser
-     */
     @PostConstruct
     public void init() {
-        log.info("{} {} Initializing MSport with Playwright...", EMOJI_INIT, EMOJI_BET);
+        log.info("{} {} Initializing OneWin with Playwright...", EMOJI_INIT, EMOJI_BET);
         try {
             playwright = Playwright.create();
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                     .setHeadless(false)
                     .setArgs(Arrays.asList(
-                            "--start-maximized",  // Start maximized
-                            "--window-size=2560,1440",  // Larger window size to prevent wrapping
-                            "--force-device-scale-factor=1",  // Prevent scaling issues
-                            "--disable-blink-features=AutomationControlled"  // Hide automation indicators
+                            "--start-maximized",
+                            "--window-size=2560,1440",
+                            "--force-device-scale-factor=1",
+                            "--disable-blink-features=AutomationControlled"
                     ))
                     .setSlowMo(0));
 
             log.info("{} {} Playwright initialized successfully", EMOJI_SUCCESS, EMOJI_INIT);
-            log.info("Registering SportyBet Window for Bet placing");
+            log.info("Registering OneWin Window for Bet placing");
             orchestrator.registerWorker(BOOKMAKER, taskQueue);
 
         } catch (Exception e) {
             log.error("{} {} Failed to initialize Playwright: {}", EMOJI_ERROR, EMOJI_INIT, e.getMessage(), e);
             throw new RuntimeException("Playwright initialization failed", e);
         }
-
-
-//        run();
     }
-
 
     /**
-     * Poll for a betting task from the dispatcher
-     * This method waits for and retrieves the next betting task to process
+     * Poll for a BetLegTask from the orchestrator task queue.
+     * This method blocks until a task is available or timeout occurs.
      *
-     * @return BettingTask object containing game info, market, outcome details, or null if no task available
-     * @throws Exception if polling fails
+     * @return BetLegTask object or null if timeout/interrupted
      */
-    private BettingTask pollTaskFromDispatcher() throws Exception {
-        log.info("{} {} Polling for betting task from dispatcher...", EMOJI_POLL, EMOJI_SEARCH);
-        // TODO: Implementation to poll task from dispatcher
-        // This should communicate with your dispatcher service to get the next betting task
-        return MockBettingTask.createSampleSoftBookTask();
-    }
+    private BetLegTask pollTaskFromDispatcher() {
+        try {
+            log.debug("{} {} Polling for BetLegTask from queue...", EMOJI_POLL, EMOJI_SEARCH);
 
-    // ========================================================================
-    // BET PLACEMENT WORKFLOW WITH INDICATOR
-    // ========================================================================
+            // Poll with timeout to allow periodic checks of running state
+            BetLegTask task = taskQueue.poll(pollIntervalMs, TimeUnit.MILLISECONDS);
+
+            if (task != null) {
+                log.info("{} {} Received BetLegTask | ArbId: {} | Bookmaker: {} | Outcome: {} | Odds: {} | Stake: {}",
+                        EMOJI_SUCCESS, EMOJI_POLL,
+                        task.getArbId(), task.getBookmaker(), task.getOutcome(),
+                        task.getExpectedOdds(), task.getStakeAmount());
+            }
+
+            return task;
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("{} {} Task polling interrupted", EMOJI_WARNING, EMOJI_POLL);
+            return null;
+        } catch (Exception e) {
+            log.error("{} {} Error polling task: {}", EMOJI_ERROR, EMOJI_POLL, e.getMessage(), e);
+            return null;
+        }
+    }
 
     /**
      * Deploy bet - orchestrates the complete bet deployment flow with synchronization
-     * 1. Register intent with sync manager
-     * 2. Navigate to game
-     * 3. Find market
-     * 4. Select outcome
-     * 5. Verify betslip
-     * 6. Mark deployment success
-     * 7. Wait for partner deployment
+     * Uses WindowSyncManager for partner coordination and Phaser for orchestrator signaling
      *
      * @param page The Playwright page instance
-     * @param task The betting task containing all bet details
+     * @param task The BetLegTask containing all bet details
      * @return true if bet is successfully deployed to betslip, false otherwise
-     * @throws Exception if deployment fails
      */
-    private boolean deployBet(Page page, BettingTask task) throws Exception {
-        String arbId = task.taskId();
-        log.info("{} {} Starting bet deployment for task: {}",
-                EMOJI_START, EMOJI_TARGET, arbId);
+    private boolean deployBet(Page page, BetLegTask task) {
+        String arbId = task.getTaskId();
+        log.info("{} {} Starting bet deployment for task: {} | ArbId: {}",
+                EMOJI_START, EMOJI_TARGET, arbId, task.getArbId());
 
         try {
             // ========================================
-            // STEP 1: REGISTER INTENT
+            // STEP 1: REGISTER INTENT WITH PARTNER
             // ========================================
             boolean intentRegistered = syncManager.registerIntent(
                     arbId,
                     BOOKMAKER,
-                    task.expectedOdds()
+                    task.getExpectedOdds()
             );
 
             if (!intentRegistered) {
@@ -228,83 +220,80 @@ public class OneWin implements BettingWindow, Runnable {
             // ========================================
             // STEP 2: NAVIGATE TO GAME
             // ========================================
-            log.info("{} {} [1/4] Navigating to game: {} vs {}",
-                    EMOJI_GAME, EMOJI_NAVIGATION, task.homeTeam(), task.awayTeam());
+            log.info("{} {} [1/4] Navigating to game for outcome: {}",
+                    EMOJI_GAME, EMOJI_NAVIGATION, task.getOutcome());
 
-            boolean gameAvailable = OneWinNavigationUtil.navigateToGame(page, task);
+            boolean gameAvailable = OneWinNavigationUtil.navigateToGame(page, task.getBetLeg());
             randomHumanDelay(800, 1500);
             OneWinNavigationUtil.waitForPageReady(page);
 
-
             if (!gameAvailable) {
                 log.warn("{} {} Game not available: {}", EMOJI_WARNING, EMOJI_GAME, arbId);
-                syncManager.notifyBetFailure(arbId, BOOKMAKER,
-                        "Game not available");
+                syncManager.notifyBetFailure(arbId, BOOKMAKER, "Game not available");
                 syncManager.skipArbAndSync(arbId);
                 return false;
             }
 
             log.info("{} {} Game navigation successful", EMOJI_SUCCESS, EMOJI_GAME);
-
             randomHumanDelay(500, 1000);
 
             // ========================================
-            // STEP 3: FIND MARKET
+            // STEP 3: SELECT AND VERIFY BET
             // ========================================
+            log.info("{} {} [2/4] Selecting and verifying bet", EMOJI_MARKET, EMOJI_CART);
 
-            boolean selectAndVerify = OneWinMarketUtil.selectAndVerifyBetJS(page,task, arbOutcomeService);
-            if(!selectAndVerify) {
+            boolean selectAndVerify = OneWinMarketUtil.selectAndVerifyBetJS(
+                    page, task.getBetLeg(), arbOutcomeService);
+
+            if (!selectAndVerify) {
                 log.warn("{} {} Bet selection and verification failed", EMOJI_WARNING, EMOJI_CART);
-
                 OneWinMarketUtil.clearBetSlip(page);
-                syncManager.notifyBetFailure(arbId, BOOKMAKER,
-                        "Bet selection and verification failed");
+                syncManager.notifyBetFailure(arbId, BOOKMAKER, "Bet selection and verification failed");
                 syncManager.skipArbAndSync(arbId);
                 return false;
-
             }
 
             // ========================================
-            // STEP 6: MARK DEPLOYMENT SUCCESS
+            // STEP 4: MARK DEPLOYMENT SUCCESS
             // ========================================
-//            boolean markedDeployed = syncManager.markDeploymentSuccess(
-//                    arbId,
-//                    BOOKMAKER
-//            );
-//
-//            if (!markedDeployed) {
-//                log.warn("{} {} Arb cancelled after deployment: {}",
-//                        EMOJI_WARNING, EMOJI_SYNC, arbId);
-//                OneWinMarketUtil.clearBetSlip(page);
-//                return false;
-//            }
+            boolean markedDeployed = syncManager.markDeploymentSuccess(
+                    arbId,
+                    BOOKMAKER
+            );
+
+            if (!markedDeployed) {
+                log.warn("{} {} Arb cancelled after deployment: {}",
+                        EMOJI_WARNING, EMOJI_SYNC, arbId);
+                OneWinMarketUtil.clearBetSlip(page);
+                return false;
+            }
 
             log.info("{} {} Deployment marked as successful", EMOJI_SUCCESS, EMOJI_SYNC);
 
             // ========================================
-            // STEP 7: WAIT FOR PARTNER DEPLOYMENT
+            // STEP 5: WAIT FOR PARTNER DEPLOYMENT
             // ========================================
-//            log.info("{} {} Waiting for partner to deploy...", EMOJI_SYNC, EMOJI_CLOCK);
-//
-//            boolean partnerDeployed = syncManager.waitForPartnerDeploymentOrTimeout(
-//                    arbId,
-//                    BOOKMAKER,
-//                    Duration.ofSeconds(deployTimeout)
-//            );
-//
-//            if (!partnerDeployed) {
-//                log.warn("{} {} Partner deployment failed or timeout", EMOJI_WARNING, EMOJI_SYNC);
-//                OneWinMarketUtil.clearBetSlip(page);
-//                // Partner will handle cleanup and arb killing
-//                return false;
-//            }
+            log.info("{} {} [3/4] Waiting for partner to deploy...", EMOJI_SYNC, EMOJI_CLOCK);
+
+            boolean partnerDeployed = syncManager.waitForPartnerDeploymentOrTimeout(
+                    arbId,
+                    BOOKMAKER,
+                    Duration.ofSeconds(deployTimeout)
+            );
+
+            if (!partnerDeployed) {
+                log.warn("{} {} Partner deployment failed or timeout", EMOJI_WARNING, EMOJI_SYNC);
+                OneWinMarketUtil.clearBetSlip(page);
+                // Partner will handle cleanup and arb killing
+                return false;
+            }
 
             log.info("{} {} Both windows DEPLOYED - ready for simultaneous placement!",
                     EMOJI_SUCCESS, EMOJI_ROCKET);
 
             randomHumanDelay(200, 400);
 
-            log.info("{} {} Bet deployment completed successfully for task: {}",
+            log.info("{} {} [4/4] Bet deployment completed successfully for task: {}",
                     EMOJI_SUCCESS, EMOJI_ROCKET, arbId);
             return true;
 
@@ -325,60 +314,216 @@ public class OneWin implements BettingWindow, Runnable {
                         EMOJI_WARNING, EMOJI_CART, clearEx.getMessage());
             }
 
-            throw e;
+            return false;
         }
     }
 
     /**
-     * Human-like random delay to avoid bot detection
-     *
-     * @param minMs Minimum delay in milliseconds
-     * @param maxMs Maximum delay in milliseconds
-     */
-    private void randomHumanDelay(long minMs, long maxMs) {
-        try {
-            long delay = minMs + ThreadLocalRandom.current().nextLong(maxMs - minMs + 1);
-            Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.warn("Delay interrupted");
-        }
-    }
-
-    /**
-     * Handle successful bet placement
-     * Logs success and notifies dispatcher
-     *
-     * @param task The successfully placed betting task
-     */
-    private void handleBetSuccess(BettingTask task) {
-        log.info("{} {} Bet successfully placed for task {}",
-                EMOJI_SUCCESS, EMOJI_MONEY, task.taskId());
-        // TODO: Notify dispatcher of success
-        // TODO: Update task status to completed
-    }
-
-    /**
-     * Handle bet placement failure
-     * Logs error, clears betslip, and prepares for next task
+     * Execute the complete bet placement workflow for a BetLegTask.
+     * This method handles:
+     * 1. Deployment (with partner synchronization via WindowSyncManager)
+     * 2. Bet placement
+     * 3. Partner coordination and rollback if needed
+     * 4. Phaser signaling (to unblock orchestrator)
      *
      * @param page The Playwright page instance
-     * @param task The failed betting task
-     * @param error The exception that caused the failure
+     * @param task The BetLegTask to execute
      */
-    private void handleBetFailure(Page page, BettingTask task, Exception error) {
-        log.error("{} {} Bet placement failed for task {}: {}",
-                EMOJI_ERROR, EMOJI_BET, task.taskId(), error.getMessage());
+    private void executeBetLegTask(Page page, BetLegTask task) {
+        String arbId = task.getTaskId();
+        log.info("{} {} Executing BetLegTask | {} | Attempt: 1/{}",
+                EMOJI_START, EMOJI_TARGET, task.getSummary(), task.getMaxRetries());
 
-        try {
-            OneWinMarketUtil.clearBetSlip(page);
-        } catch (Exception e) {
-            log.warn("{} {} Failed to clear betslip after error: {}",
-                    EMOJI_WARNING, EMOJI_CART, e.getMessage());
+        int attempt = 0;
+        boolean success = false;
+        String resultMessage = null;
+        String betId = null;
+
+        while (attempt < task.getMaxRetries() && !success) {
+            attempt++;
+
+            try {
+                log.info("{} {} Attempt {}/{} for ArbId: {}",
+                        EMOJI_BET, EMOJI_SYNC, attempt, task.getMaxRetries(), task.getArbId());
+
+                // ========================================
+                // STEP 1: DEPLOY BET TO BETSLIP (with partner sync)
+                // ========================================
+                boolean deployed = deployBet(page, task);
+
+                if (!deployed) {
+                    resultMessage = String.format("Deployment failed on attempt %d/%d",
+                            attempt, task.getMaxRetries());
+                    log.warn("{} {} {}", EMOJI_WARNING, EMOJI_BET, resultMessage);
+
+                    if (attempt < task.getMaxRetries()) {
+                        long backoffMs = task.getRetryBackoff().toMillis() * attempt;
+                        log.info("{} {} Retrying after {}ms....", EMOJI_CLOCK, EMOJI_SYNC, backoffMs);
+                        Thread.sleep(backoffMs);
+                        continue;
+                    }
+                    break;
+                }
+
+                log.info("{} {} Bet deployed successfully - ready for placement",
+                        EMOJI_SUCCESS, EMOJI_ROCKET);
+
+                // ========================================
+                // STEP 2: PLACE THE BET (SYNCHRONIZED)
+                // ========================================
+                log.info("{} {} SIMULTANEOUS BETTING | ArbId: {} | Bookmaker: {}",
+                        EMOJI_MONEY, EMOJI_BET, task.getArbId(), BOOKMAKER);
+
+                boolean betPlaced = OneWinMarketUtil.placeBet(
+                        page, task.getBetLeg(), arbOutcomeService);
+
+                // Generate/extract bet ID
+                betId = "BET_" + System.currentTimeMillis(); // TODO: Extract actual bet ID
+
+                if (!betPlaced) {
+                    resultMessage = String.format("Bet placement failed on attempt %d/%d",
+                            attempt, task.getMaxRetries());
+                    log.warn("{} {} {}", EMOJI_WARNING, EMOJI_MONEY, resultMessage);
+
+                    // Notify partner of failure
+                    syncManager.notifyBetFailure(task.getTaskId(), BOOKMAKER, "Placement failed");
+
+                    // Wait for partner to complete their attempt
+                    syncManager.waitForPartnerBetCompletion(
+                            task.getTaskId(), BOOKMAKER,
+                            Duration.ofSeconds(betTimeoutSeconds + 5));
+
+                    OneWinMarketUtil.clearBetSlip(page);
+
+                    if (attempt < task.getMaxRetries()) {
+                        long backoffMs = task.getRetryBackoff().toMillis() * attempt;
+                        log.info("{} {} Retrying after {}ms...", EMOJI_CLOCK, EMOJI_SYNC, backoffMs);
+                        Thread.sleep(backoffMs);
+                        continue;
+                    }
+                    break;
+                }
+
+                log.info("{} {} Bet PLACED | ArbId: {} | Stake: {} | Odds: {}",
+                        EMOJI_SUCCESS, EMOJI_MONEY, task.getTaskId(),
+                        task.getStakeAmount(), task.getExpectedOdds());
+
+                // Notify partner of successful placement
+                syncManager.notifyBetPlaced(task.getTaskId(), BOOKMAKER);
+
+                // Close success modal if present
+                randomHumanDelay(2000, 3000);
+                try {
+                    page.locator("div.m-betslip-success button:has-text('OK')")
+                            .first()
+                            .click(new Locator.ClickOptions().setTimeout(2000));
+                } catch (Exception ignored) {}
+
+                // ========================================
+                // STEP 3: WAIT FOR PARTNER RESULT & HANDLE ROLLBACK
+                // ========================================
+                log.info("{} {} Waiting for partner to complete | ArbId: {}",
+                        EMOJI_SYNC, EMOJI_CLOCK, task.getTaskId());
+
+                WindowSyncManager.PartnerBetResult partnerResult = syncManager.waitForPartnerBetCompletion(
+                        task.getTaskId(), BOOKMAKER,
+                        Duration.ofSeconds(betTimeoutSeconds + 5));
+
+                if (partnerResult.isSuccess()) {
+                    log.info("{} {} BOTH BETS PLACED SUCCESSFULLY | ArbId: {}",
+                            EMOJI_SUCCESS, EMOJI_ROCKET, task.getTaskId());
+
+                    success = true;
+                    resultMessage = String.format("Bet placed successfully | Odds: %.2f | Stake: %.2f | BetId: %s",
+                            task.getExpectedOdds(), task.getStakeAmount(), betId);
+
+                } else {
+                    log.warn("{} {} PARTNER FAILED - INITIATING ROLLBACK | ArbId: {}",
+                            EMOJI_WARNING, EMOJI_SYNC, task.getTaskId());
+
+                    syncManager.requestRollback(task.getTaskId(), BOOKMAKER,
+                            "Partner failed: " + partnerResult.getMessage());
+
+                    boolean rollbackSuccess = performRollback(page, task.getTaskId(), betId);
+                    syncManager.notifyRollbackCompleted(task.getTaskId(), BOOKMAKER, rollbackSuccess);
+
+                    if (rollbackSuccess) {
+                        resultMessage = String.format("Rollback successful - partner failed: %s",
+                                partnerResult.getMessage());
+                        success = false; // Mark as failed since arb didn't complete
+                    } else {
+                        log.error("{} {} ROLLBACK FAILED - MANUAL INTERVENTION REQUIRED | ArbId: {}",
+                                EMOJI_ERROR, EMOJI_WARNING, task.getTaskId());
+                        resultMessage = "CRITICAL: Rollback failed - manual intervention required";
+                        success = false;
+                    }
+                }
+
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                resultMessage = "Task execution interrupted";
+                log.error("{} {} {}", EMOJI_ERROR, EMOJI_WARNING, resultMessage);
+                break;
+
+            } catch (Exception e) {
+                resultMessage = String.format("Exception on attempt %d/%d: %s",
+                        attempt, task.getMaxRetries(), e.getMessage());
+                log.error("{} {} {}", EMOJI_ERROR, EMOJI_BET, resultMessage, e);
+
+                try {
+                    OneWinMarketUtil.clearBetSlip(page);
+                } catch (Exception clearEx) {
+                    log.warn("{} {} Failed to clear betslip: {}",
+                            EMOJI_WARNING, EMOJI_CART, clearEx.getMessage());
+                }
+
+                if (attempt < task.getMaxRetries()) {
+                    try {
+                        long backoffMs = task.getRetryBackoff().toMillis() * attempt;
+                        log.info("{} {} Retrying after {}ms...", EMOJI_CLOCK, EMOJI_SYNC, backoffMs);
+                        Thread.sleep(backoffMs);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
         }
 
-        // TODO: Notify dispatcher of failure
-        // TODO: Update task status to failed
+        // ========================================
+        // STEP 4: COMPLETE THE TASK (SIGNAL PHASER)
+        // This signals the orchestrator that this BetLegTask is done
+        // ========================================
+        if (success) {
+            task.complete(true, resultMessage);
+            log.info("{} {} BetLegTask completed successfully | {} | Phase advanced",
+                    EMOJI_SUCCESS, EMOJI_ROCKET, task.getSummary());
+        } else {
+            task.complete(false, resultMessage != null ? resultMessage : "All retry attempts exhausted");
+            log.error("{} {} BetLegTask failed after {} attempts | {} | Phase advanced",
+                    EMOJI_ERROR, EMOJI_BET, attempt, task.getSummary());
+        }
+
+        // ========================================
+        // STEP 5: UNREGISTER INTENT & RETURN TO SPORT PAGE
+        // ========================================
+        try {
+            syncManager.unRegisterIntent(task.getTaskId(), BOOKMAKER);
+            log.debug("{} {} Intent unregistered", EMOJI_SUCCESS, EMOJI_SYNC);
+        } catch (Exception e) {
+            log.warn("{} {} Failed to unregister intent: {}", EMOJI_WARNING, EMOJI_SYNC, e.getMessage());
+        }
+
+        try {
+            Sport configuredSport = determineConfiguredSport();
+            OneWinNavigationUtil.returnToSportPage(page, configuredSport);
+            OneWinNavigationUtil.waitForPageReady(page);
+            log.info("{} {} Returned to sport page, ready for next task",
+                    EMOJI_SUCCESS, EMOJI_NAVIGATION);
+        } catch (Exception e) {
+            log.warn("{} {} Failed to return to sport page: {}",
+                    EMOJI_WARNING, EMOJI_NAVIGATION, e.getMessage());
+        }
     }
 
     /**
@@ -395,7 +540,7 @@ public class OneWin implements BettingWindow, Runnable {
 
         try {
             // Navigate to bet history/my bets page
-            String myBetsUrl = "https://www.msport.com/ng/web/mybets";
+            String myBetsUrl = "https://1win.ng/mybets"; // Update with actual OneWin URL
             page.navigate(myBetsUrl);
             page.waitForTimeout(2000);
 
@@ -445,22 +590,28 @@ public class OneWin implements BettingWindow, Runnable {
         return false;
     }
 
+    /**
+     * Human-like random delay to avoid bot detection
+     */
+    private void randomHumanDelay(long minMs, long maxMs) {
+        try {
+            long delay = minMs + ThreadLocalRandom.current().nextLong(maxMs - minMs + 1);
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Delay interrupted");
+        }
+    }
 
     /**
      * Determine which sport to navigate to based on configuration
-     * @return The configured sport type
      */
     private Sport determineConfiguredSport() {
-        log.info("{} {} Determining configured sport from settings...", EMOJI_INFO, EMOJI_SEARCH);
-
         if (fetchTableTennisEnabled) {
-            log.info("{} Table Tennis is enabled", EMOJI_TARGET);
             return Sport.TABLE_TENNIS;
         } else if (fetchFootballEnabled) {
-            log.info("{} Football is enabled", EMOJI_TARGET);
             return Sport.FOOTBALL;
         } else if (fetchBasketballEnabled) {
-            log.info("{} Basketball is enabled", EMOJI_TARGET);
             return Sport.BASKETBALL;
         }
 
@@ -474,7 +625,6 @@ public class OneWin implements BettingWindow, Runnable {
      */
     private void handleCaptchaScenario() {
         log.warn("{} {} CAPTCHA detected - implementing recovery strategy", EMOJI_WARNING, EMOJI_SYNC);
-
         try {
             Thread.sleep(5000);
             recreateContext();
@@ -486,7 +636,6 @@ public class OneWin implements BettingWindow, Runnable {
 
     /**
      * Wait between retry attempts with exponential backoff
-     * @param attempt Current attempt number
      */
     private void waitBetweenRetries(int attempt) {
         long waitTime = Math.min(2000L * attempt, 10000L);
@@ -505,9 +654,6 @@ public class OneWin implements BettingWindow, Runnable {
     // CONTEXT MANAGEMENT
     // ========================================================================
 
-    /**
-     * Create new browser context
-     */
     private BrowserContext newContext(Browser browser, UserAgentProfile profile) {
         log.info("ViewPort size {} x {}", profile.getViewport().getWidth(), profile.getViewport().getHeight());
         log.info("Headers: {}", getAllHeaders(profile));
@@ -519,9 +665,6 @@ public class OneWin implements BettingWindow, Runnable {
         );
     }
 
-    /**
-     * Get all headers from profile
-     */
     private Map<String, String> getAllHeaders(UserAgentProfile profile) {
         Map<String, String> all = new HashMap<>();
         if (profile.getHeaders().getStandardHeaders() != null) {
@@ -533,9 +676,6 @@ public class OneWin implements BettingWindow, Runnable {
         return all;
     }
 
-    /**
-     * Load or create browser context
-     */
     private BrowserContext loadOrCreateContext() {
         profile = profileManager.getNextProfile();
         Path contextFilePath = Paths.get(contextPath, CONTEXT_FILE);
@@ -572,9 +712,6 @@ public class OneWin implements BettingWindow, Runnable {
         return newContext(browser, profile);
     }
 
-    /**
-     * Save browser context
-     */
     private void saveContext(BrowserContext context) {
         if (context == null) return;
 
@@ -593,10 +730,6 @@ public class OneWin implements BettingWindow, Runnable {
         }
     }
 
-    /**
-     * Recreate browser context
-     * Proper cleanup of all resources before recreating
-     */
     private void recreateContext() {
         log.info("{} {} Recreating browser context...", EMOJI_SYNC, EMOJI_INIT);
         isLoggedIn.set(false);
@@ -643,9 +776,6 @@ public class OneWin implements BettingWindow, Runnable {
     // MAIN ENTRY POINTS
     // ========================================================================
 
-    /**
-     * Main entry point - runs the betting window with retry logic
-     */
     @Override
     public void run() {
         int attempt = 0;
@@ -721,15 +851,13 @@ public class OneWin implements BettingWindow, Runnable {
         }
     }
 
-
-
     /**
      * Main window entry method - orchestrates the complete betting flow
      *
      * Flow:
      * 1. Initial setup: Navigate to bookmaker, login, go to sport page
-     * 2. Continuous loop: Poll tasks -> Navigate to game -> Place bet -> Return to sport page
-     * 3. Loop continues until window is stopped or max retries reached
+     * 2. Continuous loop: Poll BetLegTasks -> Execute with partner sync -> Signal orchestrator via Phaser
+     * 3. Loop continues until window is stopped
      */
     private void windowEntry() throws Exception {
         Page page = null;
@@ -794,108 +922,61 @@ public class OneWin implements BettingWindow, Runnable {
             final int maxConsecutiveFailures = 5;
 
             while (isRunning.get() && !isPaused.get()) {
-                BettingTask task = null;
+                BetLegTask task = null;
+
                 try {
                     randomHumanDelay(1000, 2500);
-                    // 1. Poll for task
-                    log.info("{} {} Polling for new betting task...", EMOJI_POLL, EMOJI_CLOCK);
+
+                    // Poll for BetLegTask from orchestrator queue
                     task = pollTaskFromDispatcher();
+
                     if (task == null) {
-                        Thread.sleep(pollIntervalMs);
+                        // No task available, continue polling
                         continue;
                     }
-                    log.info("{} {} Received betting task: {}", EMOJI_SUCCESS, EMOJI_POLL, task.taskId());
 
-                    // 2. Mark bet in progress
+                    // Mark bet in progress
                     isBetInProgress.set(true);
 
-                    // 3. DEPLOY: Full pre-placement + sync with partner
-                    if (!deployBet(page, task)) {
-                        log.warn("{} {} Deployment failed or cancelled - skipping task {}", EMOJI_WARNING, EMOJI_TARGET, task.taskId());
-                        isBetInProgress.set(false);
-                        consecutiveFailures++;
-//                        continue;
-                        return;
-                    }
+                    // Execute the complete BetLegTask workflow
+                    // - Deploy with WindowSyncManager partner coordination
+                    // - Place bet
+                    // - Handle rollback if partner fails
+                    // - Signal orchestrator via Phaser (task.complete())
+                    executeBetLegTask(page, task);
 
-                    // 4. PLACE THE BET (both sides are now synchronized and ready)
-                    log.info("🚀 SIMULTANEOUS BETTING | ArbId: {} | Bookmaker: MSPORT", task.taskId());
-                    boolean betPlaced = OneWinMarketUtil.placeBet(page, task, arbOutcomeService);
+                    // Reset consecutive failures on successful task processing
+                    consecutiveFailures = 0;
 
-                    // Placeholder bet ID - replace with actual extraction logic
-                    String betId = "BET_" + System.currentTimeMillis();
+                } catch (Exception e) {
+                    log.error("{} {} Unexpected error processing BetLegTask: {}",
+                            EMOJI_ERROR, EMOJI_WARNING, e.getMessage(), e);
 
-                    if (!betPlaced) {
-                        log.warn("❌ Bet placement failed | ArbId: {}", task.taskId());
-                        syncManager.notifyBetFailure(task.taskId(), BOOKMAKER, "Placement failed");
-
-                        syncManager.waitForPartnerBetCompletion(
-                                task.taskId(), BOOKMAKER,
-                                Duration.ofSeconds(betTimeoutSeconds + 5));
-
-                        OneWinMarketUtil.clearBetSlip(page);
-                        isBetInProgress.set(false);
-                        consecutiveFailures++;
-                        continue;
-                    }
-
-                    log.info("✅ Bet PLACED | ArbId: {} | Stake: {} | Odds: {}", task.taskId(),
-                            task.stakeAmount(), task.expectedOdds());
-
-                    syncManager.notifyBetPlaced(task.taskId(), BOOKMAKER);
-
-                    // Close success modal if present
-                    randomHumanDelay(2000, 3000);
-                    try {
-                        page.locator("div.m-betslip-success button:has-text('OK')")
-                                .first()
-                                .click(new Locator.ClickOptions().setTimeout(2000));
-                    } catch (Exception ignored) {}
-
-                    // 5. Wait for partner result & handle rollback if needed
-                    log.info("⏳ Waiting for partner to complete | ArbId: {}", task.taskId());
-                    WindowSyncManager.PartnerBetResult partnerResult = syncManager.waitForPartnerBetCompletion(
-                            task.taskId(), BOOKMAKER,
-                            java.time.Duration.ofSeconds(betTimeoutSeconds + 5));
-
-                    if (partnerResult.isSuccess()) {
-                        log.info("✅ BOTH BETS PLACED SUCCESSFULLY | ArbId: {}", task.taskId());
-                        handleBetSuccess(task);
-                        consecutiveFailures = 0;
-                    } else {
-                        log.warn("⚠️ PARTNER FAILED - INITIATING ROLLBACK | ArbId: {}", task.taskId());
-                        syncManager.requestRollback(task.taskId(), BOOKMAKER,
-                                "Partner failed: " + partnerResult.getMessage());
-                        boolean rollbackSuccess = performRollback(page, task.taskId(), betId);
-                        syncManager.notifyRollbackCompleted(task.taskId(), BOOKMAKER, rollbackSuccess);
-                        if (!rollbackSuccess) {
-                            log.error("❌ ROLLBACK FAILED - MANUAL INTERVENTION REQUIRED | ArbId: {}", task.taskId());
+                    // If task exists but wasn't completed, signal failure to orchestrator
+                    if (task != null) {
+                        try {
+                            task.fail(e);
+                            log.info("{} {} Task failure signaled to orchestrator via Phaser",
+                                    EMOJI_WARNING, EMOJI_SYNC);
+                        } catch (Exception failEx) {
+                            log.error("{} {} Failed to signal task failure: {}",
+                                    EMOJI_ERROR, EMOJI_BET, failEx.getMessage());
                         }
                     }
 
-                    // 6. Return to sport page for next task
-                    OneWinNavigationUtil.returnToSportPage(page, configuredSport);
-                    OneWinNavigationUtil.waitForPageReady(page);
-                    log.info("{} {} Returned to sport page, ready for next task", EMOJI_SUCCESS, EMOJI_NAVIGATION);
-
-                } catch (Exception e) {
-                    log.error("{} {} Unexpected error processing task: {}", EMOJI_ERROR, EMOJI_WARNING, e.getMessage(), e);
-                    if (task != null) {
-                        handleBetFailure(page, task, e);
-                    }
                     consecutiveFailures++;
+
                 } finally {
                     isBetInProgress.set(false);
-                    if (task != null) {
-                        syncManager.unRegisterIntent(task.taskId(), BOOKMAKER);
-                    }
                 }
 
-                // Recovery from too many failures
+                // Recovery from too many consecutive failures
                 if (consecutiveFailures >= maxConsecutiveFailures) {
-                    log.warn("{} {} Too many consecutive failures ({}), attempting recovery...", EMOJI_WARNING, EMOJI_SYNC, consecutiveFailures);
+                    log.warn("{} {} Too many consecutive failures ({}), attempting recovery...",
+                            EMOJI_WARNING, EMOJI_SYNC, consecutiveFailures);
                     try {
                         OneWinMarketUtil.clearBetSlip(page);
+                        configuredSport = determineConfiguredSport();
                         OneWinNavigationUtil.returnToSportPage(page, configuredSport);
                         OneWinNavigationUtil.waitForPageReady(page);
                         consecutiveFailures = 0;
@@ -914,8 +995,6 @@ public class OneWin implements BettingWindow, Runnable {
                     }
                     log.info("{} {} Betting loop resumed", EMOJI_SUCCESS, EMOJI_START);
                 }
-
-                Thread.sleep(pollIntervalMs);
             }
 
             log.info("{} {} Betting loop ended normally", EMOJI_INFO, EMOJI_SHUTDOWN);
@@ -941,10 +1020,9 @@ public class OneWin implements BettingWindow, Runnable {
         }
     }
 
-
     @Override
     public void pause() {
-        log.info("{} {} Pausing MSport window...", EMOJI_WARNING, EMOJI_CLOCK);
+        log.info("{} {} Pausing OneWin window...", EMOJI_WARNING, EMOJI_CLOCK);
         isPaused.set(true);
     }
 
@@ -954,13 +1032,13 @@ public class OneWin implements BettingWindow, Runnable {
 
     @Override
     public void resume() {
-        log.info("{} {} Resuming MSport window...", EMOJI_SUCCESS, EMOJI_START);
+        log.info("{} {} Resuming OneWin window...", EMOJI_SUCCESS, EMOJI_START);
         isPaused.set(false);
     }
 
     @Override
     public void stop() {
-        log.info("{} {} Stopping MSport window...", EMOJI_SHUTDOWN, EMOJI_WARNING);
+        log.info("{} {} Stopping OneWin window...", EMOJI_SHUTDOWN, EMOJI_WARNING);
         isRunning.set(false);
         isWindowUpAndRunning.set(false);
         isBetInProgress.set(false);
@@ -978,7 +1056,7 @@ public class OneWin implements BettingWindow, Runnable {
 
     @Override
     public void shutdown() {
-        log.info("{} {} Shutting down MSport window...", EMOJI_SHUTDOWN, EMOJI_TRASH);
+        log.info("{} {} Shutting down OneWin window...", EMOJI_SHUTDOWN, EMOJI_TRASH);
 
         try {
             stop();
@@ -1005,7 +1083,4 @@ public class OneWin implements BettingWindow, Runnable {
             log.error("{} {} Error during shutdown: {}", EMOJI_ERROR, EMOJI_SHUTDOWN, e.getMessage(), e);
         }
     }
-
-
 }
-

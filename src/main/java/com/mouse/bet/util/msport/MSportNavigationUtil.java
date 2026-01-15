@@ -506,11 +506,11 @@ public class MSportNavigationUtil {
      * Wait for page to be fully loaded and ready
      */
     public static void waitForPageReady(Page page) throws Exception {
-        log.info("{} {} Waiting for page to be ready...", EMOJI_CLOCK, EMOJI_HEALTH);
-
-        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
-//        page.waitForFunction("document.readyState === 'complete'");
-        page.waitForSelector("body", new Page.WaitForSelectorOptions().setTimeout(10000));
+//        log.info("{} {} Waiting for page to be ready...", EMOJI_CLOCK, EMOJI_HEALTH);
+//
+//        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+////        page.waitForFunction("document.readyState === 'complete'");
+//        page.waitForSelector("body", new Page.WaitForSelectorOptions().setTimeout(10000));
     }
 
     // Helper methods

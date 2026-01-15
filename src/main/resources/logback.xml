@@ -31,7 +31,66 @@
     <appender name="SPORTY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/window/sporty.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>ogs/window/sporty.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/window/sporty.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="MSPORT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/window/msport.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/window/msport.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="ONEWIN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/window/onewin.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/window/onewin.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="ORCH_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/orchestrator/orchestrator.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/orchestrator/orchestrator.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ORCHCONTROLLER_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/orchestrator/orchestrator-controller.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/orchestrator/orchestrator-controller.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -76,6 +135,51 @@
         </filter>
     </appender>
 
+
+    <appender name="ONEWINNAV_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/nav/onewinnavigationutil.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/nav/onewinnavigationutil-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="MSPORTNAV_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/nav/msportnavigationutil.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/nav/msportnavigationutil-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="SPORTYNAV_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/nav/sportynavigationutil.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/nav/sportynavigationutil-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- ============================================= -->
     <!-- LOGGER CONFIGURATIONS -->
     <!-- ============================================= -->
@@ -89,12 +193,49 @@
 
     <logger name="com.mouse.bet.window.SportyBet" level="DEBUG" additivity="false">
         <appender-ref ref="SPORTY_FILE"/>
-        <appender-ref ref="CONSOLE"/>
+<!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.window.MSport" level="DEBUG" additivity="false">
+        <appender-ref ref="MSPORT_FILE"/>
+<!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.window.OneWin" level="DEBUG" additivity="false">
+        <appender-ref ref="ONEWIN_FILE"/>
+<!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.orchestrator.Orchestrator" level="DEBUG" additivity="false">
+        <appender-ref ref="ORCH_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.controller.OrchestratorController" level="DEBUG" additivity="false">
+        <appender-ref ref="ORCHCONTROLLER_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
     <logger name="com.mouse.bet.controller.ArbitrageController" level="DEBUG" additivity="false">
         <appender-ref ref="ARBCONTROLLER_FILE"/>
-        <appender-ref ref="CONSOLE"/>
+<!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+
+
+    <logger name="com.mouse.bet.util.onewin.OneWinNavigationUtil" level="DEBUG" additivity="false">
+        <appender-ref ref="ONEWINNAV_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.util.msport.MSportNavigationUtil" level="DEBUG" additivity="false">
+        <appender-ref ref="MSPORTNAV_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.util.sporty.SportyNavigationUtil" level="DEBUG" additivity="false">
+        <appender-ref ref="SPORTYNAV_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
     <!-- Root logger (everything else) -->

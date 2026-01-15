@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { TrendingUp, RefreshCw, Menu, Settings, Play, Pause, RotateCw, Database, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../common/Button';
+import {arbitrageApi} from "../../services/api.js";
+
 
 const ArbitrageHeader = ({
                              filteredCount,
@@ -10,29 +12,56 @@ const ArbitrageHeader = ({
                              loading = false
                          }) => {
     const [showMenu, setShowMenu] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [isPollingActive, setIsPollingActive] = useState(false);
     const navigate = useNavigate();
 
-    const handleMenuAction = (action) => {
+    const handleMenuAction = async (action) => {
         setShowMenu(false);
 
-        switch(action) {
-            case 'config':
-                navigate('/config');
-                break;
-            case 'start-polling':
-                // Handle start polling
-                console.log('Start polling');
-                break;
-            case 'stop-polling':
-                // Handle stop polling
-                console.log('Stop polling');
-                break;
-            case 'cleanup':
-                // Handle cleanup
-                console.log('Cleanup queues');
-                break;
-            default:
-                break;
+        try {
+            setActionLoading(true);
+
+            switch(action) {
+                case 'config':
+                    navigate('/config');
+                    break;
+                case 'start-polling':
+                    console.log('Starting orchestrator...');
+                    const response = await arbitrageApi.orchestrator.startOrchestrator();
+                    console.log('✅ Orchestrator started:', response);
+                    setIsPollingActive(true);
+                    alert('Orchestrator started successfully!');
+                    break;
+                case 'stop-polling':
+                    console.log('Stop polling');
+                    setIsPollingActive(false);
+                    // TODO: Implement stop polling endpoint
+                    break;
+                case 'restart-polling':
+                    console.log('Restart polling');
+                    // TODO: Implement restart polling endpoint
+                    break;
+                case 'cleanup':
+                    console.log('Cleaning up queues...');
+                    await arbitrageApi.orchestrator.forceCleanup();
+                    console.log('✅ Queues cleaned up');
+                    alert('Queues cleaned up successfully!');
+                    break;
+                case 'status':
+                    console.log('Checking system status...');
+                    const status = await arbitrageApi.orchestrator.getStatus();
+                    console.log('System status:', status);
+                    // You might want to navigate to a status page or show a modal
+                    break;
+                default:
+                    break;
+            }
+        } catch (error) {
+            console.error(`❌ Error executing ${action}:`, error);
+            alert(`Error: ${error.message}`);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -53,7 +82,7 @@ const ArbitrageHeader = ({
                     variant="primary"
                     icon={RefreshCw}
                     onClick={onRefresh}
-                    loading={loading}
+                    loading={loading || actionLoading}
                     className="flex-1 sm:flex-initial"
                 >
                     Refresh
@@ -66,6 +95,7 @@ const ArbitrageHeader = ({
                         icon={Menu}
                         onClick={() => setShowMenu(!showMenu)}
                         className="px-2"
+                        disabled={actionLoading}
                     />
 
                     {/* Dropdown Menu */}
@@ -89,9 +119,10 @@ const ArbitrageHeader = ({
                                     <MenuDivider />
                                     <MenuItem
                                         icon={Play}
-                                        label="Start Polling"
-                                        description="Begin auto-polling"
+                                        label="Start Orchestrator"
+                                        description="Initialize Betting Engine"
                                         onClick={() => handleMenuAction('start-polling')}
+                                        isActive={isPollingActive}
                                     />
                                     <MenuItem
                                         icon={Pause}
@@ -129,16 +160,24 @@ const ArbitrageHeader = ({
     );
 };
 
-const MenuItem = ({ icon: Icon, label, description, onClick, danger = false }) => (
+const MenuItem = ({ icon: Icon, label, description, onClick, danger = false, isActive = false }) => (
     <button
         onClick={onClick}
         className={`w-full px-3 py-2 flex items-start gap-2 hover:bg-gray-50 transition-colors ${
             danger ? 'hover:bg-red-50' : ''
         }`}
     >
-        <Icon className={`mt-0.5 flex-shrink-0 ${danger ? 'text-red-600' : 'text-gray-600'}`} size={16} />
+        <div className="relative mt-0.5 flex-shrink-0">
+            <Icon className={`${danger ? 'text-red-600' : 'text-gray-600'}`} size={16} />
+            {isActive && (
+                <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+            )}
+        </div>
         <div className="text-left flex-1">
-            <div className={`text-sm font-medium ${danger ? 'text-red-900' : 'text-gray-900'}`}>
+            <div className={`text-sm font-medium ${danger ? 'text-red-900' : 'text-gray-900'} ${isActive ? 'text-green-700' : ''}`}>
                 {label}
             </div>
             <div className="text-xs text-gray-500 mt-0.5">{description}</div>

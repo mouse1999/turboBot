@@ -16,22 +16,140 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * REST Controller for managing and monitoring the Orchestrator
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/orchestrator")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class OrchestratorController {
 
     private final Orchestrator orchestrator;
     private final ArbitrageRepository arbitrageRepository;
+
+    /**
+     * Start the orchestrator
+     * POST /api/orchestrator/start
+     */
+    @PostMapping("/orchestrator/start")
+    public ResponseEntity<Map<String, Object>> startOrchestrator() {
+        log.info("Starting orchestrator via API");
+
+        try {
+            orchestrator.start();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Orchestrator started successfully");
+            response.put("queueStats", orchestrator.getQueueStats());
+            response.put("registeredWorkers", orchestrator.getRegisteredWorkers().size());
+            response.put("timestamp", LocalDateTime.now());
+
+            log.info("Orchestrator started successfully | Workers: {}",
+                    orchestrator.getRegisteredWorkers().size());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error starting orchestrator | Error: {}", e.getMessage(), e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "Failed to start orchestrator");
+            errorResponse.put("message", e.getMessage());
+            errorResponse.put("timestamp", LocalDateTime.now());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    /**
+     * Stop the orchestrator
+     * POST /api/orchestrator/stop
+     */
+    @PostMapping("/orchestrator/stop")
+    public ResponseEntity<Map<String, Object>> stopOrchestrator() {
+        log.info("Stopping orchestrator via API");
+
+        try {
+            Orchestrator.QueueStats beforeStats = orchestrator.getQueueStats();
+            orchestrator.stop();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Orchestrator stopped successfully");
+            response.put("queueStatsBeforeStop", beforeStats);
+            response.put("timestamp", LocalDateTime.now());
+
+            log.info("Orchestrator stopped successfully | QueueStats: {}", beforeStats);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error stopping orchestrator | Error: {}", e.getMessage(), e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "Failed to stop orchestrator");
+            errorResponse.put("message", e.getMessage());
+            errorResponse.put("timestamp", LocalDateTime.now());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    /**
+     * Restart the orchestrator (stop then start)
+     * POST /api/orchestrator/restart
+     */
+    @PostMapping("/orchestrator/restart")
+    public ResponseEntity<Map<String, Object>> restartOrchestrator() {
+        log.info("Restarting orchestrator via API");
+
+        try {
+            Orchestrator.QueueStats beforeStats = orchestrator.getQueueStats();
+
+            // Stop
+            orchestrator.stop();
+            log.info("Orchestrator stopped for restart");
+
+            // Small delay to ensure clean shutdown
+            Thread.sleep(1000);
+
+            // Start
+            orchestrator.start();
+            log.info("Orchestrator started after restart");
+
+            Orchestrator.QueueStats afterStats = orchestrator.getQueueStats();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Orchestrator restarted successfully");
+            response.put("before", beforeStats);
+            response.put("after", afterStats);
+            response.put("registeredWorkers", orchestrator.getRegisteredWorkers().size());
+            response.put("timestamp", LocalDateTime.now());
+
+            log.info("Orchestrator restarted successfully | Workers: {}",
+                    orchestrator.getRegisteredWorkers().size());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error restarting orchestrator | Error: {}", e.getMessage(), e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "Failed to restart orchestrator");
+            errorResponse.put("message", e.getMessage());
+            errorResponse.put("timestamp", LocalDateTime.now());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
 
     /**
      * Queue an arbitrage opportunity with custom stakes
@@ -45,7 +163,7 @@ public class OrchestratorController {
      *   }
      * }
      */
-    @PostMapping("/queue-with-stakes")
+    @PostMapping("/orchestrator/queue-with-stakes")
     public ResponseEntity<Map<String, Object>> queueWithStakes(@Valid @RequestBody QueueArbRequest request) {
 
         // Validate request has identifier
@@ -55,7 +173,7 @@ public class OrchestratorController {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Invalid request");
             errorResponse.put("message", "Either 'id' or 'externalId' is required");
-            errorResponse.put("timestamp", java.time.LocalDateTime.now());
+            errorResponse.put("timestamp", LocalDateTime.now());
 
             return ResponseEntity.badRequest().body(errorResponse);
         }
@@ -116,7 +234,7 @@ public class OrchestratorController {
 
             // Update stakes for each outcome
             Map<BookMaker, BigDecimal> updatedStakes = new HashMap<>();
-            Set<BookMaker> missingStakes = new java.util.HashSet<>();
+            Set<BookMaker> missingStakes = new HashSet<>();
 
             for (ArbOutcome outcome : arb.getOutcomes()) {
                 BookMaker bookmaker = outcome.getBookmakerName();
@@ -216,7 +334,7 @@ public class OrchestratorController {
      * POST /api/orchestrator/queue/by-id
      * Body: { "id": 12345 }
      */
-    @PostMapping("/queue/by-id")
+    @PostMapping("/orchestrator/queue/by-id")
     public ResponseEntity<Map<String, Object>> queueById(@RequestBody Map<String, Long> request) {
         Long id = request.get("id");
 
@@ -320,45 +438,10 @@ public class OrchestratorController {
     }
 
     /**
-     * Queue an arbitrage with both id and externalId (flexible)
-     * POST /api/orchestrator/queue
-     * Body: { "id": 12345, "externalId": "ARB-2025-001" }
-     */
-//    @PostMapping("/queue")
-//    public ResponseEntity<Map<String, Object>> queueArbitrage(@RequestBody Map<String, Object> request) {
-//        Long id = request.get("id") != null ?
-//                Long.valueOf(request.get("id").toString()) : null;
-//        String externalId = request.get("externalId") != null ?
-//                request.get("externalId").toString() : null;
-//
-//        if (id == null && externalId == null) {
-//            log.warn("Queue request rejected - missing both id and externalId");
-//
-//            Map<String, Object> errorResponse = new HashMap<>();
-//            errorResponse.put("error", "Invalid request");
-//            errorResponse.put("message", "Either 'id' or 'externalId' is required");
-//            errorResponse.put("timestamp", java.time.LocalDateTime.now());
-//
-//            return ResponseEntity.badRequest().body(errorResponse);
-//        }
-//
-//        // Prefer externalId if provided
-//        if (externalId != null) {
-//            Map<String, String> externalIdRequest = new HashMap<>();
-//            externalIdRequest.put("externalId", externalId);
-//            return externalIdRequest;
-//        } else {
-//            Map<String, Long> idRequest = new HashMap<>();
-//            idRequest.put("id", id);
-//            return queueById(idRequest);
-//        }
-//    }
-
-    /**
      * Get orchestrator status
      * GET /api/orchestrator/status
      */
-    @GetMapping("/status")
+    @GetMapping("/orchestrator/status")
     public ResponseEntity<Map<String, Object>> getStatus() {
         log.info("Fetching orchestrator status");
 
@@ -366,6 +449,7 @@ public class OrchestratorController {
         Set<BookMaker> registeredWorkers = orchestrator.getRegisteredWorkers();
 
         Map<String, Object> status = new HashMap<>();
+//        status.put("running", orchestrator.getRunning().get());
         status.put("queueStats", queueStats);
         status.put("registeredWorkers", registeredWorkers);
         status.put("workerCount", registeredWorkers.size());
@@ -378,7 +462,7 @@ public class OrchestratorController {
      * Get queue statistics
      * GET /api/orchestrator/queue-stats
      */
-    @GetMapping("/queue-stats")
+    @GetMapping("/orchestrator/queue-stats")
     public ResponseEntity<Orchestrator.QueueStats> getQueueStats() {
         log.info("Fetching queue statistics");
         Orchestrator.QueueStats stats = orchestrator.getQueueStats();
@@ -389,7 +473,7 @@ public class OrchestratorController {
      * Get registered workers
      * GET /api/orchestrator/workers
      */
-    @GetMapping("/workers")
+    @GetMapping("/orchestrator/workers")
     public ResponseEntity<Map<String, Object>> getWorkers() {
         log.info("Fetching registered workers");
 
@@ -407,7 +491,7 @@ public class OrchestratorController {
      * Force cleanup of orchestrator queues
      * POST /api/orchestrator/cleanup
      */
-    @PostMapping("/cleanup")
+    @PostMapping("/orchestrator/cleanup")
     public ResponseEntity<Map<String, Object>> forceCleanup() {
         log.info("Forcing orchestrator queue clean-up via API");
 
@@ -440,13 +524,14 @@ public class OrchestratorController {
      * Health check endpoint
      * GET /api/orchestrator/health
      */
-    @GetMapping("/health")
+    @GetMapping("/orchestrator/health")
     public ResponseEntity<Map<String, Object>> health() {
         Orchestrator.QueueStats stats = orchestrator.getQueueStats();
         Set<BookMaker> workers = orchestrator.getRegisteredWorkers();
 
         Map<String, Object> health = new HashMap<>();
         health.put("status", "UP");
+//        health.put("running", orchestrator..get());
         health.put("queueStats", stats);
         health.put("registeredWorkers", workers.size());
         health.put("timestamp", java.time.LocalDateTime.now());
