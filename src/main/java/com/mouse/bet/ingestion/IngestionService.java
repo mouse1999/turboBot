@@ -14,6 +14,7 @@ import com.mouse.bet.mapper.model.MarketOutcome;
 import com.mouse.bet.monitoring.ArbitrageDataValidator;
 import com.mouse.bet.repository.ArbOutcomeRepository;
 import com.mouse.bet.repository.ArbitrageRepository;
+import com.mouse.bet.service.ArbitrageService;
 import com.mouse.bet.transformation.BookMakerMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -72,8 +73,7 @@ public class IngestionService {
 
 
     private final BreakingBetClient breakingBetClient;
-    private final ArbitrageRepository arbitrageRepository;
-    private final ArbOutcomeRepository arbOutcomeRepository;
+    private final ArbitrageService arbitrageService;
     private final ArbitrageDataValidator validator;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -641,10 +641,10 @@ public class IngestionService {
                 log.debug("{} {} Extracted crumbs:-- mid='{}', spec='{}'",
                         EMOJI_CRUMBS, EMOJI_INFO, mid, spec);
 
-                if (mid == null || spec == null) {
+                if (mid == null) {
                     log.error("{} {} {} Missing required crumbs for oneWin: mid={}, spec={}",
                             EMOJI_ERROR, EMOJI_MARKET, EMOJI_CRUMBS, mid, spec);
-                    throw new IllegalArgumentException("Missing required crumbs for SPORTYBET: mid, spec");
+                    throw new IllegalArgumentException("Missing required crumbs for onewin: mid, spec");
                 }
 
                 log.info("{} {} Searching oneWinBetMapper for market: mid='{}', spec='{}'",
@@ -840,150 +840,106 @@ public class IngestionService {
         return arb;
     }
 
+    /**
+     * Save opportunities using thread-safe ArbitrageService
+     * Uses concurrent processing with proper error handling
+     */
     private int saveArbitrageOpportunitiesConcurrent(List<ArbitrageOpportunity> opportunities) {
         log.debug("{} {} Processing {} opportunities for database save...",
                 EMOJI_SAVE, EMOJI_INFO, opportunities.size());
 
-        List<CompletableFuture<SaveResult>> futures = opportunities.stream()
+        if (opportunities.isEmpty()) {
+            log.debug("{} {} No opportunities to save", EMOJI_INFO, EMOJI_SAVE);
+            return 0;
+        }
+
+        // Use CompletableFuture for concurrent saves with ArbitrageService
+        List<CompletableFuture<ArbitrageService.SaveResult>> futures = opportunities.stream()
                 .map(opportunity -> CompletableFuture.supplyAsync(() -> {
                     try {
-                        return saveOrUpdateSingleOpportunity(opportunity);
+                        // Use thread-safe ArbitrageService method
+                        return arbitrageService.saveOrUpdateArbitrage(opportunity);
                     } catch (Exception e) {
-                        log.warn("{} {} Failed to save opportunity: {}",
-                                EMOJI_WARNING, EMOJI_SAVE, e.getMessage());
-                        return SaveResult.SKIPPED;
+                        log.warn("{} {} Failed to save opportunity {}: {}",
+                                EMOJI_WARNING, EMOJI_SAVE,
+                                opportunity.getExternalId(), e.getMessage());
+                        return ArbitrageService.SaveResult.SKIPPED;
                     }
                 }, processingExecutor))
                 .toList();
 
-        List<SaveResult> results = futures.stream()
-                .map(CompletableFuture::join)
-                .toList();
+        // Collect results with timeout handling
+        List<ArbitrageService.SaveResult> results = futures.stream()
+                .map(future -> {
+                    try {
+                        return future.get(10, TimeUnit.SECONDS); // Timeout per save
+                    } catch (TimeoutException e) {
+                        log.error("{} {} Save operation timed out", EMOJI_ERROR, EMOJI_SAVE);
+                        future.cancel(true);
+                        return ArbitrageService.SaveResult.SKIPPED;
+                    } catch (Exception e) {
+                        log.error("{} {} Save operation failed: {}",
+                                EMOJI_ERROR, EMOJI_SAVE, e.getMessage());
+                        return ArbitrageService.SaveResult.SKIPPED;
+                    }
+                })
+                .collect(Collectors.toList());
 
-        long savedCount = results.stream().filter(r -> r == SaveResult.SAVED).count();
-        long updatedCount = results.stream().filter(r -> r == SaveResult.UPDATED).count();
-        long skippedCount = results.stream().filter(r -> r == SaveResult.SKIPPED).count();
+        long savedCount = results.stream()
+                .filter(r -> r == ArbitrageService.SaveResult.SAVED)
+                .count();
+        long updatedCount = results.stream()
+                .filter(r -> r == ArbitrageService.SaveResult.UPDATED)
+                .count();
+        long skippedCount = results.stream()
+                .filter(r -> r == ArbitrageService.SaveResult.SKIPPED)
+                .count();
 
         log.info("{} {} {} Database save completed: {} new, {} updated, {} skipped",
-                EMOJI_SUCCESS, EMOJI_CONCURRENT, EMOJI_SAVE, savedCount, updatedCount, skippedCount);
+                EMOJI_SUCCESS, EMOJI_CONCURRENT, EMOJI_SAVE,
+                savedCount, updatedCount, skippedCount);
+
         return (int) (savedCount + updatedCount);
     }
 
-    private SaveResult saveOrUpdateSingleOpportunity(ArbitrageOpportunity opportunity) {
-        if (opportunity.getExternalId() != null) {
-            Optional<ArbitrageOpportunity> existing = arbitrageRepository.findByExternalId(opportunity.getExternalId());
-            if (existing.isPresent()) {
-                ArbitrageOpportunity existingArb = existing.get();
-
-                if (hasSignificantChanges(existingArb, opportunity)) {
-                    // Significant change: Delete old arb completely and save as new
-                    log.debug("{} Significant changes detected for arb {} (age: {}), expiring old and creating new",
-                            EMOJI_WARNING, opportunity.getExternalId(), existingArb.getAgeFormatted());
-
-                    // Mark old arb as expired (outcomes will be cascade deleted via orphanRemoval)
-                    existingArb.setStatus(ArbStatus.EXPIRED);
-                    existingArb.setExpiredAt(LocalDateTime.now());
-                    existingArb.calculateAge(); // Final age calculation
-                    arbitrageRepository.save(existingArb);
-
-                    // Delete the expired arb and its outcomes
-                    arbitrageRepository.delete(existingArb);
-
-                    // Recalculate confidence score for new opportunity
-                    recalculateConfidenceScore(opportunity);
-
-                    // Age will be calculated in @PrePersist (will be 0 for new arb)
-                    arbitrageRepository.save(opportunity);
-                    return SaveResult.SAVED;
-                } else {
-                    // No significant change: Keep existing arb and outcomes, just update metadata
-                    log.debug("{} No significant changes for arb {} (age: {}), updating metadata only",
-                            EMOJI_INFO, opportunity.getExternalId(), existingArb.getAgeFormatted());
-
-                    existingArb.setLastCheckedAt(LocalDateTime.now());
-
-                    // Update confidence score based on current age
-                    recalculateConfidenceScore(existingArb);
-
-                    // Age will be recalculated in @PreUpdate
-                    arbitrageRepository.save(existingArb);
-                    return SaveResult.UPDATED;
-                }
-            }
-        }
-
-        // New arb: Calculate initial confidence score
-        recalculateConfidenceScore(opportunity);
-        // Age will be calculated in @PrePersist (will be 0)
-        arbitrageRepository.save(opportunity);
-        return SaveResult.SAVED;
-    }
-
-    /**
-     * Recalculate confidence score based on current profit and age
-     */
-    private void recalculateConfidenceScore(ArbitrageOpportunity arb) {
-        // Use current age (real-time)
-        long ageSeconds = arb.getCurrentAge();
-
-        BigDecimal profit = arb.getProfitPercentage() != null ? arb.getProfitPercentage() : BigDecimal.ZERO;
-        BigDecimal newScore = calculateConfidenceScore(profit, ageSeconds);
-
-        arb.setConfidenceScore(newScore);
-
-        log.debug("{} Updated confidence score for arb {}: {} (age: {}, profit: {}%)",
-                EMOJI_INFO, arb.getExternalId(), newScore, arb.getAgeFormatted(), profit);
-    }
-
-    private enum SaveResult {
-        SAVED, UPDATED, SKIPPED
-    }
-
-    private boolean hasSignificantChanges(ArbitrageOpportunity existing, ArbitrageOpportunity newData) {
-        Set<Integer> existingBookmakers = existing.getOutcomes().stream()
-                .map(ArbOutcome::getBookmakerId)
-                .collect(Collectors.toSet());
-        Set<Integer> newBookmakers = newData.getOutcomes().stream()
-                .map(ArbOutcome::getBookmakerId)
-                .collect(Collectors.toSet());
-
-        if (!existingBookmakers.equals(newBookmakers)) return true;
-
-        BigDecimal threshold = new BigDecimal("0.05");
-        for (ArbOutcome existingOutcome : existing.getOutcomes()) {
-            ArbOutcome matchingNew = newData.getOutcomes().stream()
-                    .filter(o -> o.getBookmakerId().equals(existingOutcome.getBookmakerId()))
-                    .findFirst()
-                    .orElse(null);
-            if (matchingNew != null) {
-                BigDecimal diff = existingOutcome.getOdds().subtract(matchingNew.getOdds()).abs();
-                if (diff.compareTo(threshold) > 0) return true;
-            }
-        }
-        return false;
-    }
+    // === CONFIDENCE SCORE CALCULATION ===
 
     private BigDecimal calculateConfidenceScore(BigDecimal profit, Long ageSeconds) {
         BigDecimal score = BigDecimal.valueOf(100);
+
+        // Profit factor
         if (profit.compareTo(BigDecimal.valueOf(2)) < 0) {
             score = score.multiply(BigDecimal.valueOf(0.7));
         }
+
+        // Age factor
         if (ageSeconds > 300) {
             score = score.multiply(BigDecimal.valueOf(0.5));
         } else if (ageSeconds > 60) {
             score = score.multiply(BigDecimal.valueOf(0.8));
         }
+
         return score.setScale(2, RoundingMode.HALF_UP);
     }
 
+    // === STATISTICS ===
+
     private void logStatistics() {
         try {
-            long activeCount = arbitrageRepository.countActiveArbs();
-            BigDecimal avgProfit = arbitrageRepository.getAverageProfitPercentage();
+            ArbitrageService.ArbStatistics stats = arbitrageService.getStatistics();
+
             log.info("{} {} Current Statistics:", EMOJI_STATS, EMOJI_INFO);
-            log.info("{} Active Arbs: {}", EMOJI_STATS, activeCount);
+            log.info("{} Total Active: {}", EMOJI_STATS, stats.totalActive());
+            log.info("{} Fresh Active: {} ({}%)", EMOJI_STATS,
+                    stats.freshActive(),
+                    String.format("%.1f", stats.freshPercentage()));
+            log.info("{} Stale Active: {} ({}%)", EMOJI_STATS,
+                    stats.staleActive(),
+                    String.format("%.1f", stats.stalePercentage()));
             log.info("{} Average Profit: {}%", EMOJI_STATS,
-                    avgProfit != null ? avgProfit.setScale(2, RoundingMode.HALF_UP) : "N/A");
+                    stats.averageProfit() != null
+                            ? stats.averageProfit().setScale(2, RoundingMode.HALF_UP)
+                            : "N/A");
         } catch (Exception e) {
             log.debug("Could not retrieve statistics: {}", e.getMessage());
         }
@@ -991,6 +947,10 @@ public class IngestionService {
 
     public boolean isPollingActive() {
         return isRunning;
+    }
+
+    public boolean isCurrentlyProcessing() {
+        return isProcessing;
     }
 
 

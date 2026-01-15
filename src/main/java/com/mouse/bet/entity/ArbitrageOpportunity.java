@@ -37,6 +37,12 @@ public class ArbitrageOpportunity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // ✅ CRITICAL: Add @Version for optimistic locking
+    @Version
+    @Column(name = "version")
+    private Long version;
+
+
     @Column(name = "external_id", unique = true, length = 500)
     private String externalId;
 

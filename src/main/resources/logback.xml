@@ -180,6 +180,51 @@
         </encoder>
     </appender>
 
+
+
+    <appender name="ONEWINMRK_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/onewinmarketutil.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/onewinmarketutil.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MSPORTMRK_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/msportmarketutil.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/msportmarketutil.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="SPORTYMRK_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/sportybetmarketutil.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/sportybetmarketutil.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- ============================================= -->
     <!-- LOGGER CONFIGURATIONS -->
     <!-- ============================================= -->
@@ -235,6 +280,22 @@
 
     <logger name="com.mouse.bet.util.sporty.SportyNavigationUtil" level="DEBUG" additivity="false">
         <appender-ref ref="SPORTYNAV_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+
+    <logger name="com.mouse.bet.util.sporty.SportyMarketUtil" level="DEBUG" additivity="false">
+        <appender-ref ref="SPORTYMRKT_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.util.msport.MSportMarketUtil" level="DEBUG" additivity="false">
+        <appender-ref ref="MSPORTMRKT_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.util.onewin.OneWinMarketUtil" level="DEBUG" additivity="false">
+        <appender-ref ref="ONEWINMRKT_FILE"/>
         <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 

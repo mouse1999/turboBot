@@ -27,6 +27,12 @@ public class ArbOutcome {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // ✅ CRITICAL: Add @Version for optimistic locking
+    @Version
+    @Column(name = "version")
+    private Long version;
+
+
     // Link to parent arbitrage
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "arbitrage_id", nullable = false)
