@@ -16,8 +16,10 @@ import com.mouse.bet.repository.ArbOutcomeRepository;
 import com.mouse.bet.repository.ArbitrageRepository;
 import com.mouse.bet.service.ArbitrageService;
 import com.mouse.bet.transformation.BookMakerMapper;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -38,7 +40,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Refactored IngestionService:
@@ -379,7 +385,7 @@ public class IngestionService {
                                                         boolean isLive) {
         log.trace("{} {} Converting event {} to arbitrage...", EMOJI_TRANSFORM, EMOJI_INFO, event.getId());
 
-        // Filter: Only 2-way arbs
+        // Validate: Only 2-way arbs
         if (event.getSubEvents() == null || event.getSubEvents().size() != 2) {
             log.debug("{} {} Ignoring event {} - has {} sub-events (only accepting 2-way)",
                     EMOJI_INFO, EMOJI_TRANSFORM, event.getId(),
@@ -390,21 +396,8 @@ public class IngestionService {
         log.trace("{} {} Event {} has 2 sub-events, proceeding with conversion",
                 EMOJI_SUCCESS, EMOJI_TRANSFORM, event.getId());
 
-        // Get profit info from item
-        BigDecimal profitPercentage = item != null ? item.getValue() : BigDecimal.ZERO;
-        BigDecimal roi = item != null ? item.getRoi() : null;
-        String arbId = item != null ? item.getId() : event.getId();
-        String created = item != null ? item.getCreated() : null;
-
-        log.trace("{} {} Event {} profit info: arbId={}, profit={}%, roi={}",
-                EMOJI_INFO, EMOJI_TRANSFORM, event.getId(), arbId, profitPercentage, roi);
-
-        String marketType = "";
-        String outCome = "";  // Save last for generalOutcomeName
-
-        // Store crumbs and oid from first non-1WIN sub-event
-        Map<String, String> savedCrumbs = null;
-        String savedOid = null;
+        // Extract profit info
+        ArbitrageProfitInfo profitInfo = ArbitrageProfitInfo.from(item, event);
 
         // Sort sub-events by bookmaker priority
         List<SubEvent> sortedSubEvents = getSortedSubEvents(event);
@@ -412,192 +405,341 @@ public class IngestionService {
         log.trace("{} {} Processing {} sub-events for event {}...",
                 EMOJI_TRANSFORM, EMOJI_INFO, sortedSubEvents.size(), event.getId());
 
-        List<OutcomeData> outcomes = new ArrayList<>();
-        int subEventIndex = 0;
+        // Process sub-events using streams
+        CrumbsHolder crumbsHolder = new CrumbsHolder();
+        MarketInfoHolder marketHolder = new MarketInfoHolder();
 
-        for (SubEvent subEvent : sortedSubEvents) {
-            subEventIndex++;
+        List<OutcomeData> outcomes = IntStream.range(0, sortedSubEvents.size())
+                .mapToObj(index -> {
+                    SubEvent subEvent = sortedSubEvents.get(index);
+                    log.info("{} {} Processing sub-event {}/{} (ID: {})...",
+                            EMOJI_TRANSFORM, EMOJI_INFO, index + 1, sortedSubEvents.size(), subEvent.getId());
 
-            // ✅ Reset currentOutcome for each iteration
-           String currentOutcome = "";
-           String currentOnewinOutcome = "";
+                    return processSubEvent(subEvent, oddsMap, event, crumbsHolder, marketHolder);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-            log.info("{} {} Processing sub-event {}/{} (ID: {})...",
-                    EMOJI_TRANSFORM, EMOJI_INFO, subEventIndex, sortedSubEvents.size(), subEvent.getId());
+        // Build and return ParsedArbitrageData
+        return buildArbitrageData(event, profitInfo, marketHolder, outcomes, isLive);
+    }
 
-            Odd odd = oddsMap.get(subEvent.getId());
-            BookMaker bookMaker = BookMakerMapper.getBookmakerName(subEvent.getBookmakerId());
+    /**
+     * Immutable holder for profit-related information
+     */
+    @Value
+    @Builder
+    private static class ArbitrageProfitInfo {
+        String arbId;
+        BigDecimal profitPercentage;
+        BigDecimal roi;
+        LocalDateTime created;
+        List<Integer> groupsIds;
 
-            log.info("{} {} Sub-event {} bookmaker: {} (ID: {})",
-                    EMOJI_INFO, EMOJI_TRANSFORM, subEvent.getId(), bookMaker, subEvent.getBookmakerId());
-
-            BigDecimal oddsValue = BigDecimal.valueOf(2.00);
-            BigDecimal previousOdds = null;
-            Boolean initiator = false;
-            LocalDateTime updated = null;
-            String index = "";
-            MarketOutcome marketOutcome = null;
-
-            if (odd != null) {
-                log.trace("{} {} Found odds for sub-event {}: value={}, prev={}",
-                        EMOJI_SUCCESS, EMOJI_TRANSFORM, subEvent.getId(), odd.getValue(), odd.getPrev());
-
-                if (odd.getValue() != null && odd.getValue().compareTo(BigDecimal.ZERO) > 0) {
-                    oddsValue = odd.getValue();
-                    log.trace("{} {} Using odds value: {}", EMOJI_SUCCESS, EMOJI_TRANSFORM, oddsValue);
-                } else {
-                    log.debug("{} {} Odds masked for sub_event_id: {} (bookmaker: {})",
-                            EMOJI_WARNING, EMOJI_TRANSFORM, subEvent.getId(), subEvent.getBookmakerId());
-                }
-
-                previousOdds = odd.getPrev();
-                initiator = odd.getInitiator();
-                index = odd.getIndex();
-
-                log.info("{} {} {} Extracting crumbs for sub-event {} (bookmaker: {})...",
-                        EMOJI_CRUMBS, EMOJI_MARKET, EMOJI_INFO, subEvent.getId(), bookMaker);
-
-                // Process based on bookmaker type
-                if (bookMaker.equals(BookMaker._1WIN)) {
-                    // Handle 1WIN: use saved crumbs from first non-1WIN bookmaker
-                    if (savedCrumbs != null && savedOid != null) {
-                        log.info("{} {} {} Using SAVED crumbs and oid='{}' for 1WIN bookmaker",
-                                EMOJI_SUCCESS, EMOJI_CRUMBS, EMOJI_INFO, savedOid);
-
-                        try {
-                            marketOutcome = getMarketOutcome(bookMaker, savedCrumbs);
-
-                            if (marketOutcome != null) {
-                                String oppositeOid = OppositeOutcomeMapper.getOppositeKey(savedOid);
-                                log.info("XXXX ---- obtained opposite oid new: {}, old: {}", oppositeOid, savedOid);
-                                marketType = marketOutcome.getName();
-                                currentOnewinOutcome = marketOutcome.getOutcome(oppositeOid);  // ✅ Set current iteration
-//                                outCome = currentOutcome;  // ✅ Save last for generalOutcomeName
-
-                                log.info("{} {} {} Market outcome for 1WIN ✅✅✅: marketType='{}', originalOid='{}', oppositeOid='{}', outcome for other bookie='{}', onewinOutcome ='{}'",
-                                        EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, savedOid, oppositeOid, outCome, currentOnewinOutcome);
-                            } else {
-                                log.warn("{} {} {} Market outcome returned null for 1WIN using saved crumbs",
-                                        EMOJI_WARNING, EMOJI_MARKET, EMOJI_CRUMBS);
-                            }
-                        } catch (Exception e) {
-                            log.error("{} {} {} Failed to get market outcome for 1WIN: {}",
-                                    EMOJI_ERROR, EMOJI_MARKET, EMOJI_CRUMBS, e.getMessage(), e);
-                        }
-                    } else {
-                        log.warn("{} {} {} No saved crumbs/oid available for 1WIN bookmaker",
-                                EMOJI_WARNING, EMOJI_CRUMBS, EMOJI_INFO);
-                    }
-                } else {
-                    // Handle non-1WIN bookmakers: use their own crumbs
-                    Map<String, String> currentCrumbs = odd.getCrumbs();
-
-                    if (currentCrumbs != null && !currentCrumbs.isEmpty()) {
-                        // Save crumbs from first non-1WIN bookmaker for 1WIN to use later
-                        if (savedCrumbs == null) {
-                            savedCrumbs = currentCrumbs;
-                            savedOid = currentCrumbs.get("oid");
-                            log.info("{} {} {} Saved crumbs and oid='{}' from first non-1WIN sub-event (bookmaker: {})",
-                                    EMOJI_SUCCESS, EMOJI_CRUMBS, EMOJI_INFO, savedOid, bookMaker);
-                        }
-
-                        log.debug("{} {} Crumbs found: {} {}", EMOJI_SUCCESS, EMOJI_CRUMBS, currentCrumbs, bookMaker);
-
-                        String currentOid = currentCrumbs.get("oid");
-                        log.trace("{} {} Extracted oid from crumbs: {}", EMOJI_CRUMBS, EMOJI_INFO, currentOid);
-                        log.info("{} {} Attempting to get market outcome for bookmaker: {}", EMOJI_MARKET, EMOJI_INFO, bookMaker);
-
-                        try {
-                            marketOutcome = getMarketOutcome(bookMaker, currentCrumbs);
-
-                            if (marketOutcome != null) {
-                                marketType = marketOutcome.getName();
-                                currentOutcome = marketOutcome.getOutcome(currentOid);  // ✅ Set current iteration
-                                outCome = currentOutcome;  // ✅ Save last for generalOutcomeName
-
-                                log.info("{} {} {} Market outcome resolved: marketType='{}', oid='{}', outcome='{}'",
-                                        EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, currentOid, currentOutcome);
-                            } else {
-                                log.warn("{} {} {} Market outcome returned null for bookmaker: {}",
-                                        EMOJI_WARNING, EMOJI_MARKET, EMOJI_CRUMBS, bookMaker);
-                            }
-                        } catch (Exception e) {
-                            log.error("{} {} {} Failed to get market outcome for bookmaker {}: {}",
-                                    EMOJI_ERROR, EMOJI_MARKET, EMOJI_CRUMBS, bookMaker, e.getMessage(), e);
-                        }
-                    } else {
-                        log.warn("{} {} No crumbs found for sub-event {} (bookmaker: {})",
-                                EMOJI_WARNING, EMOJI_CRUMBS, subEvent.getId(), bookMaker);
-                    }
-                }
-
-                if (odd.getUpdated() != null) {
-                    updated = parseTimestamp(odd.getUpdated(), "yyyy-MM-dd HH:mm:ss");
-                    log.trace("{} {} Parsed updated timestamp: {}", EMOJI_INFO, EMOJI_TRANSFORM, updated);
-                }
-            } else {
-                log.warn("{} {} No odds found for sub_event_id: {}", EMOJI_WARNING, EMOJI_TRANSFORM, subEvent.getId());
-            }
-
-            // ✅ Debug log before building outcome
-//            log.info("BEFORE building outcome - bookMaker: {}, currentOutcome: '{}'", bookMaker, currentOutcome);
-
-            OutcomeData outcome = OutcomeData.builder()
-                    .subEventId(subEvent.getId())
-                    .odds(oddsValue)
-                    .previousOdds(previousOdds)
-                    .initiator(initiator)
-                    .bookmakerId(subEvent.getBookmakerId())
-                    .bookmakerName(bookMaker)
-                    .sport(subEvent.getSport())
-                    .league(subEvent.getLeague())
-                    .marketType(bookMaker == BookMaker.SPORTYBET ? marketType + " " + index : marketType)
-                    .team1(subEvent.getTeam1())
-                    .team2(subEvent.getTeam2())
-                    .progress(subEvent.getProgress())
-                    .originalId(subEvent.getOriginalId())
-                    .reordered(subEvent.getReordered())
-                    .outComeName(bookMaker == BookMaker._1WIN ?
-                            oneWinOutcomeStyle(currentOnewinOutcome, subEvent.getTeam1(), subEvent.getTeam2()) : currentOutcome)  // ✅ Use currentOutcome
-                    .updated(updated)
+        static ArbitrageProfitInfo from(ArbItem item, Event event) {
+            return ArbitrageProfitInfo.builder()
+                    .arbId(item != null ? item.getId() : event.getId())
+                    .profitPercentage(item != null ? item.getValue() : BigDecimal.ZERO)
+                    .roi(item != null ? item.getRoi() : null)
+                    .created(item != null ? parseTimestamp(item.getCreated(), "yyyy-MM-dd HH:mm:ss") : null)
+                    .groupsIds(item != null ? item.getGroupsIds() : null)
                     .build();
+        }
+    }
 
-            outcomes.add(outcome);
+    /**
+     * Mutable holder for sharing crumbs between sub-events
+     */
+    private static class CrumbsHolder {
+        private Map<String, String> savedCrumbs;
+        private String savedOid;
 
-            // ✅ Debug log after building outcome
-            log.info("AFTER building outcome - bookMaker: {}, outcomeName: '{}'",
-                    outcome.getBookmakerName(), outcome.getOutComeName());
-
-            log.trace("{} {} Outcome created: bookmaker={}, odds={}, marketType='{}', outcomeName='{}'",
-                    EMOJI_SUCCESS, EMOJI_TRANSFORM, outcome.getBookmakerName(), outcome.getOdds(),
-                    outcome.getMarketType(), outcome.getOutComeName());
+        void saveCrumbs(Map<String, String> crumbs, String oid) {
+            if (this.savedCrumbs == null) {
+                this.savedCrumbs = crumbs;
+                this.savedOid = oid;
+            }
         }
 
-        // Parse timestamps
-        LocalDateTime createdTime = parseTimestamp(created, "yyyy-MM-dd HH:mm:ss");
+        boolean hasCrumbs() {
+            return savedCrumbs != null && savedOid != null;
+        }
+    }
+
+    /**
+     * Mutable holder for market information
+     */
+    private static class MarketInfoHolder {
+        private String marketType = "";
+        private String lastOutcome = "";
+
+        void updateMarket(String marketType, String outcome) {
+            if (marketType != null) {
+                this.marketType = marketType;
+            }
+            if (outcome != null) {
+                this.lastOutcome = outcome;
+            }
+        }
+    }
+
+    /**
+     * Process a single sub-event and create OutcomeData
+     */
+    private OutcomeData processSubEvent(SubEvent subEvent,
+                                        Map<String, Odd> oddsMap,
+                                        Event event,
+                                        CrumbsHolder crumbsHolder,
+                                        MarketInfoHolder marketHolder) {
+        Odd odd = oddsMap.get(subEvent.getId());
+        BookMaker bookMaker = BookMakerMapper.getBookmakerName(subEvent.getBookmakerId());
+
+        log.info("{} {} Sub-event {} bookmaker: {} (ID: {})",
+                EMOJI_INFO, EMOJI_TRANSFORM, subEvent.getId(), bookMaker, subEvent.getBookmakerId());
+
+        if (odd == null) {
+            log.warn("{} {} No odds found for sub_event_id: {}",
+                    EMOJI_WARNING, EMOJI_TRANSFORM, subEvent.getId());
+            return null;
+        }
+
+        // Extract odds information
+        OddsInfo oddsInfo = extractOddsInfo(odd);
+
+        // Extract market information based on bookmaker type
+        MarketInfo marketInfo = bookMaker == BookMaker._1WIN
+                ? extractOneWinMarketInfo(odd, crumbsHolder, bookMaker)
+                : extractStandardMarketInfo(odd, crumbsHolder, bookMaker);
+
+        // Update market holder
+        marketHolder.updateMarket(marketInfo.marketType, marketInfo.outcome);
+
+        // Determine final outcome name
+        String finalOutcome = bookMaker == BookMaker._1WIN
+                ? oneWinOutcomeStyle(marketInfo.outcome, subEvent.getTeam2(), subEvent.getTeam1())
+                : marketInfo.outcome;
+
+        // Build and return outcome
+        OutcomeData outcome = buildOutcomeData(subEvent, bookMaker, oddsInfo, marketInfo, finalOutcome);
+
+        log.info("✅ Built outcome - bookMaker: {}, outcome: '{}', odds: {}",
+                bookMaker, finalOutcome, oddsInfo.value);
+
+        return outcome;
+    }
+
+    /**
+     * Immutable holder for odds information
+     */
+    @Value
+    @Builder
+    private static class OddsInfo {
+        BigDecimal value;
+        BigDecimal previousValue;
+        Boolean initiator;
+        String index;
+        LocalDateTime updated;
+
+        static OddsInfo from(Odd odd) {
+            return OddsInfo.builder()
+                    .value(Optional.ofNullable(odd.getValue())
+                            .filter(v -> v.compareTo(BigDecimal.ZERO) > 0)
+                            .orElse(BigDecimal.valueOf(2.00)))
+                    .previousValue(odd.getPrev())
+                    .initiator(odd.getInitiator())
+                    .index(removeSinglePrefix(odd.getIndex()))
+                    .updated(parseTimestamp(odd.getUpdated(), "yyyy-MM-dd HH:mm:ss"))
+                    .build();
+        }
+    }
+
+
+    public static String removeSinglePrefix(String input) {
+        if (input == null) {
+            return null;
+        }
+
+        if (input.isEmpty()) {
+            return input;
+        }
+
+        String trimmed = input.trim();
+
+        // Remove only single leading + or - sign
+        if (trimmed.startsWith("+") || trimmed.startsWith("-")) {
+            return trimmed.substring(1);
+        }
+
+        return trimmed;
+    }
+
+    /**
+     * Extract odds information from Odd object
+     */
+    private OddsInfo extractOddsInfo(Odd odd) {
+        log.trace("{} {} Found odds: value={}, prev={}",
+                EMOJI_SUCCESS, EMOJI_TRANSFORM, odd.getValue(), odd.getPrev());
+
+        return OddsInfo.from(odd);
+    }
+
+    /**
+     * Immutable holder for market information
+     */
+    @Value
+    @Builder
+    private static class MarketInfo {
+        String marketType;
+        String outcome;
+
+        static MarketInfo empty() {
+            return MarketInfo.builder().marketType("").outcome("").build();
+        }
+
+        static MarketInfo of(String marketType, String outcome) {
+            return MarketInfo.builder()
+                    .marketType(marketType != null ? marketType : "")
+                    .outcome(outcome != null ? outcome : "")
+                    .build();
+        }
+    }
+
+    /**
+     * Extract market info for standard (non-1WIN) bookmakers
+     */
+    private MarketInfo extractStandardMarketInfo(Odd odd,
+                                                 CrumbsHolder crumbsHolder,
+                                                 BookMaker bookMaker) {
+        Map<String, String> crumbs = odd.getCrumbs();
+
+        if (crumbs == null || crumbs.isEmpty()) {
+            log.warn("{} {} No crumbs found for bookmaker: {}",
+                    EMOJI_WARNING, EMOJI_CRUMBS, bookMaker);
+            return MarketInfo.empty();
+        }
+
+        String oid = crumbs.get("oid");
+
+        // Save crumbs for 1WIN to use later
+        crumbsHolder.saveCrumbs(crumbs, oid);
+
+        log.info("{} {} {} Saved crumbs with oid='{}' for bookmaker: {}",
+                EMOJI_SUCCESS, EMOJI_CRUMBS, EMOJI_INFO, oid, bookMaker);
+
+        // Get market outcome
+        return Optional.ofNullable(getMarketOutcome(bookMaker, crumbs))
+                .map(outcome -> {
+                    String marketType = outcome.getName();
+                    String outcomeName = outcome.getOutcome(oid);
+
+                    log.info("{} {} {} Market resolved: marketType='{}', oid='{}', outcome='{}'",
+                            EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, oid, outcomeName);
+
+                    return MarketInfo.of(marketType, outcomeName);
+                })
+                .orElseGet(() -> {
+                    log.warn("{} {} {} Market outcome returned null for bookmaker: {}",
+                            EMOJI_WARNING, EMOJI_MARKET, EMOJI_CRUMBS, bookMaker);
+                    return MarketInfo.empty();
+                });
+    }
+
+    /**
+     * Extract market info for 1WIN bookmaker using saved crumbs
+     */
+    private MarketInfo extractOneWinMarketInfo(Odd odd,
+                                               CrumbsHolder crumbsHolder,
+                                               BookMaker bookMaker) {
+        if (!crumbsHolder.hasCrumbs()) {
+            log.warn("{} {} {} No saved crumbs available for 1WIN bookmaker",
+                    EMOJI_WARNING, EMOJI_CRUMBS, EMOJI_INFO);
+            return MarketInfo.empty();
+        }
+
+        log.info("{} {} {} Using SAVED crumbs with oid='{}' for 1WIN",
+                EMOJI_SUCCESS, EMOJI_CRUMBS, EMOJI_INFO, crumbsHolder.savedOid);
+
+        return Optional.ofNullable(getMarketOutcome(bookMaker, crumbsHolder.savedCrumbs))
+                .map(outcome -> {
+                    String oppositeOid = OppositeOutcomeMapper.getOppositeKey(crumbsHolder.savedOid);
+                    String marketType = outcome.getName();
+                    String outcomeName = outcome.getOutcome(oppositeOid);
+
+                    log.info("{} {} {} Market outcome for 1WIN: marketType='{}', originalOid='{}', oppositeOid='{}', outcome='{}'",
+                            EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType,
+                            crumbsHolder.savedOid, oppositeOid, outcomeName);
+
+                    return MarketInfo.of(marketType, outcomeName);
+                })
+                .orElseGet(() -> {
+                    log.warn("{} {} {} Market outcome returned null for 1WIN",
+                            EMOJI_WARNING, EMOJI_MARKET, EMOJI_CRUMBS);
+                    return MarketInfo.empty();
+                });
+    }
+
+    /**
+     * Build OutcomeData object
+     */
+    private OutcomeData buildOutcomeData(SubEvent subEvent,
+                                         BookMaker bookMaker,
+                                         OddsInfo oddsInfo,
+                                         MarketInfo marketInfo,
+                                         String finalOutcome) {
+        String marketType = bookMaker == BookMaker.SPORTYBET
+                ? marketInfo.marketType + " " + oddsInfo.index
+                : marketInfo.marketType;
+
+        return OutcomeData.builder()
+                .subEventId(subEvent.getId())
+                .odds(oddsInfo.value)
+                .previousOdds(oddsInfo.previousValue)
+                .initiator(oddsInfo.initiator)
+                .bookmakerId(subEvent.getBookmakerId())
+                .bookmakerName(bookMaker)
+                .sport(subEvent.getSport())
+                .league(subEvent.getLeague())
+                .marketType(marketType)
+                .team1(subEvent.getTeam1())
+                .team2(subEvent.getTeam2())
+                .progress(subEvent.getProgress())
+                .originalId(subEvent.getOriginalId())
+                .reordered(subEvent.getReordered())
+                .outComeName(finalOutcome)
+                .updated(oddsInfo.updated)
+                .build();
+    }
+
+    /**
+     * Build final ParsedArbitrageData object
+     */
+    private ParsedArbitrageData buildArbitrageData(Event event,
+                                                   ArbitrageProfitInfo profitInfo,
+                                                   MarketInfoHolder marketHolder,
+                                                   List<OutcomeData> outcomes,
+                                                   boolean isLive) {
         LocalDateTime matchStart = parseTimestamp(event.getStart(), "yyyy-MM-dd HH:mm");
 
         log.trace("{} {} Parsed timestamps: created={}, matchStart={}",
-                EMOJI_INFO, EMOJI_TRANSFORM, createdTime, matchStart);
+                EMOJI_INFO, EMOJI_TRANSFORM, profitInfo.created, matchStart);
 
-        // Build ParsedArbitrageData from Event
         ParsedArbitrageData parsed = ParsedArbitrageData.builder()
-                .arbId(arbId)
+                .arbId(profitInfo.arbId)
                 .eventId(event.getId())
-                .profitPercentage(profitPercentage)
-                .roi(roi)
-                .generalMarketType(marketType)
-                .generalOutcomeName(outCome)  // ✅ Use outCome (last set value)
-                .groupsIds(item != null ? item.getGroupsIds() : null)
+                .profitPercentage(profitInfo.profitPercentage)
+                .roi(profitInfo.roi)
+                .generalMarketType(marketHolder.marketType)
+                .generalOutcomeName(marketHolder.lastOutcome)
+                .groupsIds(profitInfo.groupsIds)
                 .sportId(event.getSportId())
                 .sportName(BookMakerMapper.getSportName(event.getSportId()))
                 .league(event.getLeague())
                 .team1(event.getTeam1())
                 .team2(event.getTeam2())
                 .matchStart(matchStart)
-                .created(createdTime)
+                .created(profitInfo.created)
                 .isLive(isLive)
-                .progress(outcomes.get(0).getProgress())
+                .progress(!outcomes.isEmpty() ? outcomes.get(0).getProgress() : null)
                 .outcomes(outcomes)
                 .build();
 
@@ -605,13 +747,16 @@ public class IngestionService {
                 EMOJI_SUCCESS, EMOJI_TRANSFORM, EMOJI_MARKET, event.getId(),
                 outcomes.get(0).getBookmakerName(), outcomes.get(0).getOdds(),
                 outcomes.get(1).getBookmakerName(), outcomes.get(1).getOdds(),
-                profitPercentage, marketType, outCome);
+                profitInfo.profitPercentage, marketHolder.marketType, marketHolder.lastOutcome);
 
         return parsed;
     }
 
+    /**
+     * Replace "home"/"away" with actual team names in outcome string
+     */
     private String oneWinOutcomeStyle(String outCome, String homeTeam, String awayTeam) {
-        log.debug("🎯 oneWinOutcomeStyle called - Input: outCome='{}', homeTeam='{}', awayTeam='{}'",
+        log.debug("🎯 oneWinOutcomeStyle - Input: outCome='{}', homeTeam='{}', awayTeam='{}'",
                 outCome, homeTeam, awayTeam);
 
         if (outCome == null) {
@@ -620,30 +765,31 @@ public class IngestionService {
         }
 
         String trimmed = outCome.trim();
-        log.trace("📝 Trimmed outcome: '{}'", trimmed);
 
         // Exact match (fast path)
-        if (homeTeam != null && trimmed.equalsIgnoreCase("home")) {
-            log.info("✅ Exact match 'home' -> replacing with homeTeam: '{}'", homeTeam);
-            return homeTeam;
+        String exactMatch = Stream.of(
+                        new AbstractMap.SimpleEntry<>("home", homeTeam),
+                        new AbstractMap.SimpleEntry<>("away", awayTeam)
+                )
+                .filter(entry -> entry.getValue() != null)
+                .filter(entry -> trimmed.equalsIgnoreCase(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if (exactMatch != null) {
+            log.info("✅ Exact match '{}' -> '{}'", trimmed.toLowerCase(), exactMatch);
+            return exactMatch;
         }
 
-        if (awayTeam != null && trimmed.equalsIgnoreCase("away")) {
-            log.info("✅ Exact match 'away' -> replacing with awayTeam: '{}'", awayTeam);
-            return awayTeam;
-        }
-
-        // Partial replacement (case-insensitive)
+        // Partial replacement
         String result = outCome;
-        log.trace("🔄 Starting partial replacement - initial result: '{}'", result);
 
         if (homeTeam != null) {
             String beforeReplace = result;
             result = replaceIgnoreCase(result, "home", homeTeam);
             if (!beforeReplace.equals(result)) {
                 log.debug("🔄 Replaced 'home' with '{}': '{}' -> '{}'", homeTeam, beforeReplace, result);
-            } else {
-                log.trace("⏭️ No 'home' found to replace");
             }
         }
 
@@ -652,8 +798,6 @@ public class IngestionService {
             result = replaceIgnoreCase(result, "away", awayTeam);
             if (!beforeReplace.equals(result)) {
                 log.debug("🔄 Replaced 'away' with '{}': '{}' -> '{}'", awayTeam, beforeReplace, result);
-            } else {
-                log.trace("⏭️ No 'away' found to replace");
             }
         }
 
@@ -661,22 +805,13 @@ public class IngestionService {
         return result;
     }
 
+    /**
+     * Case-insensitive string replacement
+     */
     private String replaceIgnoreCase(String source, String target, String replacement) {
-        StringBuilder sb = new StringBuilder(source.length());
-        String lowerSource = source.toLowerCase();
-        String lowerTarget = target.toLowerCase();
-
-        int fromIndex = 0;
-        int index;
-
-        while ((index = lowerSource.indexOf(lowerTarget, fromIndex)) != -1) {
-            sb.append(source, fromIndex, index);
-            sb.append(replacement);
-            fromIndex = index + target.length();
-        }
-
-        sb.append(source.substring(fromIndex));
-        return sb.toString();
+        return Pattern.compile(Pattern.quote(target), Pattern.CASE_INSENSITIVE)
+                .matcher(source)
+                .replaceAll(Matcher.quoteReplacement(replacement));
     }
 
 
@@ -811,7 +946,7 @@ public class IngestionService {
         }
     }
 
-    private LocalDateTime parseTimestamp(String timestamp, String pattern) {
+    private static LocalDateTime parseTimestamp(String timestamp, String pattern) {
         if (timestamp == null) return null;
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);

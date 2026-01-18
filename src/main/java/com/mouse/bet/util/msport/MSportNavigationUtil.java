@@ -490,101 +490,106 @@ public class MSportNavigationUtil {
     private static boolean tryClickByLeagueAndTeamTextJs(Page page, String leagueName, String home, String away) {
         log.info("Strategy 3: Searching for match in league '{}': {} vs {}", leagueName, home, away);
         try {
-            // Use JavaScript to find the match quickly with detailed search info and improved normalization
+            // Use JavaScript to find the match and return RELATIVE href
             Object result = page.evaluate("""
-        (params) => {
-            const { leagueName, home, away } = params;
-            const searchLog = [];
+    (params) => {
+        const { leagueName, home, away } = params;
+        const searchLog = [];
+        
+        // Enhanced normalization function to handle hyphens, dots, and special characters
+        function normalize(text) {
+            if (!text) return '';
+            return text.toLowerCase()
+                .replace(/\\s*-\\s*/g, ' ')    // Replace " - " or "-" with space
+                .replace(/[.,]/g, '')           // Remove dots and commas
+                .replace(/\\s+/g, ' ')          // Normalize multiple spaces to single space
+                .trim();
+        }
+        
+        const normalizedLeague = normalize(leagueName);
+        searchLog.push(`Searching for league: '${leagueName}' (normalized: '${normalizedLeague}')`);
+        
+        // Get all tournaments
+        const tournaments = document.querySelectorAll('.m-tournament');
+        searchLog.push(`Total tournaments: ${tournaments.length}`);
+        
+        for (let i = 0; i < tournaments.length; i++) {
+            const tournament = tournaments[i];
             
-            // Enhanced normalization function to handle hyphens, dots, and special characters
-            function normalize(text) {
-                if (!text) return '';
-                return text.toLowerCase()
-                    .replace(/\\s*-\\s*/g, ' ')    // Replace " - " or "-" with space
-                    .replace(/[.,]/g, '')           // Remove dots and commas
-                    .replace(/\\s+/g, ' ')          // Normalize multiple spaces to single space
-                    .trim();
+            // Get tournament title
+            const titleElement = tournament.querySelector('.category-tournament-title');
+            if (!titleElement) {
+                searchLog.push(`Tournament ${i}: No title found`);
+                continue;
             }
             
-            const normalizedLeague = normalize(leagueName);
-            searchLog.push(`Searching for league: '${leagueName}' (normalized: '${normalizedLeague}')`);
+            const tournamentText = titleElement.textContent.replace(/\\s+/g, ' ').trim();
+            const normalizedTournament = normalize(tournamentText);
             
-            // Get all tournaments
-            const tournaments = document.querySelectorAll('.m-tournament');
-            searchLog.push(`Total tournaments: ${tournaments.length}`);
+            // Multiple matching strategies for flexibility
+            const exactMatch = normalizedTournament === normalizedLeague;
+            const containsMatch = normalizedTournament.includes(normalizedLeague) || 
+                                 normalizedLeague.includes(normalizedTournament);
             
-            for (let i = 0; i < tournaments.length; i++) {
-                const tournament = tournaments[i];
+            // Word-based matching: all significant words from league appear in tournament
+            const leagueWords = normalizedLeague.split(' ').filter(word => word.length > 2);
+            const wordMatch = leagueWords.length > 0 && 
+                             leagueWords.every(word => normalizedTournament.includes(word));
+            
+            const matches = exactMatch || containsMatch || wordMatch;
+            
+            if (!matches) {
+                searchLog.push(`Tournament ${i}: '${tournamentText}' (normalized: '${normalizedTournament}') - no match`);
+                continue;
+            }
+            
+            searchLog.push(`Tournament ${i}: '${tournamentText}' (normalized: '${normalizedTournament}') - MATCHED! (league normalized: '${normalizedLeague}')`);
+            
+            // Search for teams in this tournament
+            const matchElements = tournament.querySelectorAll('.m-event .m-teams');
+            searchLog.push(`  - Found ${matchElements.length} matches in this league`);
+            
+            for (let j = 0; j < matchElements.length; j++) {
+                const match = matchElements[j];
+                const teamWrappers = match.querySelectorAll('.m-server-name-wrapper');
                 
-                // Get tournament title
-                const titleElement = tournament.querySelector('.category-tournament-title');
-                if (!titleElement) {
-                    searchLog.push(`Tournament ${i}: No title found`);
-                    continue;
-                }
-                
-                const tournamentText = titleElement.textContent.replace(/\\s+/g, ' ').trim();
-                const normalizedTournament = normalize(tournamentText);
-                
-                // Multiple matching strategies for flexibility
-                const exactMatch = normalizedTournament === normalizedLeague;
-                const containsMatch = normalizedTournament.includes(normalizedLeague) || 
-                                     normalizedLeague.includes(normalizedTournament);
-                
-                // Word-based matching: all significant words from league appear in tournament
-                const leagueWords = normalizedLeague.split(' ').filter(word => word.length > 2);
-                const wordMatch = leagueWords.length > 0 && 
-                                 leagueWords.every(word => normalizedTournament.includes(word));
-                
-                const matches = exactMatch || containsMatch || wordMatch;
-                
-                if (!matches) {
-                    searchLog.push(`Tournament ${i}: '${tournamentText}' (normalized: '${normalizedTournament}') - no match`);
-                    continue;
-                }
-                
-                searchLog.push(`Tournament ${i}: '${tournamentText}' (normalized: '${normalizedTournament}') - MATCHED! (league normalized: '${normalizedLeague}')`);
-                
-                // Search for teams in this tournament
-                const matchElements = tournament.querySelectorAll('.m-event .m-teams');
-                searchLog.push(`  - Found ${matchElements.length} matches in this league`);
-                
-                for (let j = 0; j < matchElements.length; j++) {
-                    const match = matchElements[j];
-                    const teamWrappers = match.querySelectorAll('.m-server-name-wrapper');
+                if (teamWrappers.length >= 2) {
+                    const homeText = teamWrappers[0].querySelector('.tw-w-full.tw-truncate')?.textContent.trim();
+                    const awayText = teamWrappers[1].querySelector('.tw-w-full.tw-truncate')?.textContent.trim();
                     
-                    if (teamWrappers.length >= 2) {
-                        const homeText = teamWrappers[0].querySelector('.tw-w-full.tw-truncate')?.textContent.trim();
-                        const awayText = teamWrappers[1].querySelector('.tw-w-full.tw-truncate')?.textContent.trim();
+                    searchLog.push(`  - Match ${j}: ${homeText} vs ${awayText}`);
+                    
+                    if (homeText && awayText &&
+                        homeText.toLowerCase() === home.toLowerCase() &&
+                        awayText.toLowerCase() === away.toLowerCase()) {
                         
-                        searchLog.push(`  - Match ${j}: ${homeText} vs ${awayText}`);
+                        searchLog.push(`  - TEAMS MATCHED!`);
                         
-                        if (homeText && awayText &&
-                            homeText.toLowerCase() === home.toLowerCase() &&
-                            awayText.toLowerCase() === away.toLowerCase()) {
+                        // Get the link element
+                        const link = match.querySelector('a');
+                        if (link) {
+                            // Return absolute href for direct navigation
+                            const absoluteHref = link.href;
                             
-                            searchLog.push(`  - TEAMS MATCHED!`);
+                            searchLog.push(`  - Match URL: ${absoluteHref}`);
                             
-                            // Return the link's href
-                            const link = match.querySelector('a');
-                            if (link) {
-                                return {
-                                    found: true,
-                                    href: link.href,
-                                    league: tournamentText,
-                                    home: homeText,
-                                    away: awayText,
-                                    searchLog: searchLog
-                                };
-                            }
+                            return {
+                                found: true,
+                                absoluteHref: absoluteHref,
+                                league: tournamentText,
+                                home: homeText,
+                                away: awayText,
+                                searchLog: searchLog
+                            };
                         }
                     }
                 }
             }
-            
-            return { found: false, searchLog: searchLog };
         }
-        """,
+        
+        return { found: false, searchLog: searchLog };
+    }
+    """,
                     Map.of(
                             "leagueName", leagueName,
                             "home", home,
@@ -604,24 +609,30 @@ public class MSportNavigationUtil {
             }
 
             if (Boolean.TRUE.equals(resultMap.get("found"))) {
-                String href = (String) resultMap.get("href");
+                String absoluteHref = (String) resultMap.get("absoluteHref");
                 String foundLeague = (String) resultMap.get("league");
                 String foundHome = (String) resultMap.get("home");
                 String foundAway = (String) resultMap.get("away");
 
                 log.info("✅ Found match in league '{}': {} vs {}", foundLeague, foundHome, foundAway);
-                log.debug("Match URL: {}", href);
+                log.debug("Match URL: {}", absoluteHref);
 
-                // Click the link using CSS selector
-                String selector = String.format("a[href='%s']", href.replace("'", "\\'"));
-                page.click(selector);
+                // Navigate directly using absolute URL
+                try {
+                    log.debug("Navigating directly to match URL...");
 
-                // Wait for navigation
-                page.waitForLoadState(LoadState.NETWORKIDLE,
-                        new Page.WaitForLoadStateOptions().setTimeout(5000));
+                    page.navigate(absoluteHref, new Page.NavigateOptions()
+                            .setTimeout(15000)
+                            .setWaitUntil(WaitUntilState.NETWORKIDLE));
 
-                log.info("Successfully navigated to match page");
-                return true;
+                    log.info("✅ Successfully navigated to match page");
+                    return true;
+
+                } catch (Exception e) {
+                    log.error("❌ Failed to navigate to match page: {}", e.getMessage());
+                    return false;
+                }
+
             } else {
                 log.warn("❌ Match not found: {} vs {} in league '{}'", home, away, leagueName);
                 return false;
@@ -629,6 +640,98 @@ public class MSportNavigationUtil {
 
         } catch (Exception e) {
             log.error("League and team text strategy error: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+
+    // Alternative: Simpler version using direct navigation
+    private static boolean tryClickByLeagueAndTeamTextJsSimple(Page page, String leagueName, String home, String away) {
+        log.info("Strategy 3 (Simple): Searching for match in league '{}': {} vs {}", leagueName, home, away);
+        try {
+            // Use JavaScript to find the match and get absolute URL
+            Object result = page.evaluate("""
+    (params) => {
+        const { leagueName, home, away } = params;
+        
+        function normalize(text) {
+            if (!text) return '';
+            return text.toLowerCase()
+                .replace(/\\s*-\\s*/g, ' ')
+                .replace(/[.,]/g, '')
+                .replace(/\\s+/g, ' ')
+                .trim();
+        }
+        
+        const normalizedLeague = normalize(leagueName);
+        const tournaments = document.querySelectorAll('.m-tournament');
+        
+        for (const tournament of tournaments) {
+            const titleElement = tournament.querySelector('.category-tournament-title');
+            if (!titleElement) continue;
+            
+            const normalizedTournament = normalize(titleElement.textContent);
+            
+            if (normalizedTournament.includes(normalizedLeague) || 
+                normalizedLeague.includes(normalizedTournament)) {
+                
+                const matchElements = tournament.querySelectorAll('.m-event .m-teams');
+                
+                for (const match of matchElements) {
+                    const teamWrappers = match.querySelectorAll('.m-server-name-wrapper');
+                    
+                    if (teamWrappers.length >= 2) {
+                        const homeText = teamWrappers[0].querySelector('.tw-w-full.tw-truncate')?.textContent.trim();
+                        const awayText = teamWrappers[1].querySelector('.tw-w-full.tw-truncate')?.textContent.trim();
+                        
+                        if (homeText && awayText &&
+                            homeText.toLowerCase() === home.toLowerCase() &&
+                            awayText.toLowerCase() === away.toLowerCase()) {
+                            
+                            const link = match.querySelector('a');
+                            if (link) {
+                                return {
+                                    found: true,
+                                    url: link.href  // Get absolute URL
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return { found: false };
+    }
+    """,
+                    Map.of(
+                            "leagueName", leagueName,
+                            "home", home,
+                            "away", away
+                    )
+            );
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> resultMap = (Map<String, Object>) result;
+
+            if (Boolean.TRUE.equals(resultMap.get("found"))) {
+                String url = (String) resultMap.get("url");
+
+                log.info("✅ Found match, navigating to: {}", url);
+
+                // Navigate directly using the URL
+                page.navigate(url, new Page.NavigateOptions()
+                        .setTimeout(15000)
+                        .setWaitUntil(WaitUntilState.NETWORKIDLE));
+
+                log.info("✅ Successfully navigated to match page");
+                return true;
+            } else {
+                log.warn("❌ Match not found: {} vs {} in league '{}'", home, away, leagueName);
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("Simple navigation strategy error: {}", e.getMessage(), e);
             return false;
         }
     }
