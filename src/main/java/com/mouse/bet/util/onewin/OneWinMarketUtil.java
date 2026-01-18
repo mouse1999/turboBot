@@ -451,7 +451,7 @@ public class OneWinMarketUtil {
             log.info("✅ Found exact bet - Market: '{}', Outcome: '{}', Odds: {}, Disabled: {}",
                     foundMarket, foundOutcome, foundOdds, isDisabled);
 
-            takeMarketScreenshot(page, "bet_found");
+//            takeMarketScreenshot(page, "bet_found");
 
             if (isDisabled) {
                 log.warn("⚠️ Bet button is disabled/locked");
