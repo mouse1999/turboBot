@@ -366,6 +366,13 @@ public class IngestionService {
      * LOGIC: Save crumbs and oid from first non-1WIN sub-event,
      * then use them for 1WIN sub-event to get opposite outcome
      */
+    /**
+     * Convert single Event to ParsedArbitrageData
+     * SubEvents become Outcomes
+     *
+     * LOGIC: Save crumbs and oid from first non-1WIN sub-event,
+     * then use them for 1WIN sub-event to get opposite outcome
+     */
     private ParsedArbitrageData convertEventToArbitrage(Event event,
                                                         ArbItem item,
                                                         Map<String, Odd> oddsMap,
@@ -393,7 +400,8 @@ public class IngestionService {
                 EMOJI_INFO, EMOJI_TRANSFORM, event.getId(), arbId, profitPercentage, roi);
 
         String marketType = "";
-        String generalOutcome = "";  // For ParsedArbitrageData only
+        String outCome = "";  // Save last for generalOutcomeName
+        String currentOutcome = "";  // Reset for each iteration
 
         // Store crumbs and oid from first non-1WIN sub-event
         Map<String, String> savedCrumbs = null;
@@ -410,6 +418,10 @@ public class IngestionService {
 
         for (SubEvent subEvent : sortedSubEvents) {
             subEventIndex++;
+
+            // ✅ Reset currentOutcome for each iteration
+            currentOutcome = "";
+
             log.info("{} {} Processing sub-event {}/{} (ID: {})...",
                     EMOJI_TRANSFORM, EMOJI_INFO, subEventIndex, sortedSubEvents.size(), subEvent.getId());
 
@@ -425,9 +437,6 @@ public class IngestionService {
             LocalDateTime updated = null;
             String index = "";
             MarketOutcome marketOutcome = null;
-
-            // ✅ Initialize outcome for THIS iteration only (no overriding between iterations)
-            String currentOutcome = "";
 
             if (odd != null) {
                 log.trace("{} {} Found odds for sub-event {}: value={}, prev={}",
@@ -462,8 +471,8 @@ public class IngestionService {
                                 String oppositeOid = OppositeOutcomeMapper.getOppositeKey(savedOid);
                                 log.info("XXXX ---- obtained opposite oid new: {}, old: {}", oppositeOid, savedOid);
                                 marketType = marketOutcome.getName();
-                                currentOutcome = marketOutcome.getOutcome(oppositeOid);  // ✅ Set current iteration outcome
-                                generalOutcome = currentOutcome;  // Save for ParsedArbitrageData
+                                currentOutcome = marketOutcome.getOutcome(oppositeOid);  // ✅ Set current iteration
+                                outCome = currentOutcome;  // ✅ Save last for generalOutcomeName
 
                                 log.info("{} {} {} Market outcome for 1WIN: marketType='{}', originalOid='{}', oppositeOid='{}', outcome='{}'",
                                         EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, savedOid, oppositeOid, currentOutcome);
@@ -503,8 +512,8 @@ public class IngestionService {
 
                             if (marketOutcome != null) {
                                 marketType = marketOutcome.getName();
-                                currentOutcome = marketOutcome.getOutcome(currentOid);  // ✅ Set current iteration outcome
-                                generalOutcome = currentOutcome;  // Save for ParsedArbitrageData
+                                currentOutcome = marketOutcome.getOutcome(currentOid);  // ✅ Set current iteration
+                                outCome = currentOutcome;  // ✅ Save last for generalOutcomeName
 
                                 log.info("{} {} {} Market outcome resolved: marketType='{}', oid='{}', outcome='{}'",
                                         EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, currentOid, currentOutcome);
@@ -578,7 +587,7 @@ public class IngestionService {
                 .profitPercentage(profitPercentage)
                 .roi(roi)
                 .generalMarketType(marketType)
-                .generalOutcomeName(generalOutcome)  // ✅ Use generalOutcome (last set value)
+                .generalOutcomeName(outCome)  // ✅ Use outCome (last set value)
                 .groupsIds(item != null ? item.getGroupsIds() : null)
                 .sportId(event.getSportId())
                 .sportName(BookMakerMapper.getSportName(event.getSportId()))
@@ -596,7 +605,7 @@ public class IngestionService {
                 EMOJI_SUCCESS, EMOJI_TRANSFORM, EMOJI_MARKET, event.getId(),
                 outcomes.get(0).getBookmakerName(), outcomes.get(0).getOdds(),
                 outcomes.get(1).getBookmakerName(), outcomes.get(1).getOdds(),
-                profitPercentage, marketType, generalOutcome);
+                profitPercentage, marketType, outCome);
 
         return parsed;
     }
