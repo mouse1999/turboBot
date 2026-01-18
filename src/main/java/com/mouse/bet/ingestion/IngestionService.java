@@ -401,7 +401,6 @@ public class IngestionService {
 
         String marketType = "";
         String outCome = "";  // Save last for generalOutcomeName
-        String currentOutcome = "";  // Reset for each iteration
 
         // Store crumbs and oid from first non-1WIN sub-event
         Map<String, String> savedCrumbs = null;
@@ -420,7 +419,8 @@ public class IngestionService {
             subEventIndex++;
 
             // ✅ Reset currentOutcome for each iteration
-            currentOutcome = "";
+           String currentOutcome = "";
+           String currentOnewinOutcome = "";
 
             log.info("{} {} Processing sub-event {}/{} (ID: {})...",
                     EMOJI_TRANSFORM, EMOJI_INFO, subEventIndex, sortedSubEvents.size(), subEvent.getId());
@@ -471,11 +471,11 @@ public class IngestionService {
                                 String oppositeOid = OppositeOutcomeMapper.getOppositeKey(savedOid);
                                 log.info("XXXX ---- obtained opposite oid new: {}, old: {}", oppositeOid, savedOid);
                                 marketType = marketOutcome.getName();
-                                currentOutcome = marketOutcome.getOutcome(oppositeOid);  // ✅ Set current iteration
-                                outCome = currentOutcome;  // ✅ Save last for generalOutcomeName
+                                currentOnewinOutcome = marketOutcome.getOutcome(oppositeOid);  // ✅ Set current iteration
+//                                outCome = currentOutcome;  // ✅ Save last for generalOutcomeName
 
-                                log.info("{} {} {} Market outcome for 1WIN: marketType='{}', originalOid='{}', oppositeOid='{}', outcome='{}'",
-                                        EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, savedOid, oppositeOid, currentOutcome);
+                                log.info("{} {} {} Market outcome for 1WIN ✅✅✅: marketType='{}', originalOid='{}', oppositeOid='{}', outcome for other bookie='{}', onewinOutcome ='{}'",
+                                        EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, savedOid, oppositeOid, outCome, currentOnewinOutcome);
                             } else {
                                 log.warn("{} {} {} Market outcome returned null for 1WIN using saved crumbs",
                                         EMOJI_WARNING, EMOJI_MARKET, EMOJI_CRUMBS);
@@ -540,7 +540,7 @@ public class IngestionService {
             }
 
             // ✅ Debug log before building outcome
-            log.info("BEFORE building outcome - bookMaker: {}, currentOutcome: '{}'", bookMaker, currentOutcome);
+//            log.info("BEFORE building outcome - bookMaker: {}, currentOutcome: '{}'", bookMaker, currentOutcome);
 
             OutcomeData outcome = OutcomeData.builder()
                     .subEventId(subEvent.getId())
@@ -558,7 +558,7 @@ public class IngestionService {
                     .originalId(subEvent.getOriginalId())
                     .reordered(subEvent.getReordered())
                     .outComeName(bookMaker == BookMaker._1WIN ?
-                            oneWinOutcomeStyle(currentOutcome, subEvent.getTeam1(), subEvent.getTeam2()) : currentOutcome)  // ✅ Use currentOutcome
+                            oneWinOutcomeStyle(currentOnewinOutcome, subEvent.getTeam1(), subEvent.getTeam2()) : currentOutcome)  // ✅ Use currentOutcome
                     .updated(updated)
                     .build();
 
