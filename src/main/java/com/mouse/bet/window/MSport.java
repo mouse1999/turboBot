@@ -199,6 +199,8 @@ public class MSport implements BettingWindow, Runnable {
                         EMOJI_SUCCESS, EMOJI_POLL,
                         task.getArbId(), task.getBookmaker(), task.getOutcome(),
                         task.getExpectedOdds(), task.getStakeAmount());
+
+                log.info("{}", task.getArb().getOutcomeBreakdown());
             }
 
             return task;

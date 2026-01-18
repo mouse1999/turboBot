@@ -1,5 +1,6 @@
 package com.mouse.bet.orchestrator.model;
 
+import com.mouse.bet.entity.ArbitrageOpportunity;
 import com.mouse.bet.enums.BookMaker;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +24,8 @@ public class BetLegTask {
 
     /** ArbitrageOpportunity ID for tracking */
     private final Long arbId;
+
+    private ArbitrageOpportunity arb;
 
     /** Bookmaker for this leg */
     private final BookMaker bookmaker;

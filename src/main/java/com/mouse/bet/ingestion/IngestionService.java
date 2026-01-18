@@ -243,7 +243,7 @@ public class IngestionService {
             List<ArbitrageOpportunity> opportunities = transformToEntitiesConcurrent(parsedData);
 
             log.debug("{} {} Saving {} opportunities to database...", EMOJI_SAVE, EMOJI_INFO, opportunities.size());
-            int saved = saveArbitrageOpportunitiesConcurrent(opportunities);
+            int saved = saveArbitrageOpportunitiesSequential(opportunities); // Changed here
 
             long duration = System.currentTimeMillis() - startTime;
             log.info("{} {} {} arbs ingestion completed: {} opportunities saved in {}ms",
@@ -267,7 +267,7 @@ public class IngestionService {
         BreakingBetResponse response = breakingBetClient.fetchLiveArbsAsObject();
         List<ParsedArbitrageData> parsedData = enrichEventsToArbitrages(response, true);
         List<ArbitrageOpportunity> opportunities = transformToEntitiesConcurrent(parsedData);
-        return saveArbitrageOpportunitiesConcurrent(opportunities);
+        return saveArbitrageOpportunitiesSequential(opportunities);
     }
 
     @Transactional
@@ -276,7 +276,7 @@ public class IngestionService {
         BreakingBetResponse response = breakingBetClient.fetchPrematchArbsAsObject();
         List<ParsedArbitrageData> parsedData = enrichEventsToArbitrages(response, false);
         List<ArbitrageOpportunity> opportunities = transformToEntitiesConcurrent(parsedData);
-        return saveArbitrageOpportunitiesConcurrent(opportunities);
+        return saveArbitrageOpportunitiesSequential(opportunities);
     }
 
     // === NEW APPROACH: Event → ArbitrageData, SubEvents → Outcomes ===
@@ -362,6 +362,9 @@ public class IngestionService {
     /**
      * Convert single Event to ParsedArbitrageData
      * SubEvents become Outcomes
+     *
+     * LOGIC: Save crumbs and oid from first non-1WIN sub-event,
+     * then use them for 1WIN sub-event to get opposite outcome
      */
     private ParsedArbitrageData convertEventToArbitrage(Event event,
                                                         ArbItem item,
@@ -380,7 +383,7 @@ public class IngestionService {
         log.trace("{} {} Event {} has 2 sub-events, proceeding with conversion",
                 EMOJI_SUCCESS, EMOJI_TRANSFORM, event.getId());
 
-        // Get profit info from item (may be null if no item for this event)
+        // Get profit info from item
         BigDecimal profitPercentage = item != null ? item.getValue() : BigDecimal.ZERO;
         BigDecimal roi = item != null ? item.getRoi() : null;
         String arbId = item != null ? item.getId() : event.getId();
@@ -390,15 +393,15 @@ public class IngestionService {
                 EMOJI_INFO, EMOJI_TRANSFORM, event.getId(), arbId, profitPercentage, roi);
 
         String marketType = "";
-        String outCome = "";
-        Map<String, String> crumbs = null;
-        String oid = "";
+        String generalOutcome = "";  // For ParsedArbitrageData only
 
+        // Store crumbs and oid from first non-1WIN sub-event
+        Map<String, String> savedCrumbs = null;
+        String savedOid = null;
 
         // Sort sub-events by bookmaker priority
         List<SubEvent> sortedSubEvents = getSortedSubEvents(event);
 
-        // Convert each SubEvent to Outcome
         log.trace("{} {} Processing {} sub-events for event {}...",
                 EMOJI_TRANSFORM, EMOJI_INFO, sortedSubEvents.size(), event.getId());
 
@@ -410,21 +413,21 @@ public class IngestionService {
             log.info("{} {} Processing sub-event {}/{} (ID: {})...",
                     EMOJI_TRANSFORM, EMOJI_INFO, subEventIndex, sortedSubEvents.size(), subEvent.getId());
 
-            // Find odds for this sub-event
             Odd odd = oddsMap.get(subEvent.getId());
             BookMaker bookMaker = BookMakerMapper.getBookmakerName(subEvent.getBookmakerId());
 
             log.info("{} {} Sub-event {} bookmaker: {} (ID: {})",
                     EMOJI_INFO, EMOJI_TRANSFORM, subEvent.getId(), bookMaker, subEvent.getBookmakerId());
 
-            BigDecimal oddsValue = BigDecimal.valueOf(2.00); // Default
+            BigDecimal oddsValue = BigDecimal.valueOf(2.00);
             BigDecimal previousOdds = null;
             Boolean initiator = false;
             LocalDateTime updated = null;
             String index = "";
-
-
             MarketOutcome marketOutcome = null;
+
+            // ✅ Initialize outcome for THIS iteration only (no overriding between iterations)
+            String currentOutcome = "";
 
             if (odd != null) {
                 log.trace("{} {} Found odds for sub-event {}: value={}, prev={}",
@@ -442,51 +445,81 @@ public class IngestionService {
                 initiator = odd.getInitiator();
                 index = odd.getIndex();
 
-                if (!bookMaker.equals(BookMaker._1WIN)) {
-//                    log.info("skip oneWin crumb by using the previous crumb");
-                    crumbs = odd.getCrumbs();
-
-                }
-
                 log.info("{} {} {} Extracting crumbs for sub-event {} (bookmaker: {})...",
                         EMOJI_CRUMBS, EMOJI_MARKET, EMOJI_INFO, subEvent.getId(), bookMaker);
 
-                if (crumbs != null && !crumbs.isEmpty()) {
-                    log.debug("{} {} Crumbs found: {} {}", EMOJI_SUCCESS, EMOJI_CRUMBS, crumbs, bookMaker);
+                // Process based on bookmaker type
+                if (bookMaker.equals(BookMaker._1WIN)) {
+                    // Handle 1WIN: use saved crumbs from first non-1WIN bookmaker
+                    if (savedCrumbs != null && savedOid != null) {
+                        log.info("{} {} {} Using SAVED crumbs and oid='{}' for 1WIN bookmaker",
+                                EMOJI_SUCCESS, EMOJI_CRUMBS, EMOJI_INFO, savedOid);
 
-                    oid = crumbs.get("oid");
-                    log.trace("{} {} Extracted oid from crumbs: {}", EMOJI_CRUMBS, EMOJI_INFO, oid);
+                        try {
+                            marketOutcome = getMarketOutcome(bookMaker, savedCrumbs);
 
+                            if (marketOutcome != null) {
+                                String oppositeOid = OppositeOutcomeMapper.getOppositeKey(savedOid);
+                                log.info("XXXX ---- obtained opposite oid new: {}, old: {}", oppositeOid, savedOid);
+                                marketType = marketOutcome.getName();
+                                currentOutcome = marketOutcome.getOutcome(oppositeOid);  // ✅ Set current iteration outcome
+                                generalOutcome = currentOutcome;  // Save for ParsedArbitrageData
 
-                    log.info("{} {} Attempting to get market outcome for bookmaker: {}",
-                            EMOJI_MARKET, EMOJI_INFO, bookMaker);
-
-                    try {
-                        marketOutcome = getMarketOutcome(bookMaker, crumbs);
-
-                        if (marketOutcome != null) {
-                            marketType = marketOutcome.getName();
-                            if (bookMaker.equals(BookMaker._1WIN)) {
-                                outCome = marketOutcome.getOutcome(OppositeOutcomeMapper.getOppositeKey(oid));
-
-                            }else {
-                                outCome = marketOutcome.getOutcome(oid);
+                                log.info("{} {} {} Market outcome for 1WIN: marketType='{}', originalOid='{}', oppositeOid='{}', outcome='{}'",
+                                        EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, savedOid, oppositeOid, currentOutcome);
+                            } else {
+                                log.warn("{} {} {} Market outcome returned null for 1WIN using saved crumbs",
+                                        EMOJI_WARNING, EMOJI_MARKET, EMOJI_CRUMBS);
                             }
-
-
-                            log.info("{} {} {} Market outcome resolved: marketType='{}', outcome='{}'",
-                                    EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, outCome);
-                        } else {
-                            log.warn("{} {} {} Market outcome returned null for bookmaker: {}",
-                                    EMOJI_WARNING, EMOJI_MARKET, EMOJI_CRUMBS, bookMaker);
+                        } catch (Exception e) {
+                            log.error("{} {} {} Failed to get market outcome for 1WIN: {}",
+                                    EMOJI_ERROR, EMOJI_MARKET, EMOJI_CRUMBS, e.getMessage(), e);
                         }
-                    } catch (Exception e) {
-                        log.error("{} {} {} Failed to get market outcome for bookmaker {}: {}",
-                                EMOJI_ERROR, EMOJI_MARKET, EMOJI_CRUMBS, bookMaker, e.getMessage(), e);
+                    } else {
+                        log.warn("{} {} {} No saved crumbs/oid available for 1WIN bookmaker",
+                                EMOJI_WARNING, EMOJI_CRUMBS, EMOJI_INFO);
                     }
                 } else {
-                    log.warn("{} {} No crumbs found for sub-event {} (bookmaker: {})",
-                            EMOJI_WARNING, EMOJI_CRUMBS, subEvent.getId(), bookMaker);
+                    // Handle non-1WIN bookmakers: use their own crumbs
+                    Map<String, String> currentCrumbs = odd.getCrumbs();
+
+                    if (currentCrumbs != null && !currentCrumbs.isEmpty()) {
+                        // Save crumbs from first non-1WIN bookmaker for 1WIN to use later
+                        if (savedCrumbs == null) {
+                            savedCrumbs = currentCrumbs;
+                            savedOid = currentCrumbs.get("oid");
+                            log.info("{} {} {} Saved crumbs and oid='{}' from first non-1WIN sub-event (bookmaker: {})",
+                                    EMOJI_SUCCESS, EMOJI_CRUMBS, EMOJI_INFO, savedOid, bookMaker);
+                        }
+
+                        log.debug("{} {} Crumbs found: {} {}", EMOJI_SUCCESS, EMOJI_CRUMBS, currentCrumbs, bookMaker);
+
+                        String currentOid = currentCrumbs.get("oid");
+                        log.trace("{} {} Extracted oid from crumbs: {}", EMOJI_CRUMBS, EMOJI_INFO, currentOid);
+                        log.info("{} {} Attempting to get market outcome for bookmaker: {}", EMOJI_MARKET, EMOJI_INFO, bookMaker);
+
+                        try {
+                            marketOutcome = getMarketOutcome(bookMaker, currentCrumbs);
+
+                            if (marketOutcome != null) {
+                                marketType = marketOutcome.getName();
+                                currentOutcome = marketOutcome.getOutcome(currentOid);  // ✅ Set current iteration outcome
+                                generalOutcome = currentOutcome;  // Save for ParsedArbitrageData
+
+                                log.info("{} {} {} Market outcome resolved: marketType='{}', oid='{}', outcome='{}'",
+                                        EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, currentOid, currentOutcome);
+                            } else {
+                                log.warn("{} {} {} Market outcome returned null for bookmaker: {}",
+                                        EMOJI_WARNING, EMOJI_MARKET, EMOJI_CRUMBS, bookMaker);
+                            }
+                        } catch (Exception e) {
+                            log.error("{} {} {} Failed to get market outcome for bookmaker {}: {}",
+                                    EMOJI_ERROR, EMOJI_MARKET, EMOJI_CRUMBS, bookMaker, e.getMessage(), e);
+                        }
+                    } else {
+                        log.warn("{} {} No crumbs found for sub-event {} (bookmaker: {})",
+                                EMOJI_WARNING, EMOJI_CRUMBS, subEvent.getId(), bookMaker);
+                    }
                 }
 
                 if (odd.getUpdated() != null) {
@@ -497,27 +530,35 @@ public class IngestionService {
                 log.warn("{} {} No odds found for sub_event_id: {}", EMOJI_WARNING, EMOJI_TRANSFORM, subEvent.getId());
             }
 
+            // ✅ Debug log before building outcome
+            log.info("BEFORE building outcome - bookMaker: {}, currentOutcome: '{}'", bookMaker, currentOutcome);
+
             OutcomeData outcome = OutcomeData.builder()
                     .subEventId(subEvent.getId())
                     .odds(oddsValue)
                     .previousOdds(previousOdds)
                     .initiator(initiator)
                     .bookmakerId(subEvent.getBookmakerId())
-                    .bookmakerName(BookMakerMapper.getBookmakerName(subEvent.getBookmakerId()))
+                    .bookmakerName(bookMaker)
                     .sport(subEvent.getSport())
                     .league(subEvent.getLeague())
-                    .marketType(marketType)
+                    .marketType(bookMaker == BookMaker.SPORTYBET ? marketType + " " + index : marketType)
                     .team1(subEvent.getTeam1())
                     .team2(subEvent.getTeam2())
                     .progress(subEvent.getProgress())
                     .originalId(subEvent.getOriginalId())
                     .reordered(subEvent.getReordered())
                     .outComeName(bookMaker == BookMaker._1WIN ?
-                            oneWinOutcomeStyle(outCome, subEvent.getTeam1(), subEvent.getTeam2()) : outCome)
+                            oneWinOutcomeStyle(currentOutcome, subEvent.getTeam1(), subEvent.getTeam2()) : currentOutcome)  // ✅ Use currentOutcome
                     .updated(updated)
                     .build();
 
             outcomes.add(outcome);
+
+            // ✅ Debug log after building outcome
+            log.info("AFTER building outcome - bookMaker: {}, outcomeName: '{}'",
+                    outcome.getBookmakerName(), outcome.getOutComeName());
+
             log.trace("{} {} Outcome created: bookmaker={}, odds={}, marketType='{}', outcomeName='{}'",
                     EMOJI_SUCCESS, EMOJI_TRANSFORM, outcome.getBookmakerName(), outcome.getOdds(),
                     outcome.getMarketType(), outcome.getOutComeName());
@@ -530,14 +571,14 @@ public class IngestionService {
         log.trace("{} {} Parsed timestamps: created={}, matchStart={}",
                 EMOJI_INFO, EMOJI_TRANSFORM, createdTime, matchStart);
 
-        // Build ParsedArbitrageData from Event (source of truth)
+        // Build ParsedArbitrageData from Event
         ParsedArbitrageData parsed = ParsedArbitrageData.builder()
                 .arbId(arbId)
                 .eventId(event.getId())
                 .profitPercentage(profitPercentage)
                 .roi(roi)
                 .generalMarketType(marketType)
-                .generalOutcomeName(outCome)
+                .generalOutcomeName(generalOutcome)  // ✅ Use generalOutcome (last set value)
                 .groupsIds(item != null ? item.getGroupsIds() : null)
                 .sportId(event.getSportId())
                 .sportName(BookMakerMapper.getSportName(event.getSportId()))
@@ -555,7 +596,7 @@ public class IngestionService {
                 EMOJI_SUCCESS, EMOJI_TRANSFORM, EMOJI_MARKET, event.getId(),
                 outcomes.get(0).getBookmakerName(), outcomes.get(0).getOdds(),
                 outcomes.get(1).getBookmakerName(), outcomes.get(1).getOdds(),
-                profitPercentage, marketType, outCome);
+                profitPercentage, marketType, generalOutcome);
 
         return parsed;
     }
@@ -844,7 +885,11 @@ public class IngestionService {
      * Save opportunities using thread-safe ArbitrageService
      * Uses concurrent processing with proper error handling
      */
-    private int saveArbitrageOpportunitiesConcurrent(List<ArbitrageOpportunity> opportunities) {
+    /**
+     * Save opportunities sequentially using thread-safe ArbitrageService
+     * Simpler and more reliable than concurrent saves
+     */
+    private int saveArbitrageOpportunitiesSequential(List<ArbitrageOpportunity> opportunities) {
         log.debug("{} {} Processing {} opportunities for database save...",
                 EMOJI_SAVE, EMOJI_INFO, opportunities.size());
 
@@ -853,53 +898,32 @@ public class IngestionService {
             return 0;
         }
 
-        // Use CompletableFuture for concurrent saves with ArbitrageService
-        List<CompletableFuture<ArbitrageService.SaveResult>> futures = opportunities.stream()
-                .map(opportunity -> CompletableFuture.supplyAsync(() -> {
-                    try {
-                        // Use thread-safe ArbitrageService method
-                        return arbitrageService.saveOrUpdateArbitrage(opportunity);
-                    } catch (Exception e) {
-                        log.warn("{} {} Failed to save opportunity {}: {}",
-                                EMOJI_WARNING, EMOJI_SAVE,
-                                opportunity.getExternalId(), e.getMessage());
-                        return ArbitrageService.SaveResult.SKIPPED;
-                    }
-                }, processingExecutor))
-                .toList();
+        int savedCount = 0;
+        int updatedCount = 0;
+        int skippedCount = 0;
 
-        // Collect results with timeout handling
-        List<ArbitrageService.SaveResult> results = futures.stream()
-                .map(future -> {
-                    try {
-                        return future.get(10, TimeUnit.SECONDS); // Timeout per save
-                    } catch (TimeoutException e) {
-                        log.error("{} {} Save operation timed out", EMOJI_ERROR, EMOJI_SAVE);
-                        future.cancel(true);
-                        return ArbitrageService.SaveResult.SKIPPED;
-                    } catch (Exception e) {
-                        log.error("{} {} Save operation failed: {}",
-                                EMOJI_ERROR, EMOJI_SAVE, e.getMessage());
-                        return ArbitrageService.SaveResult.SKIPPED;
-                    }
-                })
-                .collect(Collectors.toList());
+        for (ArbitrageOpportunity opportunity : opportunities) {
+            try {
+                ArbitrageService.SaveResult result = arbitrageService.saveOrUpdateArbitrage(opportunity);
 
-        long savedCount = results.stream()
-                .filter(r -> r == ArbitrageService.SaveResult.SAVED)
-                .count();
-        long updatedCount = results.stream()
-                .filter(r -> r == ArbitrageService.SaveResult.UPDATED)
-                .count();
-        long skippedCount = results.stream()
-                .filter(r -> r == ArbitrageService.SaveResult.SKIPPED)
-                .count();
+                switch (result) {
+                    case SAVED -> savedCount++;
+                    case UPDATED -> updatedCount++;
+                    case SKIPPED -> skippedCount++;
+                }
 
-        log.info("{} {} {} Database save completed: {} new, {} updated, {} skipped",
-                EMOJI_SUCCESS, EMOJI_CONCURRENT, EMOJI_SAVE,
-                savedCount, updatedCount, skippedCount);
+            } catch (Exception e) {
+                log.warn("{} {} Failed to save opportunity {}: {}",
+                        EMOJI_WARNING, EMOJI_SAVE,
+                        opportunity.getExternalId(), e.getMessage());
+                skippedCount++;
+            }
+        }
 
-        return (int) (savedCount + updatedCount);
+        log.info("{} {} Database save completed: {} new, {} updated, {} skipped",
+                EMOJI_SUCCESS, EMOJI_SAVE, savedCount, updatedCount, skippedCount);
+
+        return savedCount + updatedCount;
     }
 
     // === CONFIDENCE SCORE CALCULATION ===

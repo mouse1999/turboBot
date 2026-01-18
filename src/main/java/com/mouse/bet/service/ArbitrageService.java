@@ -43,8 +43,8 @@ public class ArbitrageService {
     private final ConcurrentHashMap<String, Object> arbLocks = new ConcurrentHashMap<>();
 
     private static final long FRESHNESS_THRESHOLD_SECONDS = 2;
-    private static final int MAX_RETRY_ATTEMPTS = 5; // Increased from 3
-    private static final long RETRY_DELAY_MS = 100; // Increased from 50ms
+    private static final int MAX_RETRY_ATTEMPTS = 5;
+    private static final long RETRY_DELAY_MS = 100;
 
     private LocalDateTime getFreshnessCutoff() {
         return LocalDateTime.now().minusSeconds(FRESHNESS_THRESHOLD_SECONDS);
@@ -52,26 +52,19 @@ public class ArbitrageService {
 
     // ==================== READ OPERATIONS (Thread-safe, read-only) ====================
 
-    /**
-     * Find all fresh arbitrage opportunities
-     * Thread-safe with READ_COMMITTED isolation
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ArbitrageOpportunity> findAllArbitrage() {
         LocalDateTime cutoff = getFreshnessCutoff();
         return arbitrageRepository.findAll(cutoff);
     }
 
-    /**
-     * Find all fresh arbitrage with pagination
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<ArbitrageOpportunity> findAllArbitrage(Pageable pageable) {
         LocalDateTime cutoff = getFreshnessCutoff();
         List<ArbitrageOpportunity> freshArbs = arbitrageRepository.findAll(cutoff);
 
         if (pageable.getSort().isSorted()) {
-            freshArbs = applySorting(freshArbs, pageable.getSort());
+            applySorting(freshArbs, pageable.getSort());
         }
 
         int start = (int) pageable.getOffset();
@@ -81,23 +74,17 @@ public class ArbitrageService {
         return new PageImpl<>(pageContent, pageable, freshArbs.size());
     }
 
-    /**
-     * Find all fresh active arbitrage opportunities
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ArbitrageOpportunity> findAllActiveArbitrage() {
         return arbitrageRepository.findFreshActiveArbs();
     }
 
-    /**
-     * Find fresh active arbs with pagination
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<ArbitrageOpportunity> findAllActiveArbitrage(Pageable pageable) {
         List<ArbitrageOpportunity> freshArbs = arbitrageRepository.findFreshActiveArbs();
 
         if (pageable.getSort().isSorted()) {
-            freshArbs = applySorting(freshArbs, pageable.getSort());
+            applySorting(freshArbs, pageable.getSort());
         }
 
         int start = (int) pageable.getOffset();
@@ -107,50 +94,32 @@ public class ArbitrageService {
         return new PageImpl<>(pageContent, pageable, freshArbs.size());
     }
 
-    /**
-     * Find arbitrage by ID
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Optional<ArbitrageOpportunity> findById(Long id) {
         return arbitrageRepository.findById(id);
     }
 
-    /**
-     * Find arbitrage by external ID
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Optional<ArbitrageOpportunity> findByExternalId(String externalId) {
         return arbitrageRepository.findByExternalId(externalId);
     }
 
-    /**
-     * Find all fresh arbs sorted by profit with pagination
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<ArbitrageOpportunity> findAllArbitrageSortedByProfit(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "profitPercentage"));
         return findAllArbitrage(pageable);
     }
 
-    /**
-     * Find fresh active live arbs
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ArbitrageOpportunity> findActiveLiveArbs() {
         return arbitrageRepository.findActiveLiveArbs();
     }
 
-    /**
-     * Find fresh arbs by sport
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ArbitrageOpportunity> findActiveArbsBySport(String sport) {
         return arbitrageRepository.findActiveArbsBySportFresh(sport);
     }
 
-    /**
-     * Find fresh arbs with minimum profit
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ArbitrageOpportunity> findActiveArbsWithMinProfit(BigDecimal minProfit) {
         LocalDateTime cutoff = getFreshnessCutoff();
@@ -159,9 +128,6 @@ public class ArbitrageService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Find fresh arbs by bookmaker
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ArbitrageOpportunity> findActiveArbsByBookmaker(Integer bookmakerId) {
         LocalDateTime cutoff = getFreshnessCutoff();
@@ -170,9 +136,6 @@ public class ArbitrageService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Find fresh arbs between two bookmakers
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ArbitrageOpportunity> findActiveArbsBetweenBookmakers(Integer bookmaker1, Integer bookmaker2) {
         LocalDateTime cutoff = getFreshnessCutoff();
@@ -181,17 +144,43 @@ public class ArbitrageService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Get stale arbs (for monitoring/debugging)
-     */
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<ArbitrageOpportunity> findStaleActiveArbs() {
         return arbitrageRepository.findStaleActiveArbs();
     }
 
     /**
-     * Get statistics
+     * Find active arbs by maximum age in seconds
      */
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public List<ArbitrageOpportunity> findActiveArbsByMaxAge(int maxAgeSeconds) {
+        return arbitrageRepository.findActiveArbsByMaxAge(maxAgeSeconds);
+    }
+
+    /**
+     * Find active arbs by max age with minimum profit filter
+     */
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public List<ArbitrageOpportunity> findActiveArbsByMaxAgeAndMinProfit(int maxAgeSeconds, BigDecimal minProfit) {
+        return arbitrageRepository.findActiveArbsByMaxAgeAndMinProfit(maxAgeSeconds, minProfit);
+    }
+
+    /**
+     * Find active arbs by sport and max age
+     */
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public List<ArbitrageOpportunity> findActiveArbsBySportAndMaxAge(String sport, int maxAgeSeconds) {
+        return arbitrageRepository.findActiveArbsBySportAndMaxAge(sport, maxAgeSeconds);
+    }
+
+    /**
+     * Count active arbs by maximum age
+     */
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public long countActiveArbsByMaxAge(int maxAgeSeconds) {
+        return arbitrageRepository.countActiveArbsByMaxAge(maxAgeSeconds);
+    }
+
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public ArbStatistics getStatistics() {
         long totalActive = arbitrageRepository.countActiveArbs();
@@ -204,12 +193,6 @@ public class ArbitrageService {
 
     // ==================== WRITE OPERATIONS (Thread-safe with manual retry) ====================
 
-    /**
-     * Save arbitrage opportunity with pessimistic locking to prevent conflicts
-     * Uses REQUIRES_NEW to ensure independent transaction
-     *
-     * IMPORTANT: This method now delegates to saveOrUpdateArbitrage for thread safety
-     */
     @Transactional(
             propagation = Propagation.REQUIRES_NEW,
             isolation = Isolation.READ_COMMITTED,
@@ -217,7 +200,6 @@ public class ArbitrageService {
     )
     public void saveArbitrageOpportunity(ArbitrageOpportunity arbitrageOpportunity) {
         try {
-            // Delegate to the thread-safe save-or-update method
             SaveResult result = saveOrUpdateArbitrage(arbitrageOpportunity);
             log.debug("✅ Successfully saved arb: {} ({})",
                     arbitrageOpportunity.getExternalId(), result);
@@ -228,11 +210,6 @@ public class ArbitrageService {
         }
     }
 
-    /**
-     * Thread-safe save or update with pessimistic locking and manual retry
-     * This prevents race conditions when multiple threads try to update the same arb
-     * Uses application-level locking to serialize updates to the same externalId
-     */
     @Transactional(
             propagation = Propagation.REQUIRES_NEW,
             isolation = Isolation.READ_COMMITTED,
@@ -240,27 +217,27 @@ public class ArbitrageService {
     )
     public SaveResult saveOrUpdateArbitrage(ArbitrageOpportunity opportunity) {
         if (opportunity.getExternalId() == null) {
-            // No external ID, just save directly
             return saveOrUpdateWithRetry(opportunity);
         }
 
-        // Get or create a lock object for this specific externalId
         Object lock = arbLocks.computeIfAbsent(opportunity.getExternalId(), k -> new Object());
 
         try {
             synchronized (lock) {
-                // Only one thread can update this specific arb at a time
                 return saveOrUpdateWithRetry(opportunity);
             }
+        } catch (IllegalStateException e) {
+            if (e.getMessage() != null && e.getMessage().contains("EntityEntry")) {
+                log.error("❌ Hibernate session error for arb {}: {}",
+                        opportunity.getExternalId(), e.getMessage());
+                return SaveResult.SKIPPED;
+            }
+            throw e;
         } finally {
-            // Clean up lock if no longer needed (optional, prevents memory leak)
             arbLocks.remove(opportunity.getExternalId(), lock);
         }
     }
 
-    /**
-     * Internal method with retry logic
-     */
     private SaveResult saveOrUpdateWithRetry(ArbitrageOpportunity opportunity) {
         int attempt = 0;
 
@@ -269,8 +246,8 @@ public class ArbitrageService {
                 return saveOrUpdateWithLock(opportunity);
 
             } catch (
-                     OptimisticLockingFailureException |
-                     StaleObjectStateException e) {
+                    OptimisticLockingFailureException |
+                    StaleObjectStateException e) {
 
                 attempt++;
 
@@ -284,7 +261,6 @@ public class ArbitrageService {
                 log.warn("⚠️ Lock conflict for arb {} (attempt {}/{}), retrying...",
                         opportunity.getExternalId(), attempt, MAX_RETRY_ATTEMPTS);
 
-                // Exponential backoff
                 retryWithBackoff(attempt);
             }
         }
@@ -292,34 +268,25 @@ public class ArbitrageService {
         throw new IllegalStateException("Should never reach here");
     }
 
-    /**
-     * Internal method with pessimistic locking to prevent concurrent modifications
-     */
     private SaveResult saveOrUpdateWithLock(ArbitrageOpportunity opportunity) {
         if (opportunity.getExternalId() == null) {
-            // New arb without external ID
             arbitrageRepository.save(opportunity);
             log.debug("✅ Saved new arb without external ID");
             return SaveResult.SAVED;
         }
 
-        // Use pessimistic write lock to prevent concurrent modifications
         Optional<ArbitrageOpportunity> existing =
                 arbitrageRepository.findByExternalIdWithLock(opportunity.getExternalId());
 
         if (existing.isEmpty()) {
-            // New arb with external ID
             arbitrageRepository.save(opportunity);
             log.debug("✅ Saved new arb: {}", opportunity.getExternalId());
             return SaveResult.SAVED;
         }
 
-        // Update existing arb (already locked, safe from concurrent modifications)
         ArbitrageOpportunity existingArb = existing.get();
-
         log.debug("🔄 Updating existing arb: {}", opportunity.getExternalId());
 
-        // Update fields
         existingArb.setLastCheckedAt(LocalDateTime.now());
         existingArb.setProfitPercentage(opportunity.getProfitPercentage());
         existingArb.setConfidenceScore(opportunity.getConfidenceScore());
@@ -330,32 +297,50 @@ public class ArbitrageService {
         existingArb.setMarketType(opportunity.getMarketType());
         existingArb.setOutCome(opportunity.getOutCome());
 
-        // Update outcomes if needed (replace all)
         if (opportunity.getOutcomes() != null && !opportunity.getOutcomes().isEmpty()) {
-            // Clear existing outcomes (will be cascade deleted)
-            existingArb.getOutcomes().clear();
+            existingArb.getOutcomes().removeIf(existingOutcome ->
+                    opportunity.getOutcomes().stream()
+                            .noneMatch(newOutcome ->
+                                    newOutcome.getSubEventId().equals(existingOutcome.getSubEventId())
+                            )
+            );
 
-            // Add new outcomes
             for (ArbOutcome newOutcome : opportunity.getOutcomes()) {
-                ArbOutcome outcomeToAdd = ArbOutcome.builder()
-                        .bookmakerId(newOutcome.getBookmakerId())
-                        .bookmakerName(newOutcome.getBookmakerName())
-                        .outComeName(newOutcome.getOutComeName())
-                        .marketType(newOutcome.getMarketType())
-                        .odds(newOutcome.getOdds())
-                        .previousOdds(newOutcome.getPreviousOdds())
-                        .subEventId(newOutcome.getSubEventId())
-                        .originalId(newOutcome.getOriginalId())
-                        .sport(newOutcome.getSport())
-                        .awayTeam(newOutcome.getAwayTeam())
-                        .homeTeam(newOutcome.getHomeTeam())
-                        .leagueName(newOutcome.getLeagueName())
-                        .progress(newOutcome.getProgress())
-                        .reordered(newOutcome.getReordered())
-                        .initiator(newOutcome.getInitiator())
-                        .stake(newOutcome.getStake())
-                        .build();
-                existingArb.addOutcome(outcomeToAdd);
+                Optional<ArbOutcome> existingOutcome = existingArb.getOutcomes().stream()
+                        .filter(o -> o.getSubEventId().equals(newOutcome.getSubEventId()))
+                        .findFirst();
+
+                if (existingOutcome.isPresent()) {
+                    ArbOutcome outcomeToUpdate = existingOutcome.get();
+                    outcomeToUpdate.setOdds(newOutcome.getOdds());
+                    outcomeToUpdate.setPreviousOdds(newOutcome.getPreviousOdds());
+                    outcomeToUpdate.setBookmakerName(newOutcome.getBookmakerName());
+                    outcomeToUpdate.setOutComeName(newOutcome.getOutComeName());
+                    outcomeToUpdate.setMarketType(newOutcome.getMarketType());
+                    outcomeToUpdate.setProgress(newOutcome.getProgress());
+                    outcomeToUpdate.setInitiator(newOutcome.getInitiator());
+                } else {
+                    ArbOutcome outcomeToAdd = ArbOutcome.builder()
+                            .bookmakerId(newOutcome.getBookmakerId())
+                            .bookmakerName(newOutcome.getBookmakerName())
+                            .outComeName(newOutcome.getOutComeName())
+                            .marketType(newOutcome.getMarketType())
+                            .odds(newOutcome.getOdds())
+                            .previousOdds(newOutcome.getPreviousOdds())
+                            .subEventId(newOutcome.getSubEventId())
+                            .originalId(newOutcome.getOriginalId())
+                            .sport(newOutcome.getSport())
+                            .awayTeam(newOutcome.getAwayTeam())
+                            .homeTeam(newOutcome.getHomeTeam())
+                            .leagueName(newOutcome.getLeagueName())
+                            .progress(newOutcome.getProgress())
+                            .reordered(newOutcome.getReordered())
+                            .initiator(newOutcome.getInitiator())
+                            .stake(newOutcome.getStake())
+                            .build();
+                    existingArb.addOutcome(outcomeToAdd);
+                    existingArb.onUpdate();
+                }
             }
         }
 
@@ -363,9 +348,6 @@ public class ArbitrageService {
         return SaveResult.UPDATED;
     }
 
-    /**
-     * Batch save with transaction management and manual retry
-     */
     @Transactional(
             propagation = Propagation.REQUIRES_NEW,
             isolation = Isolation.READ_COMMITTED,
@@ -382,11 +364,11 @@ public class ArbitrageService {
             try {
                 arbitrageRepository.saveAll(opportunities);
                 log.debug("✅ Batch saved {} arbitrage opportunities", opportunities.size());
-                return; // Success, exit method
+                return;
 
             } catch (
-                     OptimisticLockingFailureException |
-                     StaleObjectStateException e) {
+                    OptimisticLockingFailureException |
+                    StaleObjectStateException e) {
 
                 attempt++;
 
@@ -401,7 +383,6 @@ public class ArbitrageService {
                 log.warn("⚠️ Optimistic lock failure during batch save (attempt {}/{}), retrying...",
                         attempt, MAX_RETRY_ATTEMPTS);
 
-                // Exponential backoff
                 retryWithBackoff(attempt);
 
             } catch (Exception e) {
@@ -411,9 +392,6 @@ public class ArbitrageService {
         }
     }
 
-    /**
-     * Update single arb by ID with locking and manual retry
-     */
     @Transactional(
             propagation = Propagation.REQUIRES_NEW,
             isolation = Isolation.READ_COMMITTED
@@ -432,7 +410,6 @@ public class ArbitrageService {
 
                 ArbitrageOpportunity arb = existing.get();
 
-                // Update fields
                 if (updates.getProfitPercentage() != null) {
                     arb.setProfitPercentage(updates.getProfitPercentage());
                 }
@@ -450,8 +427,8 @@ public class ArbitrageService {
                 return true;
 
             } catch (
-                     OptimisticLockingFailureException |
-                     StaleObjectStateException e) {
+                    OptimisticLockingFailureException |
+                    StaleObjectStateException e) {
 
                 attempt++;
 
@@ -465,7 +442,6 @@ public class ArbitrageService {
                 log.warn("⚠️ Optimistic lock failure for arb update {} (attempt {}/{}), retrying...",
                         id, attempt, MAX_RETRY_ATTEMPTS);
 
-                // Exponential backoff
                 retryWithBackoff(attempt);
             }
         }
@@ -473,12 +449,8 @@ public class ArbitrageService {
         return false;
     }
 
-    // ==================== CLEANUP OPERATIONS (Thread-safe with locking) ====================
+    // ==================== CLEANUP OPERATIONS ====================
 
-    /**
-     * Scheduled cleanup of stale arbs (runs every 5 seconds)
-     * Thread-safe with application-level write lock
-     */
     @Scheduled(fixedRate = 5000)
     @Transactional(
             propagation = Propagation.REQUIRES_NEW,
@@ -486,7 +458,6 @@ public class ArbitrageService {
             timeout = 30
     )
     public void cleanupStaleArbs() {
-        // Prevent concurrent cleanup operations
         if (!cleanupLock.writeLock().tryLock()) {
             log.debug("⏭️ Skipping cleanup - another cleanup is in progress");
             return;
@@ -502,15 +473,11 @@ public class ArbitrageService {
             }
         } catch (Exception e) {
             log.error("❌ Error during cleanup of stale arbs", e);
-            // Don't rethrow - scheduled task should continue
         } finally {
             cleanupLock.writeLock().unlock();
         }
     }
 
-    /**
-     * Manual cleanup trigger with locking
-     */
     @Transactional(
             propagation = Propagation.REQUIRES_NEW,
             isolation = Isolation.READ_COMMITTED
@@ -529,9 +496,6 @@ public class ArbitrageService {
         }
     }
 
-    /**
-     * Advanced cleanup with custom logic and pessimistic locking
-     */
     @Transactional(
             propagation = Propagation.REQUIRES_NEW,
             isolation = Isolation.READ_COMMITTED,
@@ -540,7 +504,6 @@ public class ArbitrageService {
     public int cleanupStaleArbsWithCustomLogic() {
         cleanupLock.writeLock().lock();
         try {
-            // Get stale arbs with pessimistic lock
             List<ArbitrageOpportunity> staleArbs = arbitrageRepository.findStaleArbsWithLock(
                     ArbStatus.ACTIVE,
                     getFreshnessCutoff()
@@ -553,10 +516,8 @@ public class ArbitrageService {
 
             log.info("🧹 Found {} stale arbs to expire", staleArbs.size());
 
-            // Custom logic: Only expire arbs older than a certain age
             List<Long> idsToExpire = staleArbs.stream()
                     .filter(arb -> {
-                        // Example: Only expire if profit < 1% or age > 10 seconds
                         boolean shouldExpire = arb.getProfitPercentage().compareTo(new BigDecimal("1.0")) < 0
                                 || arb.getArbAgeSeconds() > 10;
                         if (shouldExpire) {
@@ -584,9 +545,6 @@ public class ArbitrageService {
         }
     }
 
-    /**
-     * Delete old expired arbs (cleanup database)
-     */
     @Transactional(
             propagation = Propagation.REQUIRES_NEW,
             isolation = Isolation.READ_COMMITTED
@@ -606,11 +564,29 @@ public class ArbitrageService {
         }
     }
 
+    /**
+     * Expire arbs by age
+     */
+    @Transactional(
+            propagation = Propagation.REQUIRES_NEW,
+            isolation = Isolation.READ_COMMITTED
+    )
+    public int expireArbsByAge(int maxAgeSeconds) {
+        cleanupLock.writeLock().lock();
+        try {
+            int expired = arbitrageRepository.expireArbsByAge(maxAgeSeconds);
+            log.info("✅ Expired {} arbs older than {} seconds", expired, maxAgeSeconds);
+            return expired;
+        } catch (Exception e) {
+            log.error("❌ Error expiring arbs by age", e);
+            throw e;
+        } finally {
+            cleanupLock.writeLock().unlock();
+        }
+    }
+
     // ==================== HELPER METHODS ====================
 
-    /**
-     * Helper method for exponential backoff retry delay
-     */
     private void retryWithBackoff(int attempt) {
         try {
             long delay = RETRY_DELAY_MS * (long) Math.pow(2, attempt - 1);
@@ -621,9 +597,6 @@ public class ArbitrageService {
         }
     }
 
-    /**
-     * Apply sorting to a list of arbs
-     */
     private List<ArbitrageOpportunity> applySorting(List<ArbitrageOpportunity> arbs, Sort sort) {
         for (Sort.Order order : sort) {
             String property = order.getProperty();
@@ -655,7 +628,6 @@ public class ArbitrageService {
                     });
                     break;
                 default:
-                    // Default to profit percentage descending
                     arbs.sort((a, b) -> b.getProfitPercentage().compareTo(a.getProfitPercentage()));
             }
         }

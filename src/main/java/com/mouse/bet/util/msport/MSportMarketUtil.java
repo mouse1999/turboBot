@@ -6,6 +6,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
 import com.microsoft.playwright.options.WaitForSelectorState;
 
+import com.mouse.bet.converter.ModelConverter;
 import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.enums.MarketType;
 import com.mouse.bet.interfaces.BettingTask;
@@ -842,6 +843,13 @@ public class MSportMarketUtil {
 //                log.warn("Odds drifted: expected {} → got {}", task.expectedOdds(), displayedOdds);
 ////                return false; todo: enable this
 //            }
+
+            BettingTask freshTask = ModelConverter.convertFromArbOutcome(arbOutcomeService.findByExternalIdAndBookmaker(task.taskId(), task.bookmakerId()).orElse(null));
+            if (freshTask != null) {
+                log.info("fresh betting task from DB is not null");
+                task = freshTask;
+
+            }
 
             if (!isOddsAcceptable(task.expectedOdds(), displayedOdds)) {
                 log.warn("Odds drifted: expected {} → got {}", task.expectedOdds(), displayedOdds);

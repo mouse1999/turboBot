@@ -1,0 +1,219 @@
+2026-01-18 00:59:32.046 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔍 Searching for bet -- Market: , Outcome: , Expected Odds: 1.78
+2026-01-18 00:59:32.062 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Found bet - Market: 'Winner', Outcome: 'Yevhen Kryvorotko', Odds: 1.4, Disabled: false
+2026-01-18 00:59:53.898 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-005932-065-1Win-bet_found.png
+2026-01-18 00:59:54.019 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔄 Using fresh betting task from DB
+2026-01-18 00:59:54.020 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 1.4 is {:.2f}% 21.348314606741578 expected too low → REJECTED (±{:.0f}% tolerance)
+2026-01-18 00:59:54.020 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Odds not acceptable -- Found: 1.4, Expected: 1.78, Min: 1.6909999999999998, Max: 1.8690000000000002
+2026-01-18 00:59:54.034 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🖱️ Clicking target button using Playwright locator...
+2026-01-18 00:59:54.886 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Bet button clicked successfully
+2026-01-18 00:59:55.254 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Verifying bet in betslip...
+2026-01-18 00:59:56.147 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - === BETSLIP VERIFICATION ===
+2026-01-18 00:59:56.147 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Teams/Competitors: Yevhen Kryvorotko - Oleksandr Mishchenko
+2026-01-18 00:59:56.148 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Outcome: Winner, Yevhen Kryvorotko
+2026-01-18 00:59:56.148 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Odds: 1.44
+2026-01-18 00:59:56.148 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Score: 0 : 0
+2026-01-18 00:59:56.148 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ===========================
+2026-01-18 00:59:56.148 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 1.44 is {:.2f}% 19.101123595505623 expected too low → REJECTED (±{:.0f}% tolerance)
+2026-01-18 00:59:56.148 [BettingWindow-3] ERROR c.m.bet.util.onewin.OneWinMarketUtil - Odds in betslip not acceptable - Found: 1.44, Expected: 1.78
+2026-01-18 00:59:56.148 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Bet in slip may not match expected outcome
+2026-01-18 01:00:24.613 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-005956-149-1Win-betslip_mismatch.png
+2026-01-18 01:00:24.613 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:00:25.465 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Betslip cleared
+2026-01-18 01:00:31.488 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:01:56.025 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔍 Searching for bet -- Market: Winner, Outcome: Cerveny Jr, Tomas, Expected Odds: 2.45
+2026-01-18 01:01:56.142 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Found bet - Market: 'Winner', Outcome: 'Cerveny Jr, Tomas', Odds: 3.35, Disabled: false
+2026-01-18 01:01:59.496 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010156-145-1Win-bet_found.png
+2026-01-18 01:01:59.499 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔄 Using fresh betting task from DB
+2026-01-18 01:01:59.499 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 3.35 is {:.2f}% 36.73469387755102 expected too high → REJECTED (±{:.0f}% tolerance)
+2026-01-18 01:01:59.499 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Odds not acceptable -- Found: 3.35, Expected: 2.45, Min: 2.3275, Max: 2.5725000000000002
+2026-01-18 01:01:59.506 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🖱️ Clicking target button using Playwright locator...
+2026-01-18 01:02:00.212 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Bet button clicked successfully
+2026-01-18 01:02:00.552 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Verifying bet in betslip...
+2026-01-18 01:02:00.926 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - === BETSLIP VERIFICATION ===
+2026-01-18 01:02:00.926 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Teams/Competitors: Holik, Simon - Cerveny Jr, Tomas
+2026-01-18 01:02:00.926 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Outcome: Winner, Cerveny Jr, Tomas
+2026-01-18 01:02:00.926 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Odds: 4.9
+2026-01-18 01:02:00.926 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Score: 2 : 2
+2026-01-18 01:02:00.926 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ===========================
+2026-01-18 01:02:00.926 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 4.9 is {:.2f}% 100.0 expected too high → REJECTED (±{:.0f}% tolerance)
+2026-01-18 01:02:00.926 [BettingWindow-3] ERROR c.m.bet.util.onewin.OneWinMarketUtil - Odds in betslip not acceptable - Found: 4.9, Expected: 2.45
+2026-01-18 01:02:00.926 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Bet in slip may not match expected outcome
+2026-01-18 01:02:02.711 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010200-928-1Win-betslip_mismatch.png
+2026-01-18 01:02:02.711 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:02:03.619 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Betslip cleared
+2026-01-18 01:03:11.451 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔍 Searching for bet -- Market: Total, Outcome: Under 98.5, Expected Odds: 1.7
+2026-01-18 01:03:11.476 [BettingWindow-3] ERROR c.m.bet.util.onewin.OneWinMarketUtil - ❌ Bet not found - Market: Total, Outcome: Under 98.5
+2026-01-18 01:03:15.259 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010311-477-1Win-bet_not_found.png
+2026-01-18 01:03:15.957 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📊 Available markets (12):
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Winner (2 outcomes)
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri @ 1.7
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri @ 2.0
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Total (2 outcomes)
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Under 97.5 @ 2.0
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Over 97.5 @ 1.7
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Handicap (2 outcomes)
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri 0.5 @ 1.7
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri -0.5 @ 2.0
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Correct score (2 outcomes)
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 2:3 @ 1.95
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 3:2 @ 1.7
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. Winner (2 outcomes)
+2026-01-18 01:03:15.958 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri @ 1.7
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri @ 2.0
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. Total (8 outcomes)
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Under 17.5 @ 2.9
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Over 17.5 @ 1.35
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Under 18.5 @ 2.0
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Over 18.5 @ 1.7
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Under 19.5 @ 1.5
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Over 19.5 @ 2.4
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Under 21.5 @ 1.16
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Over 21.5 @ 4.25
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. Handicap (8 outcomes)
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri -4.5 @ 4.2
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri 4.5 @ 1.18
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri -3.5 @ 3.1
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri 3.5 @ 1.3
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri -2.5 @ 2.45
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri 2.5 @ 1.47
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri 2.5 @ 1.27
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri -2.5 @ 3.2
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. 5th point (2 outcomes)
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri @ 1.8
+2026-01-18 01:03:15.959 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri @ 1.9
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. Race to 5 points (2 outcomes)
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri @ 1.5
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri @ 2.4
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. Race to 8 points (2 outcomes)
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri @ 1.6
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri @ 2.15
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. Race to 10 points (2 outcomes)
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Dedek, Jiri @ 1.65
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Plachy, Jiri @ 2.05
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - How many sets will exceed score limit (2 outcomes)
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 2 @ 1.16
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 3 @ 4.15
+2026-01-18 01:03:15.960 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:03:59.288 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔍 Searching for bet -- Market: Points, Outcome: Cerveny Jr, Tomas in set 5, Point 6.5, Expected Odds: 2.0
+2026-01-18 01:03:59.326 [BettingWindow-3] ERROR c.m.bet.util.onewin.OneWinMarketUtil - ❌ Bet not found - Market: Points, Outcome: Cerveny Jr, Tomas in set 5, Point 6.5
+2026-01-18 01:04:00.875 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010359-327-1Win-bet_not_found.png
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📊 Available markets (7):
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Winner (2 outcomes)
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Holik, Simon @ 2.75
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Cerveny Jr, Tomas @ 1.37
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Total (2 outcomes)
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Under 96.5 @ 1.5
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Over 96.5 @ 2.4
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Handicap (2 outcomes)
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Holik, Simon -3.5 @ 2.75
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Cerveny Jr, Tomas 3.5 @ 1.37
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Correct score (2 outcomes)
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 2:3 @ 1.37
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 3:2 @ 2.7
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. Winner (2 outcomes)
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Holik, Simon @ 2.75
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Cerveny Jr, Tomas @ 1.37
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. 19th point (2 outcomes)
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Holik, Simon @ 1.9
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Cerveny Jr, Tomas @ 1.75
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - How many sets will exceed score limit (2 outcomes)
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 0 @ 1.47
+2026-01-18 01:04:00.902 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 1 @ 2.35
+2026-01-18 01:04:00.903 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:04:58.219 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔍 Searching for bet -- Market: Winner, Outcome: Sulava, Lubor, Expected Odds: 2.2
+2026-01-18 01:04:58.224 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Found bet - Market: 'Winner', Outcome: 'Sulava, Lubor', Odds: 1.75, Disabled: false
+2026-01-18 01:05:01.510 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010458-224-1Win-bet_found.png
+2026-01-18 01:05:01.516 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔄 Using fresh betting task from DB
+2026-01-18 01:05:01.516 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 1.75 is {:.2f}% 20.45454545454546 expected too low → REJECTED (±{:.0f}% tolerance)
+2026-01-18 01:05:01.516 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Odds not acceptable -- Found: 1.75, Expected: 2.2, Min: 2.09, Max: 2.3100000000000005
+2026-01-18 01:05:01.530 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🖱️ Clicking target button using Playwright locator...
+2026-01-18 01:05:02.081 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Bet button clicked successfully
+2026-01-18 01:05:02.361 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Verifying bet in betslip...
+2026-01-18 01:05:02.773 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - === BETSLIP VERIFICATION ===
+2026-01-18 01:05:02.773 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Teams/Competitors: Stefek, Martin - Sulava, Lubor
+2026-01-18 01:05:02.773 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Outcome: Winner, Sulava, Lubor
+2026-01-18 01:05:02.773 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Odds: 1.75
+2026-01-18 01:05:02.773 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Score: 0 : 0
+2026-01-18 01:05:02.773 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ===========================
+2026-01-18 01:05:02.773 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 1.75 is {:.2f}% 20.45454545454546 expected too low → REJECTED (±{:.0f}% tolerance)
+2026-01-18 01:05:02.773 [BettingWindow-3] ERROR c.m.bet.util.onewin.OneWinMarketUtil - Odds in betslip not acceptable - Found: 1.75, Expected: 2.2
+2026-01-18 01:05:02.773 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Bet in slip may not match expected outcome
+2026-01-18 01:05:03.926 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010502-775-1Win-betslip_mismatch.png
+2026-01-18 01:05:03.927 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:05:05.022 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Betslip cleared
+2026-01-18 01:05:31.294 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔍 Searching for bet -- Market: Points, Outcome: Cerveny Jr, Tomas in set 5, Point 5.5, Expected Odds: 2.0
+2026-01-18 01:05:31.297 [BettingWindow-3] ERROR c.m.bet.util.onewin.OneWinMarketUtil - ❌ Bet not found - Market: Points, Outcome: Cerveny Jr, Tomas in set 5, Point 5.5
+2026-01-18 01:05:32.871 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010531-297-1Win-bet_not_found.png
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📊 Available markets (7):
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Winner (2 outcomes)
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Holik, Simon @ 1.85
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Cerveny Jr, Tomas @ 1.8
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Total (2 outcomes)
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Under 96.5 @ 1.85
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Over 96.5 @ 1.85
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Handicap (2 outcomes)
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Holik, Simon -3.5 @ 1.85
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Cerveny Jr, Tomas 3.5 @ 1.8
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - Correct score (2 outcomes)
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 2:3 @ 1.8
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 3:2 @ 1.85
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. Winner (2 outcomes)
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Holik, Simon @ 1.85
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Cerveny Jr, Tomas @ 1.8
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - 5th set. 20th point (2 outcomes)
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Holik, Simon @ 1.9
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • Cerveny Jr, Tomas @ 1.8
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -   - How many sets will exceed score limit (2 outcomes)
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 0 @ 1.8
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil -     • 1 @ 1.85
+2026-01-18 01:05:32.876 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:06:26.259 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔍 Searching for bet -- Market: Winner, Outcome: Holik, Simon, Expected Odds: 1.8
+2026-01-18 01:06:26.276 [BettingWindow-3] ERROR c.m.bet.util.onewin.OneWinMarketUtil - ❌ Bet not found - Market: Winner, Outcome: Holik, Simon
+2026-01-18 01:06:29.806 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010626-287-1Win-bet_not_found.png
+2026-01-18 01:06:29.811 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📊 Available markets (0):
+2026-01-18 01:06:29.811 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:06:35.855 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:07:01.423 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔍 Searching for bet -- Market: Winner, Outcome: Cerveny Jr, Tomas, Expected Odds: 2.65
+2026-01-18 01:07:01.430 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Found bet - Market: 'Winner', Outcome: 'Cerveny Jr, Tomas', Odds: 1.9, Disabled: false
+2026-01-18 01:07:03.244 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010701-440-1Win-bet_found.png
+2026-01-18 01:07:03.251 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔄 Using fresh betting task from DB
+2026-01-18 01:07:03.251 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 1.9 is {:.2f}% 28.30188679245283 expected too low → REJECTED (±{:.0f}% tolerance)
+2026-01-18 01:07:03.251 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Odds not acceptable -- Found: 1.9, Expected: 2.65, Min: 2.5174999999999996, Max: 2.7825
+2026-01-18 01:07:03.256 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🖱️ Clicking target button using Playwright locator...
+2026-01-18 01:07:04.193 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Bet button clicked successfully
+2026-01-18 01:07:04.448 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Verifying bet in betslip...
+2026-01-18 01:07:04.886 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - === BETSLIP VERIFICATION ===
+2026-01-18 01:07:04.888 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Teams/Competitors: Holik, Simon - Cerveny Jr, Tomas
+2026-01-18 01:07:04.888 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Outcome: Winner, Cerveny Jr, Tomas
+2026-01-18 01:07:04.888 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Odds: 1.9
+2026-01-18 01:07:04.888 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Score: 2 : 2
+2026-01-18 01:07:04.888 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ===========================
+2026-01-18 01:07:04.890 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 1.9 is {:.2f}% 28.30188679245283 expected too low → REJECTED (±{:.0f}% tolerance)
+2026-01-18 01:07:04.890 [BettingWindow-3] ERROR c.m.bet.util.onewin.OneWinMarketUtil - Odds in betslip not acceptable - Found: 1.9, Expected: 2.65
+2026-01-18 01:07:04.891 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Bet in slip may not match expected outcome
+2026-01-18 01:07:06.149 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-010704-893-1Win-betslip_mismatch.png
+2026-01-18 01:07:06.149 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:07:07.339 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Betslip cleared
+2026-01-18 01:07:13.369 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:12:30.595 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔍 Searching for bet -- Market: Winner, Outcome: Dedek, Jiri, Expected Odds: 2.35
+2026-01-18 01:12:30.629 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Found bet - Market: 'Winner', Outcome: 'Dedek, Jiri', Odds: 2.1, Disabled: false
+2026-01-18 01:12:40.258 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-011230-631-1Win-bet_found.png
+2026-01-18 01:12:40.263 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🔄 Using fresh betting task from DB
+2026-01-18 01:12:40.263 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 2.1 is {:.2f}% 10.638297872340425 expected too low → REJECTED (±{:.0f}% tolerance)
+2026-01-18 01:12:40.263 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Odds not acceptable -- Found: 2.1, Expected: 2.35, Min: 2.2325, Max: 2.4675000000000002
+2026-01-18 01:12:40.835 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 🖱️ Clicking target button using Playwright locator...
+2026-01-18 01:12:41.926 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ✅ Bet button clicked successfully
+2026-01-18 01:12:42.279 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Verifying bet in betslip...
+2026-01-18 01:12:43.169 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - === BETSLIP VERIFICATION ===
+2026-01-18 01:12:43.170 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Teams/Competitors: Dedek, Jiri - Plachy, Jiri
+2026-01-18 01:12:43.170 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Outcome: Winner, Dedek, Jiri
+2026-01-18 01:12:43.170 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Odds: 2.1
+2026-01-18 01:12:43.170 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Score: 2 : 2
+2026-01-18 01:12:43.170 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - ===========================
+2026-01-18 01:12:43.170 [BettingWindow-3] DEBUG c.m.bet.util.onewin.OneWinMarketUtil - Found odds 2.1 is {:.2f}% 10.638297872340425 expected too low → REJECTED (±{:.0f}% tolerance)
+2026-01-18 01:12:43.170 [BettingWindow-3] ERROR c.m.bet.util.onewin.OneWinMarketUtil - Odds in betslip not acceptable - Found: 2.1, Expected: 2.35
+2026-01-18 01:12:43.170 [BettingWindow-3] WARN  c.m.bet.util.onewin.OneWinMarketUtil - ⚠️ Bet in slip may not match expected outcome
+2026-01-18 01:12:58.030 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - 📸 Screenshot saved: screenshots\markets\20260118-011243-172-1Win-betslip_mismatch.png
+2026-01-18 01:12:58.030 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...
+2026-01-18 01:12:59.527 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Betslip cleared
+2026-01-18 01:13:07.642 [BettingWindow-3] INFO  c.m.bet.util.onewin.OneWinMarketUtil - Clearing betslip...

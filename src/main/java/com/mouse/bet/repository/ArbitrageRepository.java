@@ -150,6 +150,104 @@ public interface ArbitrageRepository extends JpaRepository<ArbitrageOpportunity,
         return findFreshActiveArbs(LocalDateTime.now().minusSeconds(2));
     }
 
+    // ==================== AGE-BASED QUERIES (Using createdAt for age calculation) ====================
+
+    /**
+     * Find all active arbs where age (time since creation) is not more than X seconds
+     * Age = current time - createdAt
+     *
+     * @param maxAgeSeconds Maximum age in seconds (e.g., 30 for arbs not older than 30 seconds)
+     * @return List of active arbs that are not older than maxAgeSeconds
+     */
+    @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
+            "WHERE a.status = 'ACTIVE' " +
+            "AND a.createdAt >= :ageCutoffTime " +
+            "ORDER BY a.createdAt DESC")
+    List<ArbitrageOpportunity> findActiveArbsByMaxAge(@Param("ageCutoffTime") LocalDateTime ageCutoffTime);
+
+    /**
+     * Convenience method - finds active arbs not older than specified seconds
+     * Usage: findActiveArbsByMaxAge(30) - finds arbs created within last 30 seconds
+     */
+    default List<ArbitrageOpportunity> findActiveArbsByMaxAge(int maxAgeSeconds) {
+        LocalDateTime ageCutoffTime = LocalDateTime.now().minusSeconds(maxAgeSeconds);
+        return findActiveArbsByMaxAge(ageCutoffTime);
+    }
+
+    /**
+     * Find all arbs (any status) where age is not more than X seconds
+     */
+    @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
+            "WHERE a.createdAt >= :ageCutoffTime " +
+            "ORDER BY a.createdAt DESC")
+    List<ArbitrageOpportunity> findAllArbsByMaxAge(@Param("ageCutoffTime") LocalDateTime ageCutoffTime);
+
+    /**
+     * Convenience method - finds all arbs not older than specified seconds
+     */
+    default List<ArbitrageOpportunity> findAllArbsByMaxAge(int maxAgeSeconds) {
+        LocalDateTime ageCutoffTime = LocalDateTime.now().minusSeconds(maxAgeSeconds);
+        return findAllArbsByMaxAge(ageCutoffTime);
+    }
+
+    /**
+     * Find active arbs by max age with minimum profit filter
+     */
+    @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
+            "WHERE a.status = 'ACTIVE' " +
+            "AND a.createdAt >= :ageCutoffTime " +
+            "AND a.profitPercentage >= :minProfit " +
+            "ORDER BY a.profitPercentage DESC")
+    List<ArbitrageOpportunity> findActiveArbsByMaxAgeAndMinProfit(
+            @Param("ageCutoffTime") LocalDateTime ageCutoffTime,
+            @Param("minProfit") BigDecimal minProfit);
+
+    /**
+     * Convenience method - finds active arbs by max age and min profit
+     */
+    default List<ArbitrageOpportunity> findActiveArbsByMaxAgeAndMinProfit(int maxAgeSeconds, BigDecimal minProfit) {
+        LocalDateTime ageCutoffTime = LocalDateTime.now().minusSeconds(maxAgeSeconds);
+        return findActiveArbsByMaxAgeAndMinProfit(ageCutoffTime, minProfit);
+    }
+
+    /**
+     * Find active arbs by sport and max age
+     */
+    @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
+            "WHERE a.status = 'ACTIVE' " +
+            "AND a.sport = :sport " +
+            "AND a.createdAt >= :ageCutoffTime " +
+            "ORDER BY a.profitPercentage DESC")
+    List<ArbitrageOpportunity> findActiveArbsBySportAndMaxAge(
+            @Param("sport") String sport,
+            @Param("ageCutoffTime") LocalDateTime ageCutoffTime);
+
+    /**
+     * Convenience method - finds active arbs by sport and max age
+     */
+    default List<ArbitrageOpportunity> findActiveArbsBySportAndMaxAge(String sport, int maxAgeSeconds) {
+        LocalDateTime ageCutoffTime = LocalDateTime.now().minusSeconds(maxAgeSeconds);
+        return findActiveArbsBySportAndMaxAge(sport, ageCutoffTime);
+    }
+
+    /**
+     * Count active arbs by max age
+     */
+    @Query("SELECT COUNT(a) FROM ArbitrageOpportunity a " +
+            "WHERE a.status = 'ACTIVE' " +
+            "AND a.createdAt >= :ageCutoffTime")
+    long countActiveArbsByMaxAge(@Param("ageCutoffTime") LocalDateTime ageCutoffTime);
+
+    /**
+     * Convenience method - count active arbs not older than specified seconds
+     */
+    default long countActiveArbsByMaxAge(int maxAgeSeconds) {
+        LocalDateTime ageCutoffTime = LocalDateTime.now().minusSeconds(maxAgeSeconds);
+        return countActiveArbsByMaxAge(ageCutoffTime);
+    }
+
+    // ==================== EXISTING STALE ARB QUERIES ====================
+
     // Find stale arbs (not updated within last N seconds)
     @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
             "WHERE a.status = 'ACTIVE' " +
@@ -178,6 +276,23 @@ public interface ArbitrageRepository extends JpaRepository<ArbitrageOpportunity,
     default int expireStaleArbs() {
         LocalDateTime now = LocalDateTime.now();
         return expireStaleArbs(now.minusSeconds(2), now);
+    }
+
+    /**
+     * Expire arbs by max age (based on createdAt, not updatedAt)
+     */
+    @Modifying
+    @Query("UPDATE ArbitrageOpportunity a SET a.status = 'EXPIRED', a.expiredAt = :now " +
+            "WHERE a.status = 'ACTIVE' AND a.createdAt < :ageCutoffTime")
+    int expireArbsByAge(@Param("ageCutoffTime") LocalDateTime ageCutoffTime, @Param("now") LocalDateTime now);
+
+    /**
+     * Convenience method - expire arbs older than specified age in seconds
+     */
+    default int expireArbsByAge(int maxAgeSeconds) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime ageCutoffTime = now.minusSeconds(maxAgeSeconds);
+        return expireArbsByAge(ageCutoffTime, now);
     }
 
     /**

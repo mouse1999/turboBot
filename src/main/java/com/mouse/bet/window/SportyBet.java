@@ -1,6 +1,7 @@
 package com.mouse.bet.window;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.LoadState;
 import com.mouse.bet.config.WindowConfig;
 import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.enums.Sport;
@@ -79,6 +80,7 @@ public class SportyBet implements BettingWindow, Runnable {
 
     private static final BookMaker BOOKMAKER = BookMaker.SPORTYBET;
 
+    // State management
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final AtomicBoolean isWindowUpAndRunning = new AtomicBoolean(false);
     private final AtomicBoolean isPaused = new AtomicBoolean(false);
@@ -124,6 +126,9 @@ public class SportyBet implements BettingWindow, Runnable {
     @Value("${sporty.base.url:https://www.sportybet.com/ng}")
     private String baseUrl;
 
+    /**
+     * Initialize Playwright and browser
+     */
     @PostConstruct
     public void init() {
         log.info("{} {} Initializing SportyBet with Playwright...", EMOJI_INIT, EMOJI_BET);
@@ -140,6 +145,7 @@ public class SportyBet implements BettingWindow, Runnable {
                     .setSlowMo(0));
 
             log.info("{} {} Playwright initialized successfully", EMOJI_SUCCESS, EMOJI_INIT);
+
             log.info("Registering SportyBet Window for Bet placing");
             orchestrator.registerWorker(BOOKMAKER, taskQueue);
 
@@ -148,6 +154,10 @@ public class SportyBet implements BettingWindow, Runnable {
             throw new RuntimeException("Playwright initialization failed", e);
         }
     }
+
+    // ========================================================================
+    // POLLING AND TASK RETRIEVAL
+    // ========================================================================
 
     /**
      * Poll for a BetLegTask from the orchestrator task queue.
@@ -159,6 +169,7 @@ public class SportyBet implements BettingWindow, Runnable {
         try {
             log.debug("{} {} Polling for BetLegTask from queue...", EMOJI_POLL, EMOJI_SEARCH);
 
+            // Poll with timeout to allow periodic checks of running state
             BetLegTask task = taskQueue.poll(pollIntervalMs, TimeUnit.MILLISECONDS);
 
             if (task != null) {
@@ -166,6 +177,9 @@ public class SportyBet implements BettingWindow, Runnable {
                         EMOJI_SUCCESS, EMOJI_POLL,
                         task.getArbId(), task.getBookmaker(), task.getOutcome(),
                         task.getExpectedOdds(), task.getStakeAmount());
+
+
+                log.info("{}", task.getArb().getOutcomeBreakdown());
             }
 
             return task;
@@ -179,6 +193,10 @@ public class SportyBet implements BettingWindow, Runnable {
             return null;
         }
     }
+
+    // ========================================================================
+    // BET PLACEMENT WORKFLOW WITH DISPATCHER
+    // ========================================================================
 
     /**
      * Deploy bet - orchestrates the complete bet deployment flow with synchronization
@@ -278,6 +296,7 @@ public class SportyBet implements BettingWindow, Runnable {
             if (!partnerDeployed) {
                 log.warn("{} {} Partner deployment failed or timeout", EMOJI_WARNING, EMOJI_SYNC);
                 SportyMarketUtil.clearBetSlip(page);
+                // Partner will handle cleanup and arb killing
                 return false;
             }
 
@@ -294,10 +313,12 @@ public class SportyBet implements BettingWindow, Runnable {
             log.error("{} {} Bet deployment failed: {}",
                     EMOJI_ERROR, EMOJI_BET, e.getMessage(), e);
 
+            // Notify failure and sync
             syncManager.notifyBetFailure(arbId, BOOKMAKER,
                     "Deployment exception: " + e.getMessage());
             syncManager.skipArbAndSync(arbId);
 
+            // Clean up betslip on error
             try {
                 SportyMarketUtil.clearBetSlip(page);
             } catch (Exception clearEx) {
@@ -368,6 +389,7 @@ public class SportyBet implements BettingWindow, Runnable {
                 boolean betPlaced = SportyMarketUtil.placeBet(
                         page, task.getBetLeg(), arbOutcomeService);
 
+                // Generate/extract bet ID
                 betId = "BET_" + System.currentTimeMillis(); // TODO: Extract actual bet ID
 
                 if (!betPlaced) {
@@ -375,8 +397,10 @@ public class SportyBet implements BettingWindow, Runnable {
                             attempt, task.getMaxRetries());
                     log.warn("{} {} {}", EMOJI_WARNING, EMOJI_MONEY, resultMessage);
 
+                    // Notify partner of failure
                     syncManager.notifyBetFailure(task.getTaskId(), BOOKMAKER, "Placement failed");
 
+                    // Wait for partner to complete their attempt
                     syncManager.waitForPartnerBetCompletion(
                             task.getTaskId(), BOOKMAKER,
                             Duration.ofSeconds(betTimeoutSeconds + 5));
@@ -396,6 +420,7 @@ public class SportyBet implements BettingWindow, Runnable {
                         EMOJI_SUCCESS, EMOJI_MONEY, task.getTaskId(),
                         task.getStakeAmount(), task.getExpectedOdds());
 
+                // Notify partner of successful placement
                 syncManager.notifyBetPlaced(task.getTaskId(), BOOKMAKER);
 
                 // Close success modal if present
@@ -437,7 +462,7 @@ public class SportyBet implements BettingWindow, Runnable {
                     if (rollbackSuccess) {
                         resultMessage = String.format("Rollback successful - partner failed: %s",
                                 partnerResult.getMessage());
-                        success = false;
+                        success = false; // Mark as failed since arb didn't complete
                     } else {
                         log.error("{} {} ROLLBACK FAILED - MANUAL INTERVENTION REQUIRED | ArbId: {}",
                                 EMOJI_ERROR, EMOJI_WARNING, task.getTaskId());
@@ -527,7 +552,7 @@ public class SportyBet implements BettingWindow, Runnable {
 
         try {
             // Navigate to bet history/my bets page
-            String myBetsUrl = "https://www.sportybet.com/ng/mybets"; // Update with actual SportyBet URL
+            String myBetsUrl = "https://www.sportybet.com/ng/web/mybets";
             page.navigate(myBetsUrl);
             page.waitForTimeout(2000);
 
@@ -577,23 +602,17 @@ public class SportyBet implements BettingWindow, Runnable {
         return false;
     }
 
-    /**
-     * Human-like random delay to avoid bot detection
-     */
-    private void randomHumanDelay(long minMs, long maxMs) {
-        try {
-            long delay = minMs + ThreadLocalRandom.current().nextLong(maxMs - minMs + 1);
-            Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.warn("Delay interrupted");
-        }
-    }
+    // ========================================================================
+    // SUPPORTING METHODS
+    // ========================================================================
 
     /**
      * Determine which sport to navigate to based on configuration
+     * @return The configured sport type
      */
     private Sport determineConfiguredSport() {
+        log.debug("{} {} Determining configured sport from settings...", EMOJI_INFO, EMOJI_SEARCH);
+
         if (fetchTableTennisEnabled) {
             return Sport.TABLE_TENNIS;
         } else if (fetchFootballEnabled) {
@@ -612,6 +631,7 @@ public class SportyBet implements BettingWindow, Runnable {
      */
     private void handleCaptchaScenario() {
         log.warn("{} {} CAPTCHA detected - implementing recovery strategy", EMOJI_WARNING, EMOJI_SYNC);
+
         try {
             Thread.sleep(5000);
             recreateContext();
@@ -623,6 +643,7 @@ public class SportyBet implements BettingWindow, Runnable {
 
     /**
      * Wait between retry attempts with exponential backoff
+     * @param attempt Current attempt number
      */
     private void waitBetweenRetries(int attempt) {
         long waitTime = Math.min(2000L * attempt, 10000L);
@@ -639,15 +660,35 @@ public class SportyBet implements BettingWindow, Runnable {
 
     /**
      * Get betting indicator status
+     * @return true if a bet is currently being placed, false otherwise
      */
     public boolean isBetInProgress() {
         return isBetInProgress.get();
+    }
+
+    /**
+     * Human-like random delay to avoid bot detection
+     *
+     * @param minMs Minimum delay in milliseconds
+     * @param maxMs Maximum delay in milliseconds
+     */
+    private void randomHumanDelay(long minMs, long maxMs) {
+        try {
+            long delay = minMs + ThreadLocalRandom.current().nextLong(maxMs - minMs + 1);
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Delay interrupted");
+        }
     }
 
     // ========================================================================
     // CONTEXT MANAGEMENT
     // ========================================================================
 
+    /**
+     * Create new browser context
+     */
     private BrowserContext newContext(Browser browser, UserAgentProfile profile) {
         log.info("ViewPort size {} x {}", profile.getViewport().getWidth(), profile.getViewport().getHeight());
         log.info("Headers: {}", getAllHeaders(profile));
@@ -659,6 +700,9 @@ public class SportyBet implements BettingWindow, Runnable {
         );
     }
 
+    /**
+     * Get all headers from profile
+     */
     private Map<String, String> getAllHeaders(UserAgentProfile profile) {
         Map<String, String> all = new HashMap<>();
         if (profile.getHeaders().getStandardHeaders() != null) {
@@ -670,6 +714,9 @@ public class SportyBet implements BettingWindow, Runnable {
         return all;
     }
 
+    /**
+     * Load or create browser context
+     */
     private BrowserContext loadOrCreateContext() {
         profile = profileManager.getNextProfile();
         Path contextFilePath = Paths.get(contextPath, CONTEXT_FILE);
@@ -706,6 +753,9 @@ public class SportyBet implements BettingWindow, Runnable {
         return newContext(browser, profile);
     }
 
+    /**
+     * Save browser context
+     */
     private void saveContext(BrowserContext context) {
         if (context == null) return;
 
@@ -724,6 +774,10 @@ public class SportyBet implements BettingWindow, Runnable {
         }
     }
 
+    /**
+     * Recreate browser context
+     * Proper cleanup of all resources before recreating
+     */
     private void recreateContext() {
         log.info("{} {} Recreating browser context...", EMOJI_SYNC, EMOJI_INIT);
         isLoggedIn.set(false);
@@ -770,6 +824,9 @@ public class SportyBet implements BettingWindow, Runnable {
     // MAIN ENTRY POINTS
     // ========================================================================
 
+    /**
+     * Main entry point - runs the betting window with retry logic
+     */
     @Override
     public void run() {
         int attempt = 0;
@@ -903,6 +960,10 @@ public class SportyBet implements BettingWindow, Runnable {
             SportyNavigationUtil.navigateToLiveEvents(page);
             SportyNavigationUtil.waitForPageReady(page);
 
+            if (!SportyBetLoginUtil.checkIfLoggedIn(page)) {
+                throw new RuntimeException("Login verification failed");
+            }
+
             Sport configuredSport = determineConfiguredSport();
             SportyNavigationUtil.navigateToSportPage(page, configuredSport);
             SportyNavigationUtil.waitForPageReady(page);
@@ -971,7 +1032,13 @@ public class SportyBet implements BettingWindow, Runnable {
                     try {
                         SportyMarketUtil.clearBetSlip(page);
                         configuredSport = determineConfiguredSport();
-                        SportyNavigationUtil.returnToSportPage(page, configuredSport);
+//                        SportyNavigationUtil.returnToSportPage(page, configuredSport);
+//
+//
+                        page.goBack(new Page.GoBackOptions().setTimeout(15000));
+                        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+                        log.info("{} Returned to previous page", EMOJI_NAVIGATION);
+
                         SportyNavigationUtil.waitForPageReady(page);
                         consecutiveFailures = 0;
                         log.info("{} {} Recovery completed", EMOJI_SUCCESS, EMOJI_SYNC);

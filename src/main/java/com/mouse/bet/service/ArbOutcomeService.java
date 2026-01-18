@@ -1,6 +1,5 @@
 package com.mouse.bet.service;
 
-
 import com.mouse.bet.entity.ArbOutcome;
 import com.mouse.bet.repository.ArbOutcomeRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +29,7 @@ public class ArbOutcomeService {
 
     /* ===================== READ ===================== */
 
+    @Transactional(readOnly = true)  // ✅ Added
     public Optional<ArbOutcome> findByExternalIdAndBookmaker(
             String externalId,
             Integer bookmakerId
@@ -38,14 +38,17 @@ public class ArbOutcomeService {
                 .findByArbitrageExternalIdAndBookmakerId(externalId, bookmakerId);
     }
 
+    @Transactional(readOnly = true)  // ✅ Added
     public List<ArbOutcome> findByArbitrageId(Long arbId) {
         return arbOutcomeRepository.findByArbitrageId(arbId);
     }
 
+    @Transactional(readOnly = true)  // ✅ Added
     public List<ArbOutcome> findByBookmaker(Integer bookmakerId) {
         return arbOutcomeRepository.findByBookmakerId(bookmakerId);
     }
 
+    @Transactional(readOnly = true)  // ✅ Added
     public List<ArbOutcome> findByArbitrageAndBookmaker(
             Long arbId,
             Integer bookmakerId
@@ -66,4 +69,3 @@ public class ArbOutcomeService {
         arbOutcomeRepository.deleteByArbitrageIdQuery(arbId);
     }
 }
-

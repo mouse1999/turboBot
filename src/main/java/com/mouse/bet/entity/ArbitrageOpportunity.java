@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Normalized arbitrage entity with age calculation
+ * Normalized arbitrage entity with age calculation and reset logic
+ * Age resets if update gap exceeds 4 seconds (maintains consistency for 2-second updates)
  */
 @Entity
 @Table(name = "arbitrage_opportunities", indexes = {
@@ -37,11 +38,9 @@ public class ArbitrageOpportunity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ✅ CRITICAL: Add @Version for optimistic locking
     @Version
     @Column(name = "version")
     private Long version;
-
 
     @Column(name = "external_id", unique = true, length = 500)
     private String externalId;
@@ -96,7 +95,6 @@ public class ArbitrageOpportunity {
     @Builder.Default
     private Map<BookMaker, LegResult> resultMap = new HashMap<>();
 
-
     // Status and Tracking
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -130,10 +128,13 @@ public class ArbitrageOpportunity {
     @Column(name = "update_count")
     private Integer updateCount;
 
-    // ✅ NORMALIZED: Separate outcomes collection
     @OneToMany(mappedBy = "arbitrage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<ArbOutcome> outcomes = new ArrayList<>();
+
+    // ✅ Constants for age reset logic
+    private static final long UPDATE_INTERVAL_SECONDS = 2L;
+    private static final long MAX_UPDATE_GAP_SECONDS = 4L;
 
     @PrePersist
     protected void onCreate() {
@@ -145,17 +146,36 @@ public class ArbitrageOpportunity {
         if (updateCount == null) {
             updateCount = 0;
         }
-        // Calculate initial age (will be 0)
         calculateAge();
     }
 
     @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public void onUpdate() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // ✅ Check if update gap exceeds threshold (more than 4 seconds)
+        if (updatedAt != null) {
+            long secondsSinceLastUpdate = Duration.between(updatedAt, now).getSeconds();
+
+            if (secondsSinceLastUpdate > MAX_UPDATE_GAP_SECONDS) {
+                // Reset createdAt to maintain consistent age
+                // This happens when there's a gap in updates (e.g., arb disappeared and reappeared)
+                createdAt = now;
+                updateCount = 0; // Reset update count as well
+
+                // Optional: Log this event
+                // log.info("Age reset for arb {} - update gap was {} seconds",
+                //          externalId, secondsSinceLastUpdate);
+            }
+        }
+
+        updatedAt = now;
+
         if (updateCount != null) {
             updateCount++;
         }
-        // Recalculate age on every update
+
+        // Recalculate age after potential reset
         calculateAge();
     }
 
@@ -204,6 +224,27 @@ public class ArbitrageOpportunity {
     }
 
     /**
+     * Check if last update was consistent (within expected interval)
+     */
+    public boolean isUpdateConsistent() {
+        if (updatedAt == null) {
+            return false;
+        }
+        long secondsSinceLastUpdate = Duration.between(updatedAt, LocalDateTime.now()).getSeconds();
+        return secondsSinceLastUpdate <= MAX_UPDATE_GAP_SECONDS;
+    }
+
+    /**
+     * Get seconds since last update
+     */
+    public Long getSecondsSinceLastUpdate() {
+        if (updatedAt == null) {
+            return null;
+        }
+        return Duration.between(updatedAt, LocalDateTime.now()).getSeconds();
+    }
+
+    /**
      * Get human-readable age string
      */
     public String getAgeFormatted() {
@@ -215,6 +256,13 @@ public class ArbitrageOpportunity {
         } else {
             return String.format("%.1f hours", age / 3600.0);
         }
+    }
+
+    /**
+     * Check if this arb was recently reset (age < 5 seconds and updateCount < 3)
+     */
+    public boolean wasRecentlyReset() {
+        return getCurrentAge() < 5 && (updateCount == null || updateCount < 3);
     }
 
     // Helper methods
@@ -235,5 +283,100 @@ public class ArbitrageOpportunity {
     public String getSummary() {
         return String.format("%s vs %s | %s | %.2f%% profit | Age: %s",
                 homeTeam, awayTeam, sport, profitPercentage, getAgeFormatted());
+    }
+
+    /**
+     * Get detailed summary including outcome information
+     * Format: "Team1 vs Team2 | Sport | Bookmaker1 (odds1) vs Bookmaker2 (odds2) | Profit% | Age"
+     */
+    public String getDetailedSummary() {
+        if (outcomes == null || outcomes.isEmpty()) {
+            return getSummary() + " | No outcomes";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        // Basic info
+        sb.append(String.format("%s vs %s | %s | ", homeTeam, awayTeam, sport));
+
+        // Outcome details
+        for (int i = 0; i < outcomes.size(); i++) {
+            ArbOutcome outcome = outcomes.get(i);
+            sb.append(String.format("%s (%.2f)",
+                    outcome.getBookmakerName(),
+                    outcome.getOdds()));
+
+            if (i < outcomes.size() - 1) {
+                sb.append(" vs ");
+            }
+        }
+
+        // Profit and age
+        sb.append(String.format(" | %.2f%% profit | Age: %s",
+                profitPercentage, getAgeFormatted()));
+
+        return sb.toString();
+    }
+
+    /**
+     * Get full outcome breakdown with market types and selections
+     * Format: Multi-line with each outcome on separate line
+     */
+    public String getOutcomeBreakdown() {
+        if (outcomes == null || outcomes.isEmpty()) {
+            return String.format("Arb: %s vs %s | No outcomes available", homeTeam, awayTeam);
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        // Header
+        sb.append(String.format("=== %s vs %s | %s ===\n", homeTeam, awayTeam, sport));
+        sb.append(String.format("Profit: %.2f%% | ROI: %s | Age: %s | Status: %s\n",
+                profitPercentage,
+                roiPercentage != null ? String.format("%.2f%%", roiPercentage) : "N/A",
+                getAgeFormatted(),
+                status));
+        sb.append(String.format("Market: %s | Outcome: %s\n", marketType, outCome));
+        sb.append("\nOutcomes:\n");
+
+        // Each outcome
+        for (int i = 0; i < outcomes.size(); i++) {
+            ArbOutcome outcome = outcomes.get(i);
+            sb.append(String.format("  %d. %s (ID: %d)\n",
+                    i + 1,
+                    outcome.getBookmakerName(),
+                    outcome.getBookmakerId()));
+            sb.append(String.format("     Teams: %s vs %s\n",
+                    outcome.getHomeTeam(),
+                    outcome.getAwayTeam()));
+            sb.append(String.format("     Market: %s | Selection: %s\n",
+                    outcome.getMarketType() != null ? outcome.getMarketType() : "N/A",
+                    outcome.getOutComeName() != null ? outcome.getOutComeName() : "N/A"));
+            sb.append(String.format("     Odds: %.2f", outcome.getOdds()));
+
+            if (outcome.getPreviousOdds() != null) {
+                sb.append(String.format(" (was: %.2f)", outcome.getPreviousOdds()));
+            }
+
+            if (outcome.getStake() != null) {
+                sb.append(String.format(" | Stake: %.2f", outcome.getStake()));
+            }
+
+            if (outcome.getInitiator() != null && outcome.getInitiator()) {
+                sb.append(" [INITIATOR]");
+            }
+
+            sb.append("\n");
+
+            if (outcome.getProgress() != null) {
+                sb.append(String.format("     Progress: %s\n", outcome.getProgress()));
+            }
+
+            if (outcome.getLeagueName() != null) {
+                sb.append(String.format("     League: %s\n", outcome.getLeagueName()));
+            }
+        }
+
+        return sb.toString();
     }
 }

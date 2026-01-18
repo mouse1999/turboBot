@@ -285,17 +285,17 @@
 
 
     <logger name="com.mouse.bet.util.sporty.SportyMarketUtil" level="DEBUG" additivity="false">
-        <appender-ref ref="SPORTYMRKT_FILE"/>
+        <appender-ref ref="SPORTYMRK_FILE"/>
         <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
     <logger name="com.mouse.bet.util.msport.MSportMarketUtil" level="DEBUG" additivity="false">
-        <appender-ref ref="MSPORTMRKT_FILE"/>
+        <appender-ref ref="MSPORTMRK_FILE"/>
         <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
     <logger name="com.mouse.bet.util.onewin.OneWinMarketUtil" level="DEBUG" additivity="false">
-        <appender-ref ref="ONEWINMRKT_FILE"/>
+        <appender-ref ref="ONEWINMRK_FILE"/>
         <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 

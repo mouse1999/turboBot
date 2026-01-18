@@ -66,58 +66,58 @@ public class OppositeOutcomeMapper {
         addOpposite("1719", "1723");  // Home/Draw & No <-> Draw/Away & No
 
         // Excluded/Goal Bounds outcomes
-        addOpposite("0", "55");   // 0 goals <-> 5+ goals (full match)
-        addOpposite("1", "45");   // 0-1 <-> 4-5+
-        addOpposite("11", "35");  // 1 <-> 3-5+
-        addOpposite("22", "34");  // 2 <-> 3-4
+//        addOpposite("0", "55");   // 0 goals <-> 5+ goals (full match)
+//        addOpposite("1", "45");   // 0-1 <-> 4-5+
+//        addOpposite("11", "35");  // 1 <-> 3-5+
+//        addOpposite("22", "34");  // 2 <-> 3-4
 
-        // Correct Score outcomes (selected opposites)
-        addOpposite("274", "322");  // 0:0 <-> 4:4
-        addOpposite("276", "314");  // 1:0 <-> 0:4
-        addOpposite("278", "304");  // 2:0 <-> 0:3
-        addOpposite("280", "294");  // 3:0 <-> 0:2
-        addOpposite("282", "284");  // 4:0 <-> 0:1
-        addOpposite("286", "322");  // 1:1 <-> 4:4
-        addOpposite("288", "318");  // 2:1 <-> 2:4
-        addOpposite("290", "308");  // 3:1 <-> 2:3
-        addOpposite("292", "296");  // 4:1 <-> 1:2
-        addOpposite("298", "310");  // 2:2 <-> 3:3
-        addOpposite("300", "306");  // 3:2 <-> 1:3
-
-        // Winning Margin
-        addOpposite("sr:winning_margin:6+:120", "sr:winning_margin:6+:121");  // Home by 6+ <-> Away by 6+
-        addOpposite("1002", "1003");  // Home by 3+ <-> Away by 3+
-
-        // Table Tennis - Correct Score (Best of 5)
-        addOpposite("sr:correct_score:bestof:5:8", "sr:correct_score:bestof:5:13");    // 3:0 <-> 0:3
-        addOpposite("sr:correct_score:bestof:5:9", "sr:correct_score:bestof:5:12");    // 3:1 <-> 1:3
-        addOpposite("sr:correct_score:bestof:5:10", "sr:correct_score:bestof:5:11");   // 3:2 <-> 2:3
-
-        // Exact Goals/Games outcomes
-        addOpposite("sr:exact_goals:5+:1336", "sr:exact_goals:5+:1341");  // 0 <-> 5+
-        addOpposite("sr:exact_goals:5+:1337", "sr:exact_goals:5+:1340");  // 1 <-> 4
-        addOpposite("sr:exact_goals:5+:1338", "sr:exact_goals:5+:1339");  // 2 <-> 3
-
-        addOpposite("sr:exact_goals:3+:88", "sr:exact_goals:3+:91");      // 0 <-> 3+
-        addOpposite("sr:exact_goals:3+:89", "sr:exact_goals:3+:90");      // 1 <-> 2
-
-        addOpposite("sr:exact_games:bestof:5:39", "sr:exact_games:bestof:5:41");  // 3 games <-> 5 games
-
-        // Decided by Extra Points
-        addOpposite("sr:decided_by_extra_points:bestof:5:53", "sr:decided_by_extra_points:bestof:5:58");  // 0 <-> 5
-        addOpposite("sr:decided_by_extra_points:bestof:5:54", "sr:decided_by_extra_points:bestof:5:57");  // 1 <-> 4
-        addOpposite("sr:decided_by_extra_points:bestof:5:55", "sr:decided_by_extra_points:bestof:5:56");  // 2 <-> 3
-
-        // First Half Correct Score
-        addOpposite("462", "466");  // 0:0 <-> 2:2
-        addOpposite("468", "476");  // 1:0 <-> 0:2
-        addOpposite("470", "474");  // 2:0 <-> 0:1
-        addOpposite("472", "478");  // 2:1 <-> 1:2
+//        // Correct Score outcomes (selected opposites)
+//        addOpposite("274", "322");  // 0:0 <-> 4:4
+//        addOpposite("276", "314");  // 1:0 <-> 0:4
+//        addOpposite("278", "304");  // 2:0 <-> 0:3
+//        addOpposite("280", "294");  // 3:0 <-> 0:2
+//        addOpposite("282", "284");  // 4:0 <-> 0:1
+//        addOpposite("286", "322");  // 1:1 <-> 4:4
+//        addOpposite("288", "318");  // 2:1 <-> 2:4
+//        addOpposite("290", "308");  // 3:1 <-> 2:3
+//        addOpposite("292", "296");  // 4:1 <-> 1:2
+//        addOpposite("298", "310");  // 2:2 <-> 3:3
+//        addOpposite("300", "306");  // 3:2 <-> 1:3
+//
+//        // Winning Margin
+//        addOpposite("sr:winning_margin:6+:120", "sr:winning_margin:6+:121");  // Home by 6+ <-> Away by 6+
+//        addOpposite("1002", "1003");  // Home by 3+ <-> Away by 3+
+//
+//        // Table Tennis - Correct Score (Best of 5)
+//        addOpposite("sr:correct_score:bestof:5:8", "sr:correct_score:bestof:5:13");    // 3:0 <-> 0:3
+//        addOpposite("sr:correct_score:bestof:5:9", "sr:correct_score:bestof:5:12");    // 3:1 <-> 1:3
+//        addOpposite("sr:correct_score:bestof:5:10", "sr:correct_score:bestof:5:11");   // 3:2 <-> 2:3
+//
+//        // Exact Goals/Games outcomes
+//        addOpposite("sr:exact_goals:5+:1336", "sr:exact_goals:5+:1341");  // 0 <-> 5+
+//        addOpposite("sr:exact_goals:5+:1337", "sr:exact_goals:5+:1340");  // 1 <-> 4
+//        addOpposite("sr:exact_goals:5+:1338", "sr:exact_goals:5+:1339");  // 2 <-> 3
+//
+//        addOpposite("sr:exact_goals:3+:88", "sr:exact_goals:3+:91");      // 0 <-> 3+
+//        addOpposite("sr:exact_goals:3+:89", "sr:exact_goals:3+:90");      // 1 <-> 2
+//
+//        addOpposite("sr:exact_games:bestof:5:39", "sr:exact_games:bestof:5:41");  // 3 games <-> 5 games
+//
+//        // Decided by Extra Points
+//        addOpposite("sr:decided_by_extra_points:bestof:5:53", "sr:decided_by_extra_points:bestof:5:58");  // 0 <-> 5
+//        addOpposite("sr:decided_by_extra_points:bestof:5:54", "sr:decided_by_extra_points:bestof:5:57");  // 1 <-> 4
+//        addOpposite("sr:decided_by_extra_points:bestof:5:55", "sr:decided_by_extra_points:bestof:5:56");  // 2 <-> 3
+//
+//        // First Half Correct Score
+//        addOpposite("462", "466");  // 0:0 <-> 2:2
+//        addOpposite("468", "476");  // 1:0 <-> 0:2
+//        addOpposite("470", "474");  // 2:0 <-> 0:1
+//        addOpposite("472", "478");  // 2:1 <-> 1:2
 
         // Goal Bounds variations
-        addOpposite("0", "33");     // 0 <-> 3+ (for away/home specific)
-        addOpposite("1", "23");     // 0-1 <-> 2-3+
-        addOpposite("11", "13");    // 1 <-> 1-3+
+//        addOpposite("0", "33");     // 0 <-> 3+ (for away/home specific)
+//        addOpposite("1", "23");     // 0-1 <-> 2-3+
+//        addOpposite("11", "13");    // 1 <-> 1-3+
     }
 
     /**

@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -239,7 +241,7 @@ public class MSportNavigationUtil {
         try {
 //            if (tryClickByAriaLabel(page, home, away)) return true;
 //            if (tryClickByHref(page, home, away)) return true;
-//            if (tryClickByTeamText(page, home, away)) return true;
+            if (tryClickByLeagueAndTeamTextJs(page, task.leagueName(), home, away)) return true;
             if (tryClickByPartialMatch(page, home, away)) return true;
             if (tryClickByFuzzyMatch(page, home, away)) return true;
 
@@ -253,8 +255,9 @@ public class MSportNavigationUtil {
         return false;
     }
 
+
     /**
-     * Strategy 1: Click using aria-label attribute
+     * Strategy 1: Click by searching aria-label attribute with multiple patterns
      */
     private static boolean tryClickByAriaLabel(Page page, String home, String away) {
         log.info("Strategy 1: Searching by aria-label attribute");
@@ -266,20 +269,32 @@ public class MSportNavigationUtil {
         };
 
         for (String labelPattern : labelPatterns) {
+            log.debug("Trying aria-label pattern: '{}'", labelPattern);
+
             try {
-                Locator match = page.locator(String.format(".m-teams a[aria-label='%s']", labelPattern));
+                Locator match = page.locator(".m-teams a").filter(
+                        new Locator.FilterOptions().setHasText(labelPattern)
+                );
 
-                if (match.count() > 0 && match.first().isVisible()) {
-                    log.info("✅ Found by exact aria-label: '{}'", labelPattern);
-                    return clickMatchElement(page, match.first());
+                // Alternative: direct aria-label selector
+                // Locator match = page.locator(String.format("a[aria-label='%s']", labelPattern));
+
+                if (match.count() > 0) {
+                    Locator firstMatch = match.first();
+
+                    if (firstMatch.isVisible()) {
+                        log.info("✅ Found by aria-label: '{}'", labelPattern);
+                        return clickMatchElement(page, firstMatch);
+                    } else {
+                        log.debug("Match found but not visible for pattern: '{}'", labelPattern);
+                    }
                 }
-
             } catch (PlaywrightException e) {
                 log.debug("aria-label pattern '{}' failed: {}", labelPattern, e.getMessage());
             }
         }
 
-        log.debug("❌ aria-label strategy failed");
+        log.debug("❌ aria-label strategy failed - no matches found");
         return false;
     }
 
@@ -290,18 +305,29 @@ public class MSportNavigationUtil {
         log.info("Strategy 2: Searching by href pattern");
 
         try {
-            String homeUrl = home.replace(" ", "_").replace(",", "");
-            String awayUrl = away.replace(" ", "_").replace(",", "");
+            // Normalize team names for URL matching
+            String homeUrlPart = normalizeForUrl(home);
+            String awayUrlPart = normalizeForUrl(away);
+            String hrefPattern = String.format("%s_vs_%s", homeUrlPart, awayUrlPart);
 
-            String pattern = String.format("%s_vs_%s", homeUrl, awayUrl);
-            Locator match = page.locator(String.format(".m-teams a[href*='%s']", pattern));
+            log.debug("Looking for href pattern: '{}'", hrefPattern);
 
-            if (match.count() > 0 && match.first().isVisible()) {
-                log.info("✅ Found by href pattern: '{}'", pattern);
-                return clickMatchElement(page, match.first());
+            Locator match = page.locator(String.format(".m-teams a[href*='%s']", hrefPattern));
+
+            if (match.count() > 0) {
+                Locator firstMatch = match.first();
+
+                if (firstMatch.isVisible()) {
+                    log.info("✅ Found by href pattern: '{}'", hrefPattern);
+                    return clickMatchElement(page, firstMatch);
+                } else {
+                    log.debug("Match found but not visible for href pattern: '{}'", hrefPattern);
+                }
+            } else {
+                log.debug("No matches found for href pattern: '{}'", hrefPattern);
             }
 
-        } catch (Exception e) {
+        } catch (PlaywrightException e) {
             log.debug("href strategy error: {}", e.getMessage());
         }
 
@@ -310,52 +336,304 @@ public class MSportNavigationUtil {
     }
 
     /**
-     * Strategy 3: Click by finding team text in m-teams--info
+     * Normalizes team name for URL matching
+     * Removes spaces, commas, and other special characters commonly stripped in URLs
      */
-    private static boolean tryClickByTeamText(Page page, String home, String away) {
-        log.info("Strategy 3: Searching by team text");
+    private static String normalizeForUrl(String teamName) {
+        return teamName
+                .replace(" ", "_")
+                .replace(",", "")
+                .replace("'", "")
+                .replace(".", "");
+    }
 
+
+    private static boolean tryClickByLeagueAndTeamText(Page page, String leagueName, String home, String away) {
+        log.info("Strategy 3: Searching for match in league '{}': {} vs {}", leagueName, home, away);
         try {
-            Locator allTeamsContainers = page.locator(".m-teams");
-            int count = allTeamsContainers.count();
+            // Get all tournaments on the page
+            Locator allTournaments = page.locator(".m-tournament");
+            int tournamentCount = allTournaments.count();
 
-            for (int i = 0; i < count; i++) {
+            log.debug("Found {} tournaments to search", tournamentCount);
+
+            // Iterate through each tournament to find the matching league
+            for (int t = 0; t < tournamentCount; t++) {
                 try {
-                    Locator teamWrappers = page.locator(
-                            ".m-teams:nth-of-type(" + (i + 1) + ") .m-server-name-wrapper"
-                    );
+                    Locator tournament = allTournaments.nth(t);
 
-                    if (teamWrappers.count() >= 2) {
-                        String homeText = page.locator(
-                                ".m-teams:nth-of-type(" + (i + 1) +
-                                        ") .m-server-name-wrapper:nth-of-type(1) .tw-w-full.tw-truncate"
-                        ).textContent().trim();
+                    // Get the tournament/league name
+                    Locator tournamentTitle = tournament.locator(".category-tournament-title");
+                    if (tournamentTitle.count() == 0) {
+                        log.debug("Tournament {} has no title, skipping", t);
+                        continue;
+                    }
 
-                        String awayText = page.locator(
-                                ".m-teams:nth-of-type(" + (i + 1) +
-                                        ") .m-server-name-wrapper:nth-of-type(2) .tw-w-full.tw-truncate"
-                        ).textContent().trim();
+                    String fullTournamentText = tournamentTitle.textContent().trim();
 
-                        if (homeText.equalsIgnoreCase(home) && awayText.equalsIgnoreCase(away)) {
-                            log.info("✅ Found by team text match");
-                            Locator clickTarget = page.locator(
-                                    ".m-teams:nth-of-type(" + (i + 1) + ") a"
-                            ).first();
-                            return clickMatchElement(page, clickTarget);
+                    // Clean up the tournament text (remove extra whitespace/newlines)
+                    String cleanedTournamentText = fullTournamentText.replaceAll("\\s+", " ").trim();
+
+                    log.debug("Tournament {}: '{}'", t, cleanedTournamentText);
+
+                    // Check if this is the league we're looking for
+                    if (!isLeagueMatch(cleanedTournamentText, leagueName)) {
+                        log.debug("League '{}' doesn't match target '{}', skipping",
+                                cleanedTournamentText, leagueName);
+                        continue;
+                    }
+
+                    log.info("✅ Found target league: '{}'", cleanedTournamentText);
+
+                    // Now search for the match within this tournament
+                    Locator matchesInTournament = tournament.locator(".m-event .m-teams");
+                    int matchCount = matchesInTournament.count();
+
+                    log.debug("Searching {} matches in league '{}'", matchCount, cleanedTournamentText);
+
+                    // Check each match in this tournament
+                    for (int m = 0; m < matchCount; m++) {
+                        try {
+                            Locator teamsContainer = matchesInTournament.nth(m);
+                            Locator teamWrappers = teamsContainer.locator(".m-server-name-wrapper");
+
+                            if (teamWrappers.count() >= 2) {
+                                String homeText = teamWrappers.nth(0)
+                                        .locator(".tw-w-full.tw-truncate")
+                                        .textContent()
+                                        .trim();
+
+                                String awayText = teamWrappers.nth(1)
+                                        .locator(".tw-w-full.tw-truncate")
+                                        .textContent()
+                                        .trim();
+
+                                log.debug("Checking match {}: {} vs {} (looking for {} vs {})",
+                                        m, homeText, awayText, home, away);
+
+                                if (homeText.equalsIgnoreCase(home) && awayText.equalsIgnoreCase(away)) {
+                                    log.info("✅ Found exact match in '{}': {} vs {}",
+                                            cleanedTournamentText, homeText, awayText);
+
+                                    // Click the link within this teams container
+                                    Locator clickTarget = teamsContainer.locator("a").first();
+                                    return clickMatchElement(page, clickTarget);
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.debug("Error checking match {} in league '{}': {}",
+                                    m, cleanedTournamentText, e.getMessage());
                         }
                     }
+
+                    log.debug("Match not found in league '{}', continuing search...", cleanedTournamentText);
+
                 } catch (Exception e) {
-                    log.debug("Error checking container {}: {}", i, e.getMessage());
+                    log.debug("Error checking tournament {}: {}", t, e.getMessage());
                 }
             }
 
+            log.warn("❌ Match not found: {} vs {} in league '{}'", home, away, leagueName);
+            return false;
+
         } catch (Exception e) {
-            log.debug("Team text strategy error: {}", e.getMessage());
+            log.error("League and team text strategy error: {}", e.getMessage());
+            return false;
+        }
+    }
+
+
+
+    private static boolean isLeagueMatch(String fullTournamentText, String targetLeague) {
+        if (fullTournamentText == null || targetLeague == null) {
+            return false;
         }
 
-        log.debug("❌ Team text strategy failed");
+        // Normalize both strings once
+        String tournament = normalize(fullTournamentText);
+        String target = normalize(targetLeague);
+
+        // Early exit for empty strings after normalization
+        if (tournament.isEmpty() || target.isEmpty()) {
+            return false;
+        }
+
+        // Exact match - O(n)
+        if (tournament.equals(target)) {
+            log.debug("Exact match: '{}' == '{}'", fullTournamentText, targetLeague);
+            return true;
+        }
+
+        // Contains match - O(n*m) but optimized with built-in Boyer-Moore variant
+        if (tournament.contains(target) || target.contains(tournament)) {
+            log.debug("Contains match: '{}' and '{}'", fullTournamentText, targetLeague);
+            return true;
+        }
+
         return false;
     }
+
+    private static String normalize(String text) {
+        if (text == null) {
+            return "";
+        }
+
+        return text.toLowerCase()
+                .replaceAll("[^a-z0-9]+", " ")  // Replace all non-alphanumeric chars with space
+                .trim()                          // Remove leading/trailing spaces
+                .replaceAll("\\s+", " ");       // Collapse multiple spaces to single space
+    }
+
+
+
+
+    private static boolean tryClickByLeagueAndTeamTextJs(Page page, String leagueName, String home, String away) {
+        log.info("Strategy 3: Searching for match in league '{}': {} vs {}", leagueName, home, away);
+        try {
+            // Use JavaScript to find the match quickly with detailed search info and improved normalization
+            Object result = page.evaluate("""
+        (params) => {
+            const { leagueName, home, away } = params;
+            const searchLog = [];
+            
+            // Enhanced normalization function to handle hyphens, dots, and special characters
+            function normalize(text) {
+                if (!text) return '';
+                return text.toLowerCase()
+                    .replace(/\\s*-\\s*/g, ' ')    // Replace " - " or "-" with space
+                    .replace(/[.,]/g, '')           // Remove dots and commas
+                    .replace(/\\s+/g, ' ')          // Normalize multiple spaces to single space
+                    .trim();
+            }
+            
+            const normalizedLeague = normalize(leagueName);
+            searchLog.push(`Searching for league: '${leagueName}' (normalized: '${normalizedLeague}')`);
+            
+            // Get all tournaments
+            const tournaments = document.querySelectorAll('.m-tournament');
+            searchLog.push(`Total tournaments: ${tournaments.length}`);
+            
+            for (let i = 0; i < tournaments.length; i++) {
+                const tournament = tournaments[i];
+                
+                // Get tournament title
+                const titleElement = tournament.querySelector('.category-tournament-title');
+                if (!titleElement) {
+                    searchLog.push(`Tournament ${i}: No title found`);
+                    continue;
+                }
+                
+                const tournamentText = titleElement.textContent.replace(/\\s+/g, ' ').trim();
+                const normalizedTournament = normalize(tournamentText);
+                
+                // Multiple matching strategies for flexibility
+                const exactMatch = normalizedTournament === normalizedLeague;
+                const containsMatch = normalizedTournament.includes(normalizedLeague) || 
+                                     normalizedLeague.includes(normalizedTournament);
+                
+                // Word-based matching: all significant words from league appear in tournament
+                const leagueWords = normalizedLeague.split(' ').filter(word => word.length > 2);
+                const wordMatch = leagueWords.length > 0 && 
+                                 leagueWords.every(word => normalizedTournament.includes(word));
+                
+                const matches = exactMatch || containsMatch || wordMatch;
+                
+                if (!matches) {
+                    searchLog.push(`Tournament ${i}: '${tournamentText}' (normalized: '${normalizedTournament}') - no match`);
+                    continue;
+                }
+                
+                searchLog.push(`Tournament ${i}: '${tournamentText}' (normalized: '${normalizedTournament}') - MATCHED! (league normalized: '${normalizedLeague}')`);
+                
+                // Search for teams in this tournament
+                const matchElements = tournament.querySelectorAll('.m-event .m-teams');
+                searchLog.push(`  - Found ${matchElements.length} matches in this league`);
+                
+                for (let j = 0; j < matchElements.length; j++) {
+                    const match = matchElements[j];
+                    const teamWrappers = match.querySelectorAll('.m-server-name-wrapper');
+                    
+                    if (teamWrappers.length >= 2) {
+                        const homeText = teamWrappers[0].querySelector('.tw-w-full.tw-truncate')?.textContent.trim();
+                        const awayText = teamWrappers[1].querySelector('.tw-w-full.tw-truncate')?.textContent.trim();
+                        
+                        searchLog.push(`  - Match ${j}: ${homeText} vs ${awayText}`);
+                        
+                        if (homeText && awayText &&
+                            homeText.toLowerCase() === home.toLowerCase() &&
+                            awayText.toLowerCase() === away.toLowerCase()) {
+                            
+                            searchLog.push(`  - TEAMS MATCHED!`);
+                            
+                            // Return the link's href
+                            const link = match.querySelector('a');
+                            if (link) {
+                                return {
+                                    found: true,
+                                    href: link.href,
+                                    league: tournamentText,
+                                    home: homeText,
+                                    away: awayText,
+                                    searchLog: searchLog
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return { found: false, searchLog: searchLog };
+        }
+        """,
+                    Map.of(
+                            "leagueName", leagueName,
+                            "home", home,
+                            "away", away
+                    )
+            );
+
+            // Parse the result
+            @SuppressWarnings("unchecked")
+            Map<String, Object> resultMap = (Map<String, Object>) result;
+
+            // Log search details
+            @SuppressWarnings("unchecked")
+            List<String> searchLog = (List<String>) resultMap.get("searchLog");
+            if (searchLog != null) {
+                searchLog.forEach(line -> log.debug(line));
+            }
+
+            if (Boolean.TRUE.equals(resultMap.get("found"))) {
+                String href = (String) resultMap.get("href");
+                String foundLeague = (String) resultMap.get("league");
+                String foundHome = (String) resultMap.get("home");
+                String foundAway = (String) resultMap.get("away");
+
+                log.info("✅ Found match in league '{}': {} vs {}", foundLeague, foundHome, foundAway);
+                log.debug("Match URL: {}", href);
+
+                // Click the link using CSS selector
+                String selector = String.format("a[href='%s']", href.replace("'", "\\'"));
+                page.click(selector);
+
+                // Wait for navigation
+                page.waitForLoadState(LoadState.NETWORKIDLE,
+                        new Page.WaitForLoadStateOptions().setTimeout(5000));
+
+                log.info("Successfully navigated to match page");
+                return true;
+            } else {
+                log.warn("❌ Match not found: {} vs {} in league '{}'", home, away, leagueName);
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("League and team text strategy error: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+
+
 
     /**
      * Strategy 4: Partial matching (case-insensitive)
@@ -496,10 +774,10 @@ public class MSportNavigationUtil {
     /**
      * Return to sport page after bet placement
      */
-    public static void returnToSportPage(Page page, Sport Sport) throws Exception {
-        log.info("{} {} Returning to {} live page...", EMOJI_NAVIGATION, EMOJI_SEARCH, Sport);
+    public static void returnToSportPage(Page page, Sport sport) throws Exception {
+        log.info("{} {} Returning to {} live page...", EMOJI_NAVIGATION, EMOJI_SEARCH, sport);
 
-        switchToLiveSport(page, Sport.name());
+        switchToLiveSport(page, sport.getDisplayName());
     }
 
     /**

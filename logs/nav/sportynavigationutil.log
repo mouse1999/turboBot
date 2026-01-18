@@ -1,0 +1,35 @@
+2026-01-18 00:57:18.143 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil -   🎯 Navigating to SportyBet...
+2026-01-18 00:57:22.199 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ 🎯 Successfully navigated to SportyBet
+2026-01-18 00:57:25.007 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Clicked 'Live Betting' using ID selector
+2026-01-18 00:57:32.243 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Successfully navigated to Live Betting page: https://www.sportybet.com/ng/sport/live/
+2026-01-18 00:57:38.170 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil -   🎯 Navigating to SportyBet...
+2026-01-18 00:57:41.789 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ 🎯 Successfully navigated to SportyBet
+2026-01-18 00:58:02.060 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Clicked 'Live Betting' using ID selector
+2026-01-18 00:58:05.865 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Successfully navigated to Live Betting page: https://www.sportybet.com/ng/sport/live/
+2026-01-18 00:58:06.141 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Attempting to click Multi View...
+2026-01-18 00:58:09.637 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Clicked Multi View
+2026-01-18 00:58:09.637 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Multi View loaded: https://www.sportybet.com/ng/sport/football/live_list
+2026-01-18 00:58:12.232 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Switching to live sport: Table Tennis → tableTennis
+2026-01-18 00:58:12.233 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Opening 'More Sports' dropdown to select: Table Tennis
+2026-01-18 00:58:12.535 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Found dropdown using: .select-title
+2026-01-18 00:58:15.611 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Opened 'More Sports' dropdown
+2026-01-18 00:58:16.696 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Dropdown list is now visible
+2026-01-18 00:58:16.744 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Found 21 sports in dropdown
+2026-01-18 00:58:16.763 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Found sport: 'Table Tennis'
+2026-01-18 00:58:19.884 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Clicked on: Table Tennis
+2026-01-18 00:58:19.886 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Navigated to Table Tennis Multi View: https://www.sportybet.com/ng/sport/tableTennis/live_list
+2026-01-18 00:58:23.688 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Table Tennis Multi View ready! URL: https://www.sportybet.com/ng/sport/tableTennis/live_list
+2026-01-18 00:59:26.910 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - 🎯 Navigating to: Mishchenko, OleksandrvsKryvorotko, Yevhen | EventId: 16193964931486319996:876:17,5;22259:19.5::-2252780576079323146;22260:19.5::-2252780575594544326;
+2026-01-18 00:59:27.041 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - 🎯 Searching for match: Mishchenko, Oleksandr vs Kryvorotko, Yevhen
+2026-01-18 00:59:27.041 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Strategy 1: Searching by title attribute
+2026-01-18 00:59:27.095 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Found by partial title match
+2026-01-18 00:59:27.300 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Clicking match: Kryvorotko, Yevhen Mishchenko, Oleksandr
+2026-01-18 00:59:32.744 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Navigation successful: https://www.sportybet.com/ng/sport/tableTennis/live/Ukraine/Setka_Cup/Kryvorotko,_Yevhen_vs_Mishchenko,_Oleksandr/sr:match:BIw3aAG6mR2SxNBbPfgCCng
+2026-01-18 00:59:37.367 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Match content detected via fallback (odds tables present)
+2026-01-18 01:00:48.264 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - 🎯 Navigating to: Makajew, MaciejvsKolodziej, Krystian | EventId: 16193963696117167152:351:17,8;22275:-5.5::-2252780577665537991;22276:5.5::-2252780575958771060;
+2026-01-18 01:00:48.419 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - 🎯 Searching for match: Makajew, Maciej vs Kolodziej, Krystian
+2026-01-18 01:00:48.419 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Strategy 1: Searching by title attribute
+2026-01-18 01:00:48.716 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Found by partial title match
+2026-01-18 01:00:49.809 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Clicking match: Kolodziej, Krystian Makajew, Maciej
+2026-01-18 01:00:56.940 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Navigation successful: https://www.sportybet.com/ng/sport/tableTennis/live/International/TT_Elite_Series/Kolodziej,_Krystian_vs_Makajew,_Maciej/sr:match:67873010
+2026-01-18 01:01:03.845 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Match content detected via fallback (odds tables present)

@@ -14,10 +14,9 @@ import com.mouse.bet.interfaces.BettingTask;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
-import static com.mouse.bet.enums.Sport.*;
-import static com.mouse.bet.util.msport.MSportNavigationUtil.randomHumanDelay;
 
 @Slf4j
 public class SportyNavigationUtil {
@@ -171,71 +170,68 @@ public class SportyNavigationUtil {
      * Main method: Enter Multi View then switch to the correct live sport
      */
     public static void navigateToSportPage(Page page, Sport configuredSport) throws InterruptedException {
-//        log.info("Attempting to click Multi View...");
-//
-//        String[] selectors = {
-//                "a[href='/ng/sport/football/live_list/']",
-//                "span[data-cms-key='multi_view']",
-//                "text=Multi View"arbpoll
-//        };
-//
-//        boolean clicked = false;
-//        for (String selector : selectors) {
-//            try {
-//                Locator element = withLocatorRetry(
-//                        page, selector,
-//                        loc -> {
-//                            if (loc.count() > 0 && loc.first().isVisible()) {
-//                                return loc;
-//                            }
-//                            return null;
-//                        },
-//                        RETRY_MAX_ATTEMPTS, RETRY_TIMEOUT_MS, RETRY_DELAY_MS
-//                );
-//
-//                if (element != null && element.count() > 0 && element.first().isVisible()) {
-//                    element.first().scrollIntoViewIfNeeded();
-//                    randomHumanDelay(1500, 3000);
-//                    element.first().click(new Locator.ClickOptions().setTimeout(120_000));
-//                    clicked = true;
-//                    log.info("✅ Clicked Multi View");
-//                    break;
-//                }
-//            } catch (Exception e) {
-//                log.debug("Selector failed: {}", selector);
-//            }
-//        }
-//
-//        if (!clicked) {
-//            throw new RuntimeException("Could not click Multi View");
-//        }
-//
-//        String currentUrl = page.url();
-//        if (!currentUrl.contains("/football/live_list")) {
-//            throw new RuntimeException("Failed to navigate to Multi View. URL: " + currentUrl);
-//        }
-//
-//        log.info("✅ Multi View loaded: {}", currentUrl);
-//        randomHumanDelay(2500, 3000);
-//
-//            switch (configuredSport) {
-//                case BASKETBALL:
-//                    switchToLiveSport(page, "Basketball");
-//                    break;
-//                case TABLE_TENNIS:
-//                    switchToLiveSport(page, "Table Tennis");
-//                    break;
-//                case FOOTBALL:
-//                    switchToLiveSport(page, "Soccer");
-//                    break;
-//                default:
-//                    log.info("Staying on the default live sport page");
-//                    randomHumanDelay(2000, 4000);
-//            }
+        log.info("Attempting to click Multi View...");
 
-        page.goBack(new Page.GoBackOptions().setTimeout(15000));
-        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
-        log.info("{} Returned to previous page", EMOJI_NAVIGATION);
+        String[] selectors = {
+                "a[href='/ng/sport/football/live_list/']",
+                "span[data-cms-key='multi_view']",
+                "text=Multi View"
+        };
+
+        boolean clicked = false;
+        for (String selector : selectors) {
+            try {
+                Locator element = withLocatorRetry(
+                        page, selector,
+                        loc -> {
+                            if (loc.count() > 0 && loc.first().isVisible()) {
+                                return loc;
+                            }
+                            return null;
+                        },
+                        RETRY_MAX_ATTEMPTS, RETRY_TIMEOUT_MS, RETRY_DELAY_MS
+                );
+
+                if (element != null && element.count() > 0 && element.first().isVisible()) {
+                    element.first().scrollIntoViewIfNeeded();
+                    randomHumanDelay(1500, 3000);
+                    element.first().click(new Locator.ClickOptions().setTimeout(120_000));
+                    clicked = true;
+                    log.info("✅ Clicked Multi View");
+                    break;
+                }
+            } catch (Exception e) {
+                log.debug("Selector failed: {}", selector);
+            }
+        }
+
+        if (!clicked) {
+            throw new RuntimeException("Could not click Multi View");
+        }
+
+        String currentUrl = page.url();
+        if (!currentUrl.contains("/football/live_list")) {
+            throw new RuntimeException("Failed to navigate to Multi View. URL: " + currentUrl);
+        }
+
+        log.info("✅ Multi View loaded: {}", currentUrl);
+        randomHumanDelay(2500, 3000);
+
+            switch (configuredSport) {
+                case BASKETBALL:
+                    switchToLiveSport(page, "Basketball");
+                    break;
+                case TABLE_TENNIS:
+                    switchToLiveSport(page, "Table Tennis");
+                    break;
+                case FOOTBALL:
+                    switchToLiveSport(page, "Soccer");
+                    break;
+                default:
+                    log.info("Staying on the default live sport page");
+                    randomHumanDelay(2000, 4000);
+            }
+
     }
 
     /**
@@ -368,7 +364,7 @@ public class SportyNavigationUtil {
                 if (dropdown != null && dropdown.count() > 0 && dropdown.first().isVisible()) {
                     log.info("Found dropdown using: {}", selector);
                     dropdown.first().scrollIntoViewIfNeeded();
-                    randomHumanDelay(2000, 350);
+                    randomHumanDelay(2000, 3500);
                     dropdown.first().click(new Locator.ClickOptions().setTimeout(10_000));
                     opened = true;
                     log.info("✅ Opened 'More Sports' dropdown");
@@ -962,5 +958,15 @@ public class SportyNavigationUtil {
         }
         log.info("returning null for selector {}", selector);
         return null;  // Never reached
+    }
+
+
+    public static void randomHumanDelay(long minMs, long maxMs) {
+        try {
+            long delay = minMs + ThreadLocalRandom.current().nextLong(maxMs - minMs + 1);
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

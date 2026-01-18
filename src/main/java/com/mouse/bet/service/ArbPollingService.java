@@ -4,6 +4,7 @@ import com.mouse.bet.entity.ArbitrageOpportunity;
 import com.mouse.bet.entity.ArbOutcome;
 import com.mouse.bet.enums.ArbStatus;
 import com.mouse.bet.enums.BookMaker;
+import com.mouse.bet.enums.Sport;
 import com.mouse.bet.repository.ArbitrageRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -15,16 +16,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
  * Polls the database for fresh arbitrage opportunities and queues them to the orchestrator.
- * Filters opportunities based on configured bookmakers.
+ * Filters opportunities based on configured bookmakers and enabled sports.
  * Uses ExecutorService for scheduled polling instead of @Scheduled annotation.
+ *
+ * Default allowed bookmakers: SPORTYBET, _1WIN, MSPORT
  */
 @Slf4j
 @Data
@@ -59,13 +61,50 @@ public class ArbPollingService {
 
     /**
      * Bookmakers to filter for. Only arbs with outcomes from these bookmakers will be processed.
-     * Format: "BET365,BETWAY,SPORTYBET"
+     * Default: "SPORTYBET,_1WIN,MSPORT"
+     * Format: Comma-separated enum names, e.g. "SPORTYBET,_1WIN,MSPORT"
      */
-    @Value("${arb.polling.bookmakers:}")
+    @Value("${arb.polling.bookmakers:SPORTYBET,_1WIN,MSPORT}")
     private String allowedBookmakersConfig;
 
     private Set<BookMaker> allowedBookmakers;
     private final AtomicBoolean running = new AtomicBoolean(false);
+
+    // Sport-specific fetch enabled flags
+    @Value("${fetch.enabled.football:false}")
+    private boolean fetchFootballEnabled;
+
+    @Value("${fetch.enabled.basketball:true}")
+    private boolean fetchBasketballEnabled;
+
+    @Value("${fetch.enabled.table-tennis:false}")
+    private boolean fetchTableTennisEnabled;
+
+    @Value("${fetch.enabled.tennis:false}")
+    private boolean fetchTennisEnabled;
+
+    @Value("${fetch.enabled.ice-hockey:false}")
+    private boolean fetchIceHockeyEnabled;
+
+    @Value("${fetch.enabled.volleyball:false}")
+    private boolean fetchVolleyballEnabled;
+
+    @Value("${fetch.enabled.handball:false}")
+    private boolean fetchHandballEnabled;
+
+    @Value("${fetch.enabled.baseball:false}")
+    private boolean fetchBaseballEnabled;
+
+    @Value("${fetch.enabled.american-football:false}")
+    private boolean fetchAmericanFootballEnabled;
+
+    @Value("${fetch.enabled.e-sports:false}")
+    private boolean fetchEsportsEnabled;
+
+    @Value("${fetch.enabled.cricket:false}")
+    private boolean fetchCricketEnabled;
+
+    private Map<Sport, Boolean> sportEnabledMap;
 
     /** Scheduled executor for polling task */
     private ScheduledExecutorService pollingExecutor;
@@ -83,6 +122,24 @@ public class ArbPollingService {
             log.info("ArbPollingService initialized | PollingEnabled: {} | Interval: {}ms | BookmakerFilter: DISABLED | MinProfit: {}%",
                     pollingEnabled, pollingIntervalMs, minProfitPercentage);
         }
+
+        // Initialize sport enabled map
+        sportEnabledMap = new HashMap<>();
+        sportEnabledMap.put(Sport.FOOTBALL, fetchFootballEnabled);
+        sportEnabledMap.put(Sport.BASKETBALL, fetchBasketballEnabled);
+        sportEnabledMap.put(Sport.TABLE_TENNIS, fetchTableTennisEnabled);
+        sportEnabledMap.put(Sport.TENNIS, fetchTennisEnabled);
+        sportEnabledMap.put(Sport.ICE_HOCKEY, fetchIceHockeyEnabled);
+        sportEnabledMap.put(Sport.VOLLEYBALL, fetchVolleyballEnabled);
+        sportEnabledMap.put(Sport.HANDBALL, fetchHandballEnabled);
+        sportEnabledMap.put(Sport.BASEBALL, fetchBaseballEnabled);
+        sportEnabledMap.put(Sport.AMERICAN_FOOTBALL, fetchAmericanFootballEnabled);
+        sportEnabledMap.put(Sport.E_SPORTS, fetchEsportsEnabled);
+        sportEnabledMap.put(Sport.CRICKET, fetchCricketEnabled);
+
+        List<Sport> enabledSports = getEnabledSports();
+        log.info("Sport filtering enabled | EnabledSports: {} | Total: {}/{}",
+                enabledSports, enabledSports.size(), Sport.values().length);
 
         // Create executor service for polling
         pollingExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
@@ -169,7 +226,7 @@ public class ArbPollingService {
             LocalDateTime cutoffTime = LocalDateTime.now().minusSeconds(freshnessSeconds);
 
             // Fetch fresh active arbs from database
-            List<ArbitrageOpportunity> freshArbs = arbitrageRepository.findFreshActiveArbs(cutoffTime);
+            List<ArbitrageOpportunity> freshArbs = arbitrageRepository.findActiveArbsByMaxAge(cutoffTime);
 
             if (freshArbs.isEmpty()) {
                 log.trace("{} No fresh arbitrage opportunities found", EMOJI_SKIPPED);
@@ -196,9 +253,9 @@ public class ArbPollingService {
 
                 if (success) {
                     queued++;
-                    log.info("{} {} Arb queued | ArbId: {} | ExternalId: {} | Profit: {}% | Bookmakers: {}",
+                    log.info("{} {} Arb queued | ArbId: {} | ExternalId: {} | Sport: {} | Profit: {}% | Bookmakers: {}",
                             EMOJI_QUEUED, EMOJI_FOUND, arb.getId(), arb.getExternalId(),
-                            arb.getProfitPercentage(), getBookmakers(arb));
+                            arb.getSport(), arb.getProfitPercentage(), getBookmakers(arb));
 
                     // Mark as in progress to avoid re-processing
                     arb.setStatus(ArbStatus.IN_PROGRESS);
@@ -236,7 +293,15 @@ public class ArbPollingService {
             return false;
         }
 
-        // Filter 2: Check bookmakers (if filtering is enabled)
+        // Filter 2: Check sport is enabled
+        if (!isSportEnabled(arb)) {
+            Sport sport = parseSport(arb);
+            log.debug("{} Filtered (sport disabled) | ArbId: {} | Sport: {} | EnabledSports: {}",
+                    EMOJI_FILTERED, arb.getId(), sport != null ? sport : arb.getSport(), getEnabledSports());
+            return false;
+        }
+
+        // Filter 3: Check bookmakers (if filtering is enabled)
         if (!allowedBookmakers.isEmpty()) {
             Set<BookMaker> arbBookmakers = getBookmakers(arb);
 
@@ -251,13 +316,13 @@ public class ArbPollingService {
             }
         }
 
-        // Filter 3: Check if arb has valid outcomes
+        // Filter 4: Check if arb has valid outcomes
         if (arb.getOutcomes() == null || arb.getOutcomes().isEmpty()) {
             log.warn("{} Filtered (no outcomes) | ArbId: {}", EMOJI_FILTERED, arb.getId());
             return false;
         }
 
-        // Filter 4: Verify we have registered workers for all bookmakers
+        // Filter 5: Verify we have registered workers for all bookmakers
         Set<BookMaker> arbBookmakers = getBookmakers(arb);
         Set<BookMaker> registeredWorkers = orchestrator.getRegisteredWorkers();
 
@@ -277,6 +342,71 @@ public class ArbPollingService {
     }
 
     /**
+     * Check if arbitrage opportunity's sport is enabled
+     */
+    private boolean isSportEnabled(ArbitrageOpportunity arb) {
+        if (arb == null || arb.getSport() == null) {
+            log.warn("Arbitrage or sport is null, filtering out | ArbId: {}", arb != null ? arb.getId() : "null");
+            return false;
+        }
+
+        Sport sport = parseSport(arb);
+        if (sport == null) {
+            log.warn("Unknown sport '{}' for arbitrage {}, filtering out",
+                    arb.getSport(), arb.getExternalId());
+            return false;
+        }
+
+        return sportEnabledMap.getOrDefault(sport, false);
+    }
+
+    /**
+     * Parse sport from arbitrage opportunity
+     * Tries multiple approaches: sportId, display name, enum name
+     */
+    private Sport parseSport(ArbitrageOpportunity arb) {
+        // First try using sportId if available
+        if (arb.getSportId() != null) {
+            Sport sport = Sport.fromBreakingBetId(arb.getSportId());
+            if (sport != null) {
+                return sport;
+            }
+        }
+
+        // Fall back to parsing sport string
+        String sportStr = arb.getSport();
+        if (sportStr == null) {
+            return null;
+        }
+
+        // Try by display name
+        Sport sport = Sport.fromDisplayName(sportStr);
+        if (sport != null) {
+            return sport;
+        }
+
+        // Try by enum name (handle spaces and case)
+        try {
+            String normalizedName = sportStr.toUpperCase()
+                    .replace(" ", "_")
+                    .replace("-", "_");
+            return Sport.valueOf(normalizedName);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get list of enabled sports
+     */
+    private List<Sport> getEnabledSports() {
+        return sportEnabledMap.entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Extract unique bookmakers from arb outcomes
      */
     private Set<BookMaker> getBookmakers(ArbitrageOpportunity arb) {
@@ -290,7 +420,8 @@ public class ArbPollingService {
     }
 
     /**
-     * Parse bookmaker names from config string
+     * Parse bookmaker names from config string.
+     * Handles comma-separated enum names (e.g., "SPORTYBET,_1WIN,MSPORT")
      */
     private Set<BookMaker> parseBookmakers(String config) {
         return Set.of(config.split(","))
@@ -301,12 +432,22 @@ public class ArbPollingService {
                     try {
                         return BookMaker.valueOf(name.toUpperCase());
                     } catch (IllegalArgumentException e) {
-                        log.error("Invalid bookmaker name in config: {} | Error: {}", name, e.getMessage());
+                        log.error("Invalid bookmaker name in config: '{}' | Available values: {} | Error: {}",
+                                name, getAvailableBookmakers(), e.getMessage());
                         return null;
                     }
                 })
                 .filter(java.util.Objects::nonNull)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Get a string of all available bookmaker enum names for logging
+     */
+    private String getAvailableBookmakers() {
+        return java.util.Arrays.stream(BookMaker.values())
+                .map(Enum::name)
+                .collect(Collectors.joining(", "));
     }
 
     /**
@@ -327,6 +468,7 @@ public class ArbPollingService {
                 pollingIntervalMs,
                 allowedBookmakers,
                 minProfitPercentage,
+                getEnabledSports(),
                 orchestrator.getQueueStats(),
                 pollingTask != null && !pollingTask.isCancelled()
         );
@@ -349,6 +491,14 @@ public class ArbPollingService {
     }
 
     /**
+     * Update sport enabled status at runtime
+     */
+    public void updateSportEnabled(Sport sport, boolean enabled) {
+        sportEnabledMap.put(sport, enabled);
+        log.info("Updated sport enabled status | Sport: {} | Enabled: {}", sport, enabled);
+    }
+
+    /**
      * Restart polling with new configuration
      */
     public void restart() {
@@ -368,14 +518,15 @@ public class ArbPollingService {
             long intervalMs,
             Set<BookMaker> allowedBookmakers,
             double minProfitPercentage,
+            List<Sport> enabledSports,
             Orchestrator.QueueStats queueStats,
             boolean taskScheduled
     ) {
         @Override
         public String toString() {
             return String.format(
-                    "PollingStatus[running=%s, enabled=%s, interval=%dms, bookmakers=%s, minProfit=%.2f%%, queue=%s, scheduled=%s]",
-                    running, enabled, intervalMs, allowedBookmakers, minProfitPercentage, queueStats, taskScheduled
+                    "PollingStatus[running=%s, enabled=%s, interval=%dms, bookmakers=%s, minProfit=%.2f%%, enabledSports=%s, queue=%s, scheduled=%s]",
+                    running, enabled, intervalMs, allowedBookmakers, minProfitPercentage, enabledSports, queueStats, taskScheduled
             );
         }
     }

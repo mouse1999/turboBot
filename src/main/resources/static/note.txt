@@ -1,0 +1,8 @@
+.header("User-Agent", profile.getUserAgent())
+                .header("sec-ch-ua", profile.getHeaders().getClientHintsHeaders().get("Sec-CH-UA"))
+                .header("sec-ch-ua-mobile", profile.getHeaders().getClientHintsHeaders().get("Sec-CH-UA-Mobile"))
+                .header("sec-ch-ua-platform", profile.getHeaders().getClientHintsHeaders().get("Sec-CH-UA-Platform"))
+
+
+{id=6:LIVE:sr:match:67604476:204:12:setnr=1|total=12.5}
+{id=6:LIVE:sr:match:67733440:186:5:_}

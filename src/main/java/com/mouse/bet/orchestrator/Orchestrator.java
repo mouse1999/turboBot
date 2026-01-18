@@ -73,13 +73,13 @@ public class Orchestrator {
 
     // ==================== CONFIGURATION ====================
 
-    @Value("${sporty.poll.interval.ms:2000}")
+    @Value("${sporty.poll.interval.ms:1000}")
     private long pollIntervalMs;
 
-    @Value("${arb.leg.max.retries:3}")
+    @Value("${arb.leg.max.retries:2}")
     private int maxRetries;
 
-    @Value("${arb.leg.retry.backoff.seconds:2}")
+    @Value("${arb.leg.retry.backoff.seconds:3}")
     private long retryBackoffSeconds;
 
     @Value("${arb.human.delay.min.ms:15000}")
@@ -532,6 +532,7 @@ public class Orchestrator {
             BetLegTask task = BetLegTask.builder()
                     .betLeg(betLeg)
                     .arbId(arb.getId())
+                    .arb(arb)
                     .bookmaker(bookmaker)
                     .barrier(barrier)
                     .results(results)

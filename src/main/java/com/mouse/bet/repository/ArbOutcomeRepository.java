@@ -14,25 +14,40 @@ import java.util.Optional;
 @Repository
 public interface ArbOutcomeRepository extends JpaRepository<ArbOutcome, Long> {
 
-    // ✅ CORRECT: Use "arbitrage" (the field name in entity)
+    // ✅ DELETE operations
     @Transactional
     @Modifying
     void deleteByArbitrageId(Long arbId);
 
-    Optional<ArbOutcome> findByArbitrageExternalIdAndBookmakerId(String externalId, Integer bookmakerId);
-
-    // Alternative with @Query (more explicit)
     @Transactional
     @Modifying
     @Query("DELETE FROM ArbOutcome a WHERE a.arbitrage.id = :arbId")
     void deleteByArbitrageIdQuery(@Param("arbId") Long arbId);
 
-    // Find outcomes by arbitrage ID
-    List<ArbOutcome> findByArbitrageId(Long arbId);
+    // ✅ FIXED: Add JOIN FETCH to eagerly load arbitrage relationship
+    @Query("SELECT ao FROM ArbOutcome ao " +
+            "JOIN FETCH ao.arbitrage a " +
+            "WHERE a.externalId = :externalId AND ao.bookmakerId = :bookmakerId")
+    Optional<ArbOutcome> findByArbitrageExternalIdAndBookmakerId(
+            @Param("externalId") String externalId,
+            @Param("bookmakerId") Integer bookmakerId
+    );
 
-    // Find outcomes by bookmaker
+    // ✅ FIXED: Add JOIN FETCH for arbitrage queries
+    @Query("SELECT ao FROM ArbOutcome ao " +
+            "JOIN FETCH ao.arbitrage " +
+            "WHERE ao.arbitrage.id = :arbId")
+    List<ArbOutcome> findByArbitrageId(@Param("arbId") Long arbId);
+
+    // This one doesn't need JOIN FETCH since it doesn't use arbitrage in the query
     List<ArbOutcome> findByBookmakerId(Integer bookmakerId);
 
-    // Find by arbitrage and bookmaker
-    List<ArbOutcome> findByArbitrageIdAndBookmakerId(Long arbId, Integer bookmakerId);
+    // ✅ FIXED: Add JOIN FETCH
+    @Query("SELECT ao FROM ArbOutcome ao " +
+            "JOIN FETCH ao.arbitrage " +
+            "WHERE ao.arbitrage.id = :arbId AND ao.bookmakerId = :bookmakerId")
+    List<ArbOutcome> findByArbitrageIdAndBookmakerId(
+            @Param("arbId") Long arbId,
+            @Param("bookmakerId") Integer bookmakerId
+    );
 }

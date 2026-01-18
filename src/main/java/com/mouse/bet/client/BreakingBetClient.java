@@ -81,7 +81,7 @@ public class BreakingBetClient {
     @Value("${breaking-bet.token.refresh.interval:120}")
     private int tokenRefreshIntervalSeconds;
 
-    @Value("${breaking-bet.headless:true}")
+    @Value("${breaking-bet.headless:false}")
     private boolean headless;
 
     private final ProfileManager profileManager;

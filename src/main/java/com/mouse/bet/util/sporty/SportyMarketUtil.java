@@ -3,6 +3,7 @@ package com.mouse.bet.util.sporty;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
+import com.mouse.bet.converter.ModelConverter;
 import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.service.ArbOutcomeService;
 import lombok.extern.slf4j.Slf4j;
@@ -682,6 +683,13 @@ public class SportyMarketUtil {
                 log.warn("Outcome mismatch: expected '{}' → got '{}'", outcome, actualOutcome);
                 takeMarketScreenshot(page, "mismatch-" + safeFileName(market + "-" + outcome));
                 return false;
+            }
+
+            BettingTask freshTask = ModelConverter.convertFromArbOutcome(arbOutcomeService.findByExternalIdAndBookmaker(task.taskId(), task.bookmakerId()).orElse(null));
+            if (freshTask != null) {
+                log.info("fresh betting task from DB is not null");
+                task = freshTask;
+
             }
 
 //            double expectedOdds =arbOutcomeService.findByArbitrageAndBookmaker(Long.valueOf(task.taskId()), task.bookmakerId()).getOdds().doubleValue(); todo: cleanup
