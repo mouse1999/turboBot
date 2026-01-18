@@ -602,31 +602,53 @@ public class IngestionService {
     }
 
     private String oneWinOutcomeStyle(String outCome, String homeTeam, String awayTeam) {
+        log.debug("🎯 oneWinOutcomeStyle called - Input: outCome='{}', homeTeam='{}', awayTeam='{}'",
+                outCome, homeTeam, awayTeam);
+
         if (outCome == null) {
+            log.warn("⚠️ oneWinOutcomeStyle - outCome is NULL, returning null");
             return null;
         }
 
         String trimmed = outCome.trim();
+        log.trace("📝 Trimmed outcome: '{}'", trimmed);
 
         // Exact match (fast path)
         if (homeTeam != null && trimmed.equalsIgnoreCase("home")) {
+            log.info("✅ Exact match 'home' -> replacing with homeTeam: '{}'", homeTeam);
             return homeTeam;
         }
+
         if (awayTeam != null && trimmed.equalsIgnoreCase("away")) {
+            log.info("✅ Exact match 'away' -> replacing with awayTeam: '{}'", awayTeam);
             return awayTeam;
         }
 
         // Partial replacement (case-insensitive)
         String result = outCome;
+        log.trace("🔄 Starting partial replacement - initial result: '{}'", result);
 
         if (homeTeam != null) {
+            String beforeReplace = result;
             result = replaceIgnoreCase(result, "home", homeTeam);
+            if (!beforeReplace.equals(result)) {
+                log.debug("🔄 Replaced 'home' with '{}': '{}' -> '{}'", homeTeam, beforeReplace, result);
+            } else {
+                log.trace("⏭️ No 'home' found to replace");
+            }
         }
 
         if (awayTeam != null) {
+            String beforeReplace = result;
             result = replaceIgnoreCase(result, "away", awayTeam);
+            if (!beforeReplace.equals(result)) {
+                log.debug("🔄 Replaced 'away' with '{}': '{}' -> '{}'", awayTeam, beforeReplace, result);
+            } else {
+                log.trace("⏭️ No 'away' found to replace");
+            }
         }
 
+        log.info("✅ oneWinOutcomeStyle result: '{}' (original: '{}')", result, outCome);
         return result;
     }
 
