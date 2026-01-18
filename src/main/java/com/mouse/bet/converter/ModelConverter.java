@@ -60,6 +60,7 @@ public class ModelConverter {
                 .leagueName(arbOutcome.getLeagueName() != null ? arbOutcome.getLeagueName() : "Unknown")
                 .homeTeam(arbOutcome.getHomeTeam())
                 .awayTeam(arbOutcome.getAwayTeam())
+                .bookmakerUrl(arbOutcome.getBookMakerUrl())
                 .taskId(taskId)       // From parent ArbitrageOpportunity.externalId
                 .build();
     }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 
 @Data
 @Builder
@@ -33,5 +35,6 @@ public class SubEvent {
 
     private Boolean reordered;
     private String progress;
-    private Object crumbs;
+    private Map<String, String> crumbs;
 }
+//rivate Map<String, String>

@@ -6,9 +6,11 @@ import lombok.Builder;
 
 @Builder
 public record BetLeg(BookMaker bookmaker, Integer bookmakerId, String marketType, String outcome,
+                     String bookmakerUrl,
                      double expectedOdds, double minOdds, double maxOdds, double stakeAmount,
                      String leagueName, String homeTeam, String awayTeam,
                      String taskId) implements BettingTask {
+
 //taskId is the arbitrageopportunity externalId
 
 }

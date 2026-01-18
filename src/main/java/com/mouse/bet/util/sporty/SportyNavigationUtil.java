@@ -489,7 +489,7 @@ public class SportyNavigationUtil {
         try {
             randomHumanDelay(100, 150);
 
-            if (tryDirectNavigation(page, home, away)) return true;
+            if (tryDirectNavigation(page, task)) return true;
 
         } catch (Exception e) {
             log.error("{} Navigation crashed: {}", EMOJI_ERROR, e.toString());
@@ -503,445 +503,439 @@ public class SportyNavigationUtil {
 //     / * METHOD 1: Direct click in Multi View / Live List (FASTEST & MOST RELIABLE)
 //     * Uses multiple strategies to find and click the correct match
 //     */
-    private static boolean tryDirectNavigation(Page page, String home, String away) {
-        log.info("🎯 Searching for match: {} vs {}", home, away);
-
-        try {
-            // === Strategy 1: Title attribute (MOST RELIABLE) ===
-            if (tryClickByTitle(page, home, away)) {
-                return true;
-            }
-
-            // === Strategy 2: Individual team text matching ===
-            if (tryClickByTeamText(page, home, away)) {
-                return true;
-            }
-
-            // === Strategy 3: Partial matching (case-insensitive) ===
-            if (tryClickByPartialMatch(page, home, away)) {
-                return true;
-            }
-
-            // === Strategy 4: Fuzzy matching (handles variations) ===
-            if (tryClickByFuzzyMatch(page, home, away)) {
-                return true;
-            }
-
-            log.warn("❌ Could not find match with any strategy");
-            logAvailableMatches(page); // Debug: show what's available
-
-        } catch (Exception e) {
-            log.error("❌ Navigation error: {}", e.getMessage(), e);
-        }
-
-        return false;
-    }
-
-    /**
-     * Strategy 1: Click using title attribute (most reliable)
-     * Title format: "Team1 vs Team2" or "Team1 - Team2"
-     */
-    private static boolean tryClickByTitle(Page page, String home, String away) {
-        log.info("Strategy 1: Searching by title attribute");
-
-        // Try different title formats
-        String[] titlePatterns = {
-                String.format("%s vs %s", home, away),           // "Baron, Mariusz vs Urban, Wojciech"
-                String.format("%s - %s", home, away),            // Alternative separator
-                String.format("%s v %s", home, away),            // Short form
-                String.format("%s Vs %s", home, away)            // Capital Vs
-        };
-
-        for (String titlePattern : titlePatterns) {
-            try {
-                // Exact title match
-                Locator match = page.locator(String.format(".teams[title='%s']", titlePattern));
-
-                if (match.count() > 0 && match.first().isVisible()) {
-                    log.info("✅ Found by exact title: '{}'", titlePattern);
-                    return clickMatchElement(page, match.first());
-                }
-
-                // Case-insensitive title match
-                match = page.locator(String.format(".teams[title='%s' i]", titlePattern));
-
-                if (match.count() > 0 && match.first().isVisible()) {
-                    log.info("✅ Found by case-insensitive title: '{}'", titlePattern);
-                    return clickMatchElement(page, match.first());
-                }
-
-            } catch (PlaywrightException e) {
-                log.debug("Title pattern '{}' failed: {}", titlePattern, e.getMessage());
-            }
-        }
-
-        // Try partial title matching (contains both teams)
-        try {
-            String selector = String.format(
-                    ".teams[title*='%s' i][title*='%s' i]",
-                    escapeForSelector(home),
-                    escapeForSelector(away)
-            );
-
-            Locator match = page.locator(selector);
-
-            if (match.count() > 0 && match.first().isVisible()) {
-                log.info("✅ Found by partial title match");
-                return clickMatchElement(page, match.first());
-            }
-        } catch (PlaywrightException e) {
-            log.error("Partial title matching failed: {}", e.getMessage());
-        }
-
-        log.error("❌ Title strategy failed");
-        return false;
-    }
-
-    /**
-     * Strategy 2: Click by finding home and away team text
-     */
-    private static boolean tryClickByTeamText(Page page, String home, String away) {
-        log.debug("Strategy 2: Searching by team text");
-
-        try {
-            // Find all teams containers
-            Locator allTeams = page.locator(".teams");
-            int count = allTeams.count();
-
-            log.debug("Found {} team containers to check", count);
-
-            // Check each teams container
-            for (int i = 0; i < count; i++) {
-                Locator teamsContainer = allTeams.nth(i);
-
-                try {
-                    // Get home and away team text
-                    Locator homeTeam = teamsContainer.locator(".home-team");
-                    Locator awayTeam = teamsContainer.locator(".away-team");
-
-                    if (homeTeam.count() > 0 && awayTeam.count() > 0) {
-                        String homeText = homeTeam.first().textContent().trim();
-                        String awayText = awayTeam.first().textContent().trim();
-
-                        // Exact match
-                        if (homeText.equals(home) && awayText.equals(away)) {
-                            log.info("✅ Found by exact team text match");
-                            return clickMatchElement(page, teamsContainer);
-                        }
-
-                        // Case-insensitive match
-                        if (homeText.equalsIgnoreCase(home) && awayText.equalsIgnoreCase(away)) {
-                            log.info("✅ Found by case-insensitive team text match");
-                            return clickMatchElement(page, teamsContainer);
-                        }
-                    }
-                } catch (Exception e) {
-                    log.debug("Error checking container {}: {}", i, e.getMessage());
-                }
-            }
-
-        } catch (Exception e) {
-            log.debug("Team text strategy error: {}", e.getMessage());
-        }
-
-        log.debug("❌ Team text strategy failed");
-        return false;
-    }
-
-    /**
-     * Strategy 3: Partial matching (case-insensitive, ignores extra spaces)
-     */
-    private static boolean tryClickByPartialMatch(Page page, String home, String away) {
-        log.info("Strategy 3: Partial matching");
-
-        try {
-            // Normalize team names (remove extra spaces, lowercase)
-            String homeNorm = normalizeTeamName(home);
-            String awayNorm = normalizeTeamName(away);
-
-            Locator allTeams = page.locator(".teams");
-            int count = allTeams.count();
-
-            for (int i = 0; i < count; i++) {
-                Locator teamsContainer = allTeams.nth(i);
-
-                try {
-                    String fullText = teamsContainer.textContent().trim();
-                    String fullTextNorm = normalizeTeamName(fullText);
-
-                    // Check if both teams are present in the text
-                    if (fullTextNorm.contains(homeNorm) && fullTextNorm.contains(awayNorm)) {
-                        log.info("✅ Found by partial match in text: '{}'", fullText);
-                        return clickMatchElement(page, teamsContainer);
-                    }
-
-                } catch (Exception e) {
-                    log.error("Error checking container {}: {}", i, e.getMessage());
-                }
-            }
-
-        } catch (Exception e) {
-            log.error("Partial match strategy error: {}", e.getMessage());
-        }
-
-        log.error("❌ Partial match strategy failed");
-        return false;
-    }
-
-    /**
-     * Strategy 4: Fuzzy matching (handles name variations)
-     */
-    private static boolean tryClickByFuzzyMatch(Page page, String home, String away) {
-        log.debug("Strategy 4: Fuzzy matching");
-
-        try {
-            // Extract key parts of names (last names for players, main words for teams)
-            String homeKey = extractKeyName(home);
-            String awayKey = extractKeyName(away);
-
-            log.info("Fuzzy search - Home key: '{}', Away key: '{}'", homeKey, awayKey);
-
-            Locator allTeams = page.locator(".teams");
-            int count = allTeams.count();
-
-            for (int i = 0; i < count; i++) {
-                Locator teamsContainer = allTeams.nth(i);
-
-                try {
-                    String fullText = teamsContainer.textContent().toLowerCase().trim();
-
-                    // Check if key parts are present
-                    if (fullText.contains(homeKey.toLowerCase()) &&
-                            fullText.contains(awayKey.toLowerCase())) {
-                        log.info("✅ Found by fuzzy match (keys: '{}' + '{}')", homeKey, awayKey);
-                        return clickMatchElement(page, teamsContainer);
-                    }
-
-                } catch (Exception e) {
-                    log.debug("Error checking container {}: {}", i, e.getMessage());
-                }
-            }
-
-        } catch (Exception e) {
-            log.debug("Fuzzy match strategy error: {}", e.getMessage());
-        }
-
-        log.debug("❌ Fuzzy match strategy failed");
-        return false;
-    }
-
-    /**
-     * Actually click the match element and verify navigation
-     */
-    private static boolean clickMatchElement(Page page, Locator matchElement) {
-        try {
-            // Ensure element is in viewport
-            matchElement.scrollIntoViewIfNeeded();
-            randomHumanDelay(100, 150);
-
-            // Verify it's still visible
-            if (!matchElement.isVisible()) {
-                log.info("⚠️ Element not visible after scroll");
-                return false;
-            }
-
-            // Get match info for logging
-            String matchInfo = "unknown";
-            try {
-                matchInfo = matchElement.textContent().trim().replaceAll("\\s+", " ");
-            } catch (Exception e) {
-                // Ignore
-            }
-
-            log.info("Clicking match: {}", matchInfo);
-
-            // Click with retry logic
-            int maxAttempts = 3;
-            for (int attempt = 1; attempt <= maxAttempts; attempt++) {
-                try {
-                    matchElement.click(new Locator.ClickOptions()
-                            .setTimeout(10_000)
-                            .setForce(attempt > 1)); // Force on retry
-
-                    break; // Success
-
-                } catch (PlaywrightException e) {
-                    if (attempt == maxAttempts) {
-                        throw e;
-                    }
-                    log.error("Click attempt {} failed, retrying...", attempt);
-                    randomHumanDelay(500, 1000);
-                }
-            }
-
-            // Wait for navigation with multiple possible URL patterns
-            try {
-                page.waitForURL(url ->
-                                url.contains("_vs_") ||
-                                        url.contains("/sr:match:") ||
-                                        url.contains("/game/") ||
-                                        url.contains("/live/") && url.length() > page.url().length(),
-                        new Page.WaitForURLOptions()
-                                .setTimeout(15000)
-                                .setWaitUntil(WaitUntilState.DOMCONTENTLOADED)
-                );
-
-                log.info("✅ Navigation successful: {}", page.url());
-
-                // Extra verification - wait for match content to load
-                try {
-                    // Primary: Wait for the main wrapper that contains ALL odds tables
-                    page.waitForSelector(".m-detail-wrapper", new Page.WaitForSelectorOptions()
-                            .setTimeout(3000));
-
-                    log.info("✅ Match content loaded - .m-detail-wrapper detected");
-
-                } catch (TimeoutError e) {
-                    // Fallback 1: Look for any odds table (even if wrapper changed)
-                    try {
-                        page.waitForSelector(".m-table__wrapper, .m-table-row.m-outcome",
-                                new Page.WaitForSelectorOptions().setTimeout(5000));
-                        log.info("✅ Match content detected via fallback (odds tables present)");
-                    } catch (TimeoutError e2) {
-                        // Fallback 2: Look for navigation tabs (All, Main, Game)
-                        try {
-                            page.waitForSelector(".m-nav-item", new Page.WaitForSelectorOptions()
-                                    .setTimeout(3000));
-                            log.info("✅ Match content detected - navigation tabs present");
-                        } catch (TimeoutError e3) {
-                            log.warn("⚠️ Match content not detected - page may have changed or is slow");
-                            // Continue anyway — sometimes odds load later
-                        }
-                    }
-                }
-
-                return true;
-
-            } catch (PlaywrightException e) {
-                log.error("⚠️ Navigation timeout, but checking if we're on match page anyway");
-
-                // Check if URL changed at all
-                String currentUrl = page.url();
-                if (currentUrl.contains("_vs_") ||
-                        currentUrl.contains("/sr:match:") ||
-                        currentUrl.contains("/live/")) {
-                    log.info("✅ On match page despite timeout: {}", currentUrl);
-                    return true;
-                }
-
-                log.error("❌ Navigation failed. Current URL: {}", currentUrl);
-                return false;
-            }
-
-        } catch (Exception e) {
-            log.error("❌ Click error: {}", e.getMessage());
-            String currentUrl = page.url();
-            if (currentUrl.contains("_vs_") ||
-                    currentUrl.contains("/sr:match:") ||
-                    currentUrl.contains("/live/")) {
-                log.info("✅ On match page despite timeout:- {}", currentUrl);
-                return true;
-            }
+private static boolean tryDirectNavigation(Page page, BettingTask task) {
+    log.info("🎯 Direct navigation to match using bookmaker URL");
+
+    try {
+        // Get the bookmaker URL from the task
+        String bookmakerUrl = task.bookmakerUrl();
+
+        if (bookmakerUrl == null || bookmakerUrl.isEmpty()) {
+            log.warn("⚠️ No bookmaker URL available in task");
             return false;
         }
+
+        log.info("📎 Navigating to: {}", bookmakerUrl);
+
+        // Navigate directly to the URL
+        page.navigate(bookmakerUrl, new Page.NavigateOptions()
+                .setTimeout(15000)
+                .setWaitUntil(WaitUntilState.NETWORKIDLE));
+
+        log.info("✅ Successfully navigated to match page...");
+        return true;
+
+    } catch (Exception e) {
+        log.error("❌ Direct navigation failed: {}", e.getMessage(), e);
+        return false;
     }
+}
 
-    /**
-     * Helper: Normalize team name (lowercase, remove extra spaces)
-     */
-    private static String normalizeTeamName(String name) {
-        if (name == null) return "";
-        return name.toLowerCase()
-                .replaceAll("\\s+", " ")
-                .trim();
-    }
-
-    /**
-     * Helper: Extract key part of name (last name for players, main word for teams)
-     */
-    private static String extractKeyName(String fullName) {
-        if (fullName == null || fullName.isEmpty()) {
-            return "";
-        }
-
-        // For player names like "Baron, Mariusz" - take the part before comma
-        if (fullName.contains(",")) {
-            return fullName.split(",")[0].trim();
-        }
-
-        // For team names - take the last significant word
-        String[] parts = fullName.trim().split("\\s+");
-        if (parts.length > 0) {
-            return parts[parts.length - 1];
-        }
-
-        return fullName;
-    }
-
-
-    /**
-     * Helper: Escape special characters for CSS selector
-     */
-    private static String escapeForSelector(String text) {
-        if (text == null) return "";
-
-        // Escape characters that have special meaning in CSS selectors
-        return text.replace("'", "\\'")
-                .replace("\"", "\\\"")
-                .replace("[", "\\[")
-                .replace("]", "\\]");
-    }
-
-    /**
-     * Debug helper: Log all available matches on the page
-     */
-    private static void logAvailableMatches(Page page) {
-        try {
-            log.info("=== Available Matches on Page ===");
-
-            Locator allMatches = page.locator(".teams");
-            int count = allMatches.count();
-
-            log.info("Found {} match containers", count);
-
-            for (int i = 0; i < Math.min(count, 20); i++) { // Limit to first 20
-                try {
-                    Locator match = allMatches.nth(i);
-
-                    String title = "";
-                    try {
-                        title = match.getAttribute("title");
-                    } catch (Exception e) {
-                        title = "(no title)";
-                    }
-
-                    String homeTeam = "";
-                    String awayTeam = "";
-                    try {
-                        homeTeam = match.locator(".home-team").first().textContent().trim();
-                        awayTeam = match.locator(".away-team").first().textContent().trim();
-                    } catch (Exception e) {
-                        // Ignore
-                    }
-
-                    log.info("[{}] Title: '{}' | Home: '{}' | Away: '{}'",
-                            i, title, homeTeam, awayTeam);
-
-                } catch (Exception e) {
-                    log.debug("Error reading match {}: {}", i, e.getMessage());
-                }
-            }
-
-            if (count > 20) {
-                log.info("... and {} more matches", count - 20);
-            }
-
-            log.info("===================================");
-
-        } catch (Exception e) {
-            log.warn("Could not log available matches: {}", e.getMessage());
-        }
-    }
+//    /**
+//     * Strategy 1: Click using title attribute (most reliable)
+//     * Title format: "Team1 vs Team2" or "Team1 - Team2"
+//     */
+//    private static boolean tryClickByTitle(Page page, String home, String away) {
+//        log.info("Strategy 1: Searching by title attribute");
+//
+//        // Try different title formats
+//        String[] titlePatterns = {
+//                String.format("%s vs %s", home, away),           // "Baron, Mariusz vs Urban, Wojciech"
+//                String.format("%s - %s", home, away),            // Alternative separator
+//                String.format("%s v %s", home, away),            // Short form
+//                String.format("%s Vs %s", home, away)            // Capital Vs
+//        };
+//
+//        for (String titlePattern : titlePatterns) {
+//            try {
+//                // Exact title match
+//                Locator match = page.locator(String.format(".teams[title='%s']", titlePattern));
+//
+//                if (match.count() > 0 && match.first().isVisible()) {
+//                    log.info("✅ Found by exact title: '{}'", titlePattern);
+//                    return clickMatchElement(page, match.first());
+//                }
+//
+//                // Case-insensitive title match
+//                match = page.locator(String.format(".teams[title='%s' i]", titlePattern));
+//
+//                if (match.count() > 0 && match.first().isVisible()) {
+//                    log.info("✅ Found by case-insensitive title: '{}'", titlePattern);
+//                    return clickMatchElement(page, match.first());
+//                }
+//
+//            } catch (PlaywrightException e) {
+//                log.debug("Title pattern '{}' failed: {}", titlePattern, e.getMessage());
+//            }
+//        }
+//
+//        // Try partial title matching (contains both teams)
+//        try {
+//            String selector = String.format(
+//                    ".teams[title*='%s' i][title*='%s' i]",
+//                    escapeForSelector(home),
+//                    escapeForSelector(away)
+//            );
+//
+//            Locator match = page.locator(selector);
+//
+//            if (match.count() > 0 && match.first().isVisible()) {
+//                log.info("✅ Found by partial title match");
+//                return clickMatchElement(page, match.first());
+//            }
+//        } catch (PlaywrightException e) {
+//            log.error("Partial title matching failed: {}", e.getMessage());
+//        }
+//
+//        log.error("❌ Title strategy failed");
+//        return false;
+//    }
+//
+//    /**
+//     * Strategy 2: Click by finding home and away team text
+//     */
+//    private static boolean tryClickByTeamText(Page page, String home, String away) {
+//        log.debug("Strategy 2: Searching by team text");
+//
+//        try {
+//            // Find all teams containers
+//            Locator allTeams = page.locator(".teams");
+//            int count = allTeams.count();
+//
+//            log.debug("Found {} team containers to check", count);
+//
+//            // Check each teams container
+//            for (int i = 0; i < count; i++) {
+//                Locator teamsContainer = allTeams.nth(i);
+//
+//                try {
+//                    // Get home and away team text
+//                    Locator homeTeam = teamsContainer.locator(".home-team");
+//                    Locator awayTeam = teamsContainer.locator(".away-team");
+//
+//                    if (homeTeam.count() > 0 && awayTeam.count() > 0) {
+//                        String homeText = homeTeam.first().textContent().trim();
+//                        String awayText = awayTeam.first().textContent().trim();
+//
+//                        // Exact match
+//                        if (homeText.equals(home) && awayText.equals(away)) {
+//                            log.info("✅ Found by exact team text match");
+//                            return clickMatchElement(page, teamsContainer);
+//                        }
+//
+//                        // Case-insensitive match
+//                        if (homeText.equalsIgnoreCase(home) && awayText.equalsIgnoreCase(away)) {
+//                            log.info("✅ Found by case-insensitive team text match");
+//                            return clickMatchElement(page, teamsContainer);
+//                        }
+//                    }
+//                } catch (Exception e) {
+//                    log.debug("Error checking container {}: {}", i, e.getMessage());
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            log.debug("Team text strategy error: {}", e.getMessage());
+//        }
+//
+//        log.debug("❌ Team text strategy failed");
+//        return false;
+//    }
+//
+//    /**
+//     * Strategy 3: Partial matching (case-insensitive, ignores extra spaces)
+//     */
+//    private static boolean tryClickByPartialMatch(Page page, String home, String away) {
+//        log.info("Strategy 3: Partial matching");
+//
+//        try {
+//            // Normalize team names (remove extra spaces, lowercase)
+//            String homeNorm = normalizeTeamName(home);
+//            String awayNorm = normalizeTeamName(away);
+//
+//            Locator allTeams = page.locator(".teams");
+//            int count = allTeams.count();
+//
+//            for (int i = 0; i < count; i++) {
+//                Locator teamsContainer = allTeams.nth(i);
+//
+//                try {
+//                    String fullText = teamsContainer.textContent().trim();
+//                    String fullTextNorm = normalizeTeamName(fullText);
+//
+//                    // Check if both teams are present in the text
+//                    if (fullTextNorm.contains(homeNorm) && fullTextNorm.contains(awayNorm)) {
+//                        log.info("✅ Found by partial match in text: '{}'", fullText);
+//                        return clickMatchElement(page, teamsContainer);
+//                    }
+//
+//                } catch (Exception e) {
+//                    log.error("Error checking container {}: {}", i, e.getMessage());
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            log.error("Partial match strategy error: {}", e.getMessage());
+//        }
+//
+//        log.error("❌ Partial match strategy failed");
+//        return false;
+//    }
+//
+//    /**
+//     * Strategy 4: Fuzzy matching (handles name variations)
+//     */
+//    private static boolean tryClickByFuzzyMatch(Page page, String home, String away) {
+//        log.debug("Strategy 4: Fuzzy matching");
+//
+//        try {
+//            // Extract key parts of names (last names for players, main words for teams)
+//            String homeKey = extractKeyName(home);
+//            String awayKey = extractKeyName(away);
+//
+//            log.info("Fuzzy search - Home key: '{}', Away key: '{}'", homeKey, awayKey);
+//
+//            Locator allTeams = page.locator(".teams");
+//            int count = allTeams.count();
+//
+//            for (int i = 0; i < count; i++) {
+//                Locator teamsContainer = allTeams.nth(i);
+//
+//                try {
+//                    String fullText = teamsContainer.textContent().toLowerCase().trim();
+//
+//                    // Check if key parts are present
+//                    if (fullText.contains(homeKey.toLowerCase()) &&
+//                            fullText.contains(awayKey.toLowerCase())) {
+//                        log.info("✅ Found by fuzzy match (keys: '{}' + '{}')", homeKey, awayKey);
+//                        return clickMatchElement(page, teamsContainer);
+//                    }
+//
+//                } catch (Exception e) {
+//                    log.debug("Error checking container {}: {}", i, e.getMessage());
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            log.debug("Fuzzy match strategy error: {}", e.getMessage());
+//        }
+//
+//        log.debug("❌ Fuzzy match strategy failed");
+//        return false;
+//    }
+//
+//    /**
+//     * Actually click the match element and verify navigation
+//     */
+//    private static boolean clickMatchElement(Page page, Locator matchElement) {
+//        try {
+//            // Ensure element is in viewport
+//            matchElement.scrollIntoViewIfNeeded();
+//            randomHumanDelay(100, 150);
+//
+//            // Verify it's still visible
+//            if (!matchElement.isVisible()) {
+//                log.info("⚠️ Element not visible after scroll");
+//                return false;
+//            }
+//
+//            // Get match info for logging
+//            String matchInfo = "unknown";
+//            try {
+//                matchInfo = matchElement.textContent().trim().replaceAll("\\s+", " ");
+//            } catch (Exception e) {
+//                // Ignore
+//            }
+//
+//            log.info("Clicking match: {}", matchInfo);
+//
+//            // Click with retry logic
+//            int maxAttempts = 3;
+//            for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+//                try {
+//                    matchElement.click(new Locator.ClickOptions()
+//                            .setTimeout(10_000)
+//                            .setForce(attempt > 1)); // Force on retry
+//
+//                    break; // Success
+//
+//                } catch (PlaywrightException e) {
+//                    if (attempt == maxAttempts) {
+//                        throw e;
+//                    }
+//                    log.error("Click attempt {} failed, retrying...", attempt);
+//                    randomHumanDelay(500, 1000);
+//                }
+//            }
+//
+//            // Wait for navigation with multiple possible URL patterns
+//            try {
+//                page.waitForURL(url ->
+//                                url.contains("_vs_") ||
+//                                        url.contains("/sr:match:") ||
+//                                        url.contains("/game/") ||
+//                                        url.contains("/live/") && url.length() > page.url().length(),
+//                        new Page.WaitForURLOptions()
+//                                .setTimeout(15000)
+//                                .setWaitUntil(WaitUntilState.DOMCONTENTLOADED)
+//                );
+//
+//                log.info("✅ Navigation successful: {}", page.url());
+//
+//                // Extra verification - wait for match content to load
+//                try {
+//                    // Primary: Wait for the main wrapper that contains ALL odds tables
+//                    page.waitForSelector(".m-detail-wrapper", new Page.WaitForSelectorOptions()
+//                            .setTimeout(3000));
+//
+//                    log.info("✅ Match content loaded - .m-detail-wrapper detected");
+//
+//                } catch (TimeoutError e) {
+//                    // Fallback 1: Look for any odds table (even if wrapper changed)
+//                    try {
+//                        page.waitForSelector(".m-table__wrapper, .m-table-row.m-outcome",
+//                                new Page.WaitForSelectorOptions().setTimeout(5000));
+//                        log.info("✅ Match content detected via fallback (odds tables present)");
+//                    } catch (TimeoutError e2) {
+//                        // Fallback 2: Look for navigation tabs (All, Main, Game)
+//                        try {
+//                            page.waitForSelector(".m-nav-item", new Page.WaitForSelectorOptions()
+//                                    .setTimeout(3000));
+//                            log.info("✅ Match content detected - navigation tabs present");
+//                        } catch (TimeoutError e3) {
+//                            log.warn("⚠️ Match content not detected - page may have changed or is slow");
+//                            // Continue anyway — sometimes odds load later
+//                        }
+//                    }
+//                }
+//
+//                return true;
+//
+//            } catch (PlaywrightException e) {
+//                log.error("⚠️ Navigation timeout, but checking if we're on match page anyway");
+//
+//                // Check if URL changed at all
+//                String currentUrl = page.url();
+//                if (currentUrl.contains("_vs_") ||
+//                        currentUrl.contains("/sr:match:") ||
+//                        currentUrl.contains("/live/")) {
+//                    log.info("✅ On match page despite timeout: {}", currentUrl);
+//                    return true;
+//                }
+//
+//                log.error("❌ Navigation failed. Current URL: {}", currentUrl);
+//                return false;
+//            }
+//
+//        } catch (Exception e) {
+//            log.error("❌ Click error: {}", e.getMessage());
+//            String currentUrl = page.url();
+//            if (currentUrl.contains("_vs_") ||
+//                    currentUrl.contains("/sr:match:") ||
+//                    currentUrl.contains("/live/")) {
+//                log.info("✅ On match page despite timeout:- {}", currentUrl);
+//                return true;
+//            }
+//            return false;
+//        }
+//    }
+//
+//    /**
+//     * Helper: Normalize team name (lowercase, remove extra spaces)
+//     */
+//    private static String normalizeTeamName(String name) {
+//        if (name == null) return "";
+//        return name.toLowerCase()
+//                .replaceAll("\\s+", " ")
+//                .trim();
+//    }
+//
+//    /**
+//     * Helper: Extract key part of name (last name for players, main word for teams)
+//     */
+//    private static String extractKeyName(String fullName) {
+//        if (fullName == null || fullName.isEmpty()) {
+//            return "";
+//        }
+//
+//        // For player names like "Baron, Mariusz" - take the part before comma
+//        if (fullName.contains(",")) {
+//            return fullName.split(",")[0].trim();
+//        }
+//
+//        // For team names - take the last significant word
+//        String[] parts = fullName.trim().split("\\s+");
+//        if (parts.length > 0) {
+//            return parts[parts.length - 1];
+//        }
+//
+//        return fullName;
+//    }
+//
+//
+//    /**
+//     * Helper: Escape special characters for CSS selector
+//     */
+//    private static String escapeForSelector(String text) {
+//        if (text == null) return "";
+//
+//        // Escape characters that have special meaning in CSS selectors
+//        return text.replace("'", "\\'")
+//                .replace("\"", "\\\"")
+//                .replace("[", "\\[")
+//                .replace("]", "\\]");
+//    }
+//
+//    /**
+//     * Debug helper: Log all available matches on the page
+//     */
+//    private static void logAvailableMatches(Page page) {
+//        try {
+//            log.info("=== Available Matches on Page ===");
+//
+//            Locator allMatches = page.locator(".teams");
+//            int count = allMatches.count();
+//
+//            log.info("Found {} match containers", count);
+//
+//            for (int i = 0; i < Math.min(count, 20); i++) { // Limit to first 20
+//                try {
+//                    Locator match = allMatches.nth(i);
+//
+//                    String title = "";
+//                    try {
+//                        title = match.getAttribute("title");
+//                    } catch (Exception e) {
+//                        title = "(no title)";
+//                    }
+//
+//                    String homeTeam = "";
+//                    String awayTeam = "";
+//                    try {
+//                        homeTeam = match.locator(".home-team").first().textContent().trim();
+//                        awayTeam = match.locator(".away-team").first().textContent().trim();
+//                    } catch (Exception e) {
+//                        // Ignore
+//                    }
+//
+//                    log.info("[{}] Title: '{}' | Home: '{}' | Away: '{}'",
+//                            i, title, homeTeam, awayTeam);
+//
+//                } catch (Exception e) {
+//                    log.debug("Error reading match {}: {}", i, e.getMessage());
+//                }
+//            }
+//
+//            if (count > 20) {
+//                log.info("... and {} more matches", count - 20);
+//            }
+//
+//            log.info("===================================");
+//
+//        } catch (Exception e) {
+//            log.warn("Could not log available matches: {}", e.getMessage());
+//        }
+//    }
 
 
     private static  <T> T withLocatorRetry(Page page, String selector, Function<Locator, T> action,

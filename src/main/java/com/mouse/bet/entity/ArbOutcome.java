@@ -84,6 +84,8 @@ public class ArbOutcome {
     @Column
     private Boolean reordered;
 
+    private String bookMakerUrl;
+
     @Column
     private Boolean initiator;
     private String leagueName;

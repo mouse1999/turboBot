@@ -178,326 +178,329 @@ public class OneWinNavigationUtil {
 
 
     public static boolean navigateToGame(Page page, BettingTask task) {
+        log.info("🎯 Direct navigation to match using bookmaker URL");
+
         try {
-            log.info("Navigating to game: {} vs {} in league: {}",
-                    task.homeTeam(), task.awayTeam(), task.leagueName());
+            // Get the bookmaker URL from the task
+            String bookmakerUrl = task.bookmakerUrl();
 
-            // Step 1: Navigate to the league
-            navigateToLeague(page, task.leagueName());
+            if (bookmakerUrl == null || bookmakerUrl.isEmpty()) {
+                log.warn("⚠️ No bookmaker URL available in task");
+                return false;
+            }
 
-            // Step 2: Wait for games to load
-            sleepRandom(200, 500);
+            log.info("📎 Navigating to: {}", bookmakerUrl);
 
-            // Step 3: Find and click on the specific game
-            findAndClickGame(page, task.homeTeam(), task.awayTeam());
+            // Navigate directly to the URL
+            page.navigate(bookmakerUrl, new Page.NavigateOptions()
+                    .setTimeout(15000)
+                    .setWaitUntil(WaitUntilState.NETWORKIDLE));
 
-            log.info("Successfully navigated to game: {} vs {}",
-                    task.homeTeam(), task.awayTeam());
+            log.info("✅ Successfully navigated to match page");
             return true;
 
-        } catch (PlaywrightException | GameNotFoundException e) {
-            log.error("Failed to navigate to game: {} vs {} in league: {}",
-                    task.homeTeam(), task.awayTeam(), task.leagueName(), e);
+        } catch (Exception e) {
+            log.error("❌ Direct navigation failed: {}", e.getMessage(), e);
             return false;
         }
     }
 
-    /**
-     * Navigate to the specified league
-     */
-    private static void navigateToLeague(Page page, String leagueName) {
-        try {
-            log.debug("Searching for league: {}", leagueName);
-
-            // Strategy 1: Try exact match with text content
-            String exactSelector = String.format("button[data-w*='-quab']:has-text('%s')", leagueName);
-            Locator leagueButton = page.locator(exactSelector).first();
-
-            // Check if league button is visible
-            try {
-                leagueButton.waitFor(new Locator.WaitForOptions()
-                        .setState(WaitForSelectorState.VISIBLE)
-                        .setTimeout(3000));
-
-                // Human-like behavior: pause before clicking
-//                sleepRandom(5, 1000);
-
-                // Scroll to element if needed
-                leagueButton.scrollIntoViewIfNeeded();
-                sleepRandom(200, 400);
-
-                // Click the league button
-                leagueButton.click();
-
-                log.info("Successfully navigated to league: {}", leagueName);
-                return;
-
-            } catch (PlaywrightException e) {
-                log.debug("Exact match not found, trying partial match for: {}", leagueName);
-            }
-
-            // Strategy 2: Try partial match (case-insensitive)
-            Locator allLeagueButtons = page.locator("button[data-w*='-quab']");
-            int count = allLeagueButtons.count();
-
-            for (int i = 0; i < count; i++) {
-                Locator button = allLeagueButtons.nth(i);
-                String buttonText = button.textContent().trim();
-
-                // Case-insensitive partial match
-                if (buttonText.toLowerCase().contains(leagueName.toLowerCase())) {
-                    log.debug("Found league button with text: {}", buttonText);
-
-                    sleepRandom(100, 400);
-                    button.scrollIntoViewIfNeeded();
-                    sleepRandom(200, 400);
-                    button.click();
-
-                    log.info("Successfully navigated to league: {} (matched: {})",
-                            leagueName, buttonText);
-                    return;
-                }
-            }
-
-            // If we get here, league was not found
-            throw new IllegalStateException("League not found: " + leagueName);
-
-        } catch (PlaywrightException e) {
-            log.error("Failed to navigate to league: {}", leagueName, e);
-            throw e;
-        }
-    }
-
-    /**
-     * Find and click on the specific game based on home and away teams
-     * This will be implemented once you provide the game elements
-     */
-    /**
-     * Find and click game using Playwright locators (MORE RELIABLE)
-     */
-    private static void findAndClickGame(Page page, String homeTeam, String awayTeam) {
-        try {
-            log.debug("Searching for game with locators: {} vs {}", homeTeam, awayTeam);
-
-            // Normalize team names
-            String normalizedHome = normalizeText(homeTeam);
-            String normalizedAway = normalizeText(awayTeam);
-
-            // Get all match cards
-            Locator matchCards = page.locator("[data-qa='match-card']");
-
-            // Wait for at least one match card to be visible
-            matchCards.first().waitFor(new Locator.WaitForOptions()
-                    .setState(WaitForSelectorState.VISIBLE)
-                    .setTimeout(5000));
-
-            int totalCards = matchCards.count();
-            log.debug("Found {} match cards", totalCards);
-
-            // Iterate through all match cards
-            for (int i = 0; i < totalCards; i++) {
-                Locator card = matchCards.nth(i);
-
-                // Get team names from this card
-                Locator teamNames = card.locator("span._name_1b83e_7");
-                int teamCount = teamNames.count();
-
-                if (teamCount >= 2) {
-                    String team1Text = normalizeText(teamNames.nth(0).textContent());
-                    String team2Text = normalizeText(teamNames.nth(1).textContent());
-
-                    // Check if teams match (consider both orders)
-                    boolean matchFound = false;
-
-                    // Order 1: home vs away
-                    if (fuzzyMatch(team1Text, normalizedHome, 80) &&
-                            fuzzyMatch(team2Text, normalizedAway, 80)) {
-                        matchFound = true;
-                    }
-
-                    // Order 2: away vs home
-                    if (fuzzyMatch(team1Text, normalizedAway, 80) &&
-                            fuzzyMatch(team2Text, normalizedHome, 80)) {
-                        matchFound = true;
-                    }
-
-                    if (matchFound) {
-                        log.info("Found matching game: {} vs {}", team1Text, team2Text);
-
-                        // Human-like behavior before clicking
-                        sleepRandom(400, 500);
-
-                        // Scroll to the card
-                        card.scrollIntoViewIfNeeded();
-                        sleepRandom(200, 400);
-
-                        // Click the match card
-                        card.click();
-
-                        log.info("Successfully clicked game: {} vs {}", homeTeam, awayTeam);
-                        sleepRandom(200, 500);
-                        return;
-                    }
-                }
-            }
-
-            // If we get here, no match was found
-            throw new GameNotFoundException(
-                    String.format("Game not found: %s vs %s", homeTeam, awayTeam));
-
-        } catch (PlaywrightException e) {
-            log.error("Failed to find game: {} vs {}", homeTeam, awayTeam, e);
-            throw e;
-        }
-    }
-
-    /**
-     * Helper method to normalize text for comparison
-     */
-    private static String normalizeText(String text) {
-        if (text == null) return "";
-
-        return text.trim()
-                .toLowerCase()
-                .replaceAll("\\s+", " ")
-                .replaceAll("[^a-z0-9\\s]", "");
-    }
-
-    /**
-     * Fuzzy match with threshold (percentage match)
-     */
-    private static boolean fuzzyMatch(String text1, String text2, int threshold) {
-        String normalized1 = normalizeText(text1);
-        String normalized2 = normalizeText(text2);
-
-        // Exact match
-        if (normalized1.equals(normalized2)) {
-            return true;
-        }
-
-        // Contains match
-        if (normalized1.contains(normalized2) || normalized2.contains(normalized1)) {
-            return true;
-        }
-
-        // Calculate similarity (simple approach)
-        String[] words1 = normalized1.split(" ");
-        String[] words2 = normalized2.split(" ");
-
-        int matchingWords = 0;
-        for (String word1 : words1) {
-            for (String word2 : words2) {
-                if (word1.equals(word2) || word1.contains(word2) || word2.contains(word1)) {
-                    matchingWords++;
-                    break;
-                }
-            }
-        }
-
-        int totalWords = Math.max(words1.length, words2.length);
-        int similarityPercent = (matchingWords * 100) / totalWords;
-
-        return similarityPercent >= threshold;
-    }
-
-
-
-    /**
-     * Find and click game using JavaScript execution (FASTER)
-     */
-    private static void findAndClickGameJS(Page page, String homeTeam, String awayTeam) {
-        try {
-            log.debug("Searching for game using JS: {} vs {}", homeTeam, awayTeam);
-
-            // Normalize team names for comparison
-            String normalizedHome = normalizeText(homeTeam);
-            String normalizedAway = normalizeText(awayTeam);
-
-            // JavaScript to find the matching game card
-            String jsScript = String.format("""
-            (function() {
-                const homeTeam = '%s';
-                const awayTeam = '%s';
-                
-                function normalize(text) {
-                    return text.toLowerCase()
-                        .trim()
-                        .replace(/\\s+/g, ' ')
-                        .replace(/[^a-z0-9\\s]/g, '');
-                }
-                
-                const normalizedHome = normalize(homeTeam);
-                const normalizedAway = normalize(awayTeam);
-                
-                // Get all match cards
-                const matchCards = document.querySelectorAll('[data-qa="match-card"]');
-                
-                for (const card of matchCards) {
-                    // Get all team name spans
-                    const teamNames = card.querySelectorAll('span._name_1b83e_7');
-                    
-                    if (teamNames.length >= 2) {
-                        const team1 = normalize(teamNames[0].textContent);
-                        const team2 = normalize(teamNames[1].textContent);
-                        
-                        // Check if teams match (in any order)
-                        const match1 = (team1.includes(normalizedHome) || normalizedHome.includes(team1)) &&
-                                      (team2.includes(normalizedAway) || normalizedAway.includes(team2));
-                        const match2 = (team1.includes(normalizedAway) || normalizedAway.includes(team1)) &&
-                                      (team2.includes(normalizedHome) || normalizedHome.includes(team2));
-                        
-                        if (match1 || match2) {
-                            return card;
-                        }
-                    }
-                }
-                
-                return null;
-            })();
-            """, normalizedHome, normalizedAway);
-
-            // Execute JavaScript and get the element
-            Object result = page.evaluate(jsScript);
-
-            if (result == null) {
-                throw new IllegalStateException(
-                        String.format("Game not found: %s vs %s", homeTeam, awayTeam));
-            }
-
-            // Click the found match card
-            page.locator("[data-qa='match-card']").evaluateAll(jsScript + """
-            .then(card => {
-                if (card) card.click();
-            });
-            """);
-
-            // Alternative: Use the element handle to click
-            Locator matchCards = page.locator("[data-qa='match-card']");
-            int count = matchCards.count();
-
-            for (int i = 0; i < count; i++) {
-                Locator card = matchCards.nth(i);
-                String cardText = card.textContent().toLowerCase();
-
-                if (cardText.contains(normalizedHome) && cardText.contains(normalizedAway)) {
-                    sleepRandom(300, 600);
-                    card.scrollIntoViewIfNeeded();
-                    sleepRandom(200, 400);
-                    card.click();
-
-                    log.info("Clicked on game: {} vs {}", homeTeam, awayTeam);
-                    return;
-                }
-            }
-
-            throw new GameNotFoundException(
-                    String.format("Game not found: %s vs %s", homeTeam, awayTeam));
-
-        } catch (PlaywrightException e) {
-            log.error("Failed to find game: {} vs {}", homeTeam, awayTeam, e);
-            throw e;
-        }
-    }
+//    /**
+//     * Navigate to the specified league
+//     */
+//    private static void navigateToLeague(Page page, String leagueName) {
+//        try {
+//            log.debug("Searching for league: {}", leagueName);
+//
+//            // Strategy 1: Try exact match with text content
+//            String exactSelector = String.format("button[data-w*='-quab']:has-text('%s')", leagueName);
+//            Locator leagueButton = page.locator(exactSelector).first();
+//
+//            // Check if league button is visible
+//            try {
+//                leagueButton.waitFor(new Locator.WaitForOptions()
+//                        .setState(WaitForSelectorState.VISIBLE)
+//                        .setTimeout(3000));
+//
+//                // Human-like behavior: pause before clicking
+////                sleepRandom(5, 1000);
+//
+//                // Scroll to element if needed
+//                leagueButton.scrollIntoViewIfNeeded();
+//                sleepRandom(200, 400);
+//
+//                // Click the league button
+//                leagueButton.click();
+//
+//                log.info("Successfully navigated to league: {}", leagueName);
+//                return;
+//
+//            } catch (PlaywrightException e) {
+//                log.debug("Exact match not found, trying partial match for: {}", leagueName);
+//            }
+//
+//            // Strategy 2: Try partial match (case-insensitive)
+//            Locator allLeagueButtons = page.locator("button[data-w*='-quab']");
+//            int count = allLeagueButtons.count();
+//
+//            for (int i = 0; i < count; i++) {
+//                Locator button = allLeagueButtons.nth(i);
+//                String buttonText = button.textContent().trim();
+//
+//                // Case-insensitive partial match
+//                if (buttonText.toLowerCase().contains(leagueName.toLowerCase())) {
+//                    log.debug("Found league button with text: {}", buttonText);
+//
+//                    sleepRandom(100, 400);
+//                    button.scrollIntoViewIfNeeded();
+//                    sleepRandom(200, 400);
+//                    button.click();
+//
+//                    log.info("Successfully navigated to league: {} (matched: {})",
+//                            leagueName, buttonText);
+//                    return;
+//                }
+//            }
+//
+//            // If we get here, league was not found
+//            throw new IllegalStateException("League not found: " + leagueName);
+//
+//        } catch (PlaywrightException e) {
+//            log.error("Failed to navigate to league: {}", leagueName, e);
+//            throw e;
+//        }
+//    }
+//
+//    /**
+//     * Find and click on the specific game based on home and away teams
+//     * This will be implemented once you provide the game elements
+//     */
+//    /**
+//     * Find and click game using Playwright locators (MORE RELIABLE)
+//     */
+//    private static void findAndClickGame(Page page, String homeTeam, String awayTeam) {
+//        try {
+//            log.debug("Searching for game with locators: {} vs {}", homeTeam, awayTeam);
+//
+//            // Normalize team names
+//            String normalizedHome = normalizeText(homeTeam);
+//            String normalizedAway = normalizeText(awayTeam);
+//
+//            // Get all match cards
+//            Locator matchCards = page.locator("[data-qa='match-card']");
+//
+//            // Wait for at least one match card to be visible
+//            matchCards.first().waitFor(new Locator.WaitForOptions()
+//                    .setState(WaitForSelectorState.VISIBLE)
+//                    .setTimeout(5000));
+//
+//            int totalCards = matchCards.count();
+//            log.debug("Found {} match cards", totalCards);
+//
+//            // Iterate through all match cards
+//            for (int i = 0; i < totalCards; i++) {
+//                Locator card = matchCards.nth(i);
+//
+//                // Get team names from this card
+//                Locator teamNames = card.locator("span._name_1b83e_7");
+//                int teamCount = teamNames.count();
+//
+//                if (teamCount >= 2) {
+//                    String team1Text = normalizeText(teamNames.nth(0).textContent());
+//                    String team2Text = normalizeText(teamNames.nth(1).textContent());
+//
+//                    // Check if teams match (consider both orders)
+//                    boolean matchFound = false;
+//
+//                    // Order 1: home vs away
+//                    if (fuzzyMatch(team1Text, normalizedHome, 80) &&
+//                            fuzzyMatch(team2Text, normalizedAway, 80)) {
+//                        matchFound = true;
+//                    }
+//
+//                    // Order 2: away vs home
+//                    if (fuzzyMatch(team1Text, normalizedAway, 80) &&
+//                            fuzzyMatch(team2Text, normalizedHome, 80)) {
+//                        matchFound = true;
+//                    }
+//
+//                    if (matchFound) {
+//                        log.info("Found matching game: {} vs {}", team1Text, team2Text);
+//
+//                        // Human-like behavior before clicking
+//                        sleepRandom(400, 500);
+//
+//                        // Scroll to the card
+//                        card.scrollIntoViewIfNeeded();
+//                        sleepRandom(200, 400);
+//
+//                        // Click the match card
+//                        card.click();
+//
+//                        log.info("Successfully clicked game: {} vs {}", homeTeam, awayTeam);
+//                        sleepRandom(200, 500);
+//                        return;
+//                    }
+//                }
+//            }
+//
+//            // If we get here, no match was found
+//            throw new GameNotFoundException(
+//                    String.format("Game not found: %s vs %s", homeTeam, awayTeam));
+//
+//        } catch (PlaywrightException e) {
+//            log.error("Failed to find game: {} vs {}", homeTeam, awayTeam, e);
+//            throw e;
+//        }
+//    }
+//
+//    /**
+//     * Helper method to normalize text for comparison
+//     */
+//    private static String normalizeText(String text) {
+//        if (text == null) return "";
+//
+//        return text.trim()
+//                .toLowerCase()
+//                .replaceAll("\\s+", " ")
+//                .replaceAll("[^a-z0-9\\s]", "");
+//    }
+//
+//    /**
+//     * Fuzzy match with threshold (percentage match)
+//     */
+//    private static boolean fuzzyMatch(String text1, String text2, int threshold) {
+//        String normalized1 = normalizeText(text1);
+//        String normalized2 = normalizeText(text2);
+//
+//        // Exact match
+//        if (normalized1.equals(normalized2)) {
+//            return true;
+//        }
+//
+//        // Contains match
+//        if (normalized1.contains(normalized2) || normalized2.contains(normalized1)) {
+//            return true;
+//        }
+//
+//        // Calculate similarity (simple approach)
+//        String[] words1 = normalized1.split(" ");
+//        String[] words2 = normalized2.split(" ");
+//
+//        int matchingWords = 0;
+//        for (String word1 : words1) {
+//            for (String word2 : words2) {
+//                if (word1.equals(word2) || word1.contains(word2) || word2.contains(word1)) {
+//                    matchingWords++;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        int totalWords = Math.max(words1.length, words2.length);
+//        int similarityPercent = (matchingWords * 100) / totalWords;
+//
+//        return similarityPercent >= threshold;
+//    }
+//
+//
+//
+//    /**
+//     * Find and click game using JavaScript execution (FASTER)
+//     */
+//    private static void findAndClickGameJS(Page page, String homeTeam, String awayTeam) {
+//        try {
+//            log.debug("Searching for game using JS: {} vs {}", homeTeam, awayTeam);
+//
+//            // Normalize team names for comparison
+//            String normalizedHome = normalizeText(homeTeam);
+//            String normalizedAway = normalizeText(awayTeam);
+//
+//            // JavaScript to find the matching game card
+//            String jsScript = String.format("""
+//            (function() {
+//                const homeTeam = '%s';
+//                const awayTeam = '%s';
+//
+//                function normalize(text) {
+//                    return text.toLowerCase()
+//                        .trim()
+//                        .replace(/\\s+/g, ' ')
+//                        .replace(/[^a-z0-9\\s]/g, '');
+//                }
+//
+//                const normalizedHome = normalize(homeTeam);
+//                const normalizedAway = normalize(awayTeam);
+//
+//                // Get all match cards
+//                const matchCards = document.querySelectorAll('[data-qa="match-card"]');
+//
+//                for (const card of matchCards) {
+//                    // Get all team name spans
+//                    const teamNames = card.querySelectorAll('span._name_1b83e_7');
+//
+//                    if (teamNames.length >= 2) {
+//                        const team1 = normalize(teamNames[0].textContent);
+//                        const team2 = normalize(teamNames[1].textContent);
+//
+//                        // Check if teams match (in any order)
+//                        const match1 = (team1.includes(normalizedHome) || normalizedHome.includes(team1)) &&
+//                                      (team2.includes(normalizedAway) || normalizedAway.includes(team2));
+//                        const match2 = (team1.includes(normalizedAway) || normalizedAway.includes(team1)) &&
+//                                      (team2.includes(normalizedHome) || normalizedHome.includes(team2));
+//
+//                        if (match1 || match2) {
+//                            return card;
+//                        }
+//                    }
+//                }
+//
+//                return null;
+//            })();
+//            """, normalizedHome, normalizedAway);
+//
+//            // Execute JavaScript and get the element
+//            Object result = page.evaluate(jsScript);
+//
+//            if (result == null) {
+//                throw new IllegalStateException(
+//                        String.format("Game not found: %s vs %s", homeTeam, awayTeam));
+//            }
+//
+//            // Click the found match card
+//            page.locator("[data-qa='match-card']").evaluateAll(jsScript + """
+//            .then(card => {
+//                if (card) card.click();
+//            });
+//            """);
+//
+//            // Alternative: Use the element handle to click
+//            Locator matchCards = page.locator("[data-qa='match-card']");
+//            int count = matchCards.count();
+//
+//            for (int i = 0; i < count; i++) {
+//                Locator card = matchCards.nth(i);
+//                String cardText = card.textContent().toLowerCase();
+//
+//                if (cardText.contains(normalizedHome) && cardText.contains(normalizedAway)) {
+//                    sleepRandom(300, 600);
+//                    card.scrollIntoViewIfNeeded();
+//                    sleepRandom(200, 400);
+//                    card.click();
+//
+//                    log.info("Clicked on game: {} vs {}", homeTeam, awayTeam);
+//                    return;
+//                }
+//            }
+//
+//            throw new GameNotFoundException(
+//                    String.format("Game not found: %s vs %s", homeTeam, awayTeam));
+//
+//        } catch (PlaywrightException e) {
+//            log.error("Failed to find game: {} vs {}", homeTeam, awayTeam, e);
+//            throw e;
+//        }
+//    }
 
 
 

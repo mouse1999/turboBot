@@ -10,6 +10,7 @@ public interface BettingTask {
     Integer bookmakerId();   // internal / DB ID
     String marketType();
     String outcome();
+    String bookmakerUrl();
 
     double expectedOdds();
     double minOdds();

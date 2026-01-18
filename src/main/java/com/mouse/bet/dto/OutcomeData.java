@@ -67,6 +67,8 @@ public class OutcomeData {
 
     private String marketType;
 
+    private String bookmakerUrl;
+
     // ==================== Additional useful fields ====================
 
     /** Calculated stake amount for this outcome to achieve balanced arb (optional, filled later) */

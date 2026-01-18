@@ -32,8 +32,11 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -415,7 +418,7 @@ public class IngestionService {
                     log.info("{} {} Processing sub-event {}/{} (ID: {})...",
                             EMOJI_TRANSFORM, EMOJI_INFO, index + 1, sortedSubEvents.size(), subEvent.getId());
 
-                    return processSubEvent(subEvent, oddsMap, event, crumbsHolder, marketHolder);
+                    return processSubEvent(subEvent, oddsMap, event, crumbsHolder, marketHolder, isLive);
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -490,7 +493,8 @@ public class IngestionService {
                                         Map<String, Odd> oddsMap,
                                         Event event,
                                         CrumbsHolder crumbsHolder,
-                                        MarketInfoHolder marketHolder) {
+                                        MarketInfoHolder marketHolder,
+                                        boolean isLive) {
         Odd odd = oddsMap.get(subEvent.getId());
         BookMaker bookMaker = BookMakerMapper.getBookmakerName(subEvent.getBookmakerId());
 
@@ -519,11 +523,21 @@ public class IngestionService {
                 ? oneWinOutcomeStyle(marketInfo.outcome, subEvent.getTeam2(), subEvent.getTeam1())
                 : marketInfo.outcome;
 
-        // Build and return outcome
-        OutcomeData outcome = buildOutcomeData(subEvent, bookMaker, oddsInfo, marketInfo, finalOutcome);
+        // Build bookmaker URL from SubEvent crumbs
+        Map<String, String> subEventCrumbs = subEvent.getCrumbs();
+        String bookmakerUrl = buildBookmakerUrlWithMatchType(bookMaker, subEventCrumbs, subEvent.getId(), isLive);
 
-        log.info("✅ Built outcome - bookMaker: {}, outcome: '{}', odds: {}",
-                bookMaker, finalOutcome, oddsInfo.value);
+        if (bookmakerUrl != null) {
+            log.info("📎 Built URL for {}: {}", bookMaker, bookmakerUrl);
+        } else {
+            log.debug("No URL built for bookmaker: {}", bookMaker);
+        }
+
+        // Build and return outcome
+        OutcomeData outcome = buildOutcomeData(subEvent, bookMaker, oddsInfo, marketInfo, finalOutcome, bookmakerUrl);
+
+        log.info("✅ Built outcome - bookMaker: {}, outcome: '{}', odds: {}, url: {}",
+                bookMaker, finalOutcome, oddsInfo.value, bookmakerUrl != null ? "✓" : "✗");
 
         return outcome;
     }
@@ -552,7 +566,6 @@ public class IngestionService {
                     .build();
         }
     }
-
 
     public static String removeSinglePrefix(String input) {
         if (input == null) {
@@ -685,7 +698,8 @@ public class IngestionService {
                                          BookMaker bookMaker,
                                          OddsInfo oddsInfo,
                                          MarketInfo marketInfo,
-                                         String finalOutcome) {
+                                         String finalOutcome,
+                                         String bookmakerUrl) {
         String marketType = bookMaker == BookMaker.SPORTYBET
                 ? marketInfo.marketType + " " + oddsInfo.index
                 : marketInfo.marketType;
@@ -707,6 +721,7 @@ public class IngestionService {
                 .reordered(subEvent.getReordered())
                 .outComeName(finalOutcome)
                 .updated(oddsInfo.updated)
+                .bookmakerUrl(bookmakerUrl)
                 .build();
     }
 
@@ -814,8 +829,6 @@ public class IngestionService {
                 .replaceAll(Matcher.quoteReplacement(replacement));
     }
 
-
-
     private @NonNull List<SubEvent> getSortedSubEvents(Event event) {
         List<SubEvent> sortedSubEvents = new ArrayList<>(event.getSubEvents());
         sortedSubEvents.sort((se1, se2) -> {
@@ -832,6 +845,224 @@ public class IngestionService {
             return Integer.compare(index1, index2);
         });
         return sortedSubEvents;
+    }
+
+    /**
+     * Builds a bookmaker-specific URL from SubEvent crumbs
+     */
+    public static String buildBookmakerUrlWithMatchType(BookMaker bookMaker,
+                                                        Map<String, String> crumbs,
+                                                        String subEventId,
+                                                        boolean isLive) {
+        if (crumbs == null || crumbs.isEmpty()) {
+            log.debug("Cannot build URL - crumbs are null or empty for bookmaker: {}", bookMaker);
+            return null;
+        }
+
+        // Add match_type to crumbs if needed
+        Map<String, String> enrichedCrumbs = new HashMap<>(crumbs);
+        enrichedCrumbs.put("match_type", isLive ? "live" : "result");
+
+        return buildBookmakerUrl(bookMaker, enrichedCrumbs, subEventId);
+    }
+
+    /**
+     * Builds a bookmaker-specific URL from SubEvent crumbs
+     */
+    public static String buildBookmakerUrl(BookMaker bookMaker, Map<String, String> crumbs, String subEventId) {
+        if (crumbs == null || crumbs.isEmpty()) {
+            return null;
+        }
+
+        try {
+            switch (bookMaker) {
+                case MSPORT:
+                    return buildMSportUrl(crumbs);
+
+                case SPORTYBET:
+                    return buildSportyBetUrl(crumbs);
+
+                case _1WIN:
+                    return buildOneWinUrl(crumbs);
+
+                case BET9JA:
+                    return buildBet9jaUrl(crumbs);
+
+                default:
+                    log.debug("URL building not implemented for bookmaker: {}", bookMaker);
+                    return null;
+            }
+        } catch (Exception e) {
+            log.error("Failed to build URL for bookmaker {}: {}", bookMaker, e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
+     * Build MSport URL from crumbs
+     */
+    /**
+     * Build MSport URL from crumbs
+     * Format: <a href="https://www.msport.com/ng/web/sports/">...</a>{sport}/{live_or_result}/{league}/{team1}_vs_{team2}/sr:match:{event_id}
+     *
+     * Note: Sport names with spaces need URL encoding (e.g., "Table Tennis" -> "Table%20Tennis")
+     *
+     * Example crumbs:
+     * {
+     *   "event_id": "67941228",
+     *   "league": "International_TT_Cup",
+     *   "sport": "Table_Tennis",
+     *   "team1": "Kus__Ondrej",
+     *   "team2": "Vanous__Jiri"
+     * }
+     *
+     * Result: <a href="https://www.msport.com/ng/web/sports/Table%20Tennis/live/International_TT_Cup/Kus__Ondrej_vs_Vanous__Jiri/sr:match:67941228">...</a>
+     */
+    private static String buildMSportUrl(Map<String, String> crumbs) {
+        String eventId = crumbs.get("event_id");
+        String league = crumbs.get("league");
+        String sport = crumbs.get("sport");
+        String team1 = crumbs.get("team1");
+        String team2 = crumbs.get("team2");
+
+        if (eventId == null || league == null || sport == null || team1 == null || team2 == null) {
+            log.warn("Missing required crumbs for MSport URL. Available: {}", crumbs.keySet());
+            return null;
+        }
+
+        String matchType = crumbs.getOrDefault("match_type", "live");
+
+        // Convert sport name: "Table_Tennis" -> "Table Tennis" -> "Table%20Tennis"
+        // Replace underscores with spaces, then URL encode
+        String sportFormatted = sport.replace("_", " ");
+        String sportEncoded = urlEncode(sportFormatted);
+
+        String url = String.format("https://www.msport.com/ng/web/sports/%s/%s/%s/%s_vs_%s/sr:match:%s",
+                sportEncoded,
+                matchType,
+                league,
+                team1,
+                team2,
+                eventId
+        );
+
+        log.debug("Built MSport URL: {}", url);
+        return url;
+    }
+
+    /**
+     * URL encode a string (handles spaces and special characters)
+     */
+    private static String urlEncode(String value) {
+        if (value == null) {
+            return null;
+        }
+        return URLEncoder.encode(value, StandardCharsets.UTF_8)
+                .replace("+", "%20"); // Replace + with %20 for spaces
+    }
+
+
+    /**
+     * Build SportyBet URL from crumbs
+     * Format: <a href="https://www.sportybet.com/ng/sport/">...</a>{sport}/{live_or_result}/{country}/{league}/{team1}_vs_{team2}/sr:match:{event_id}
+     *
+     * Example crumbs:
+     * {
+     *   "country": "Germany",
+     *   "country_id": "sr:category:111",
+     *   "event_id": "62670809",
+     *   "league": "BBL",
+     *   "league_id": "sr:tournament:227",
+     *   "path": "/ng/sport/basketball/live/sr:category:111/sr:tournament:227/sr:match:62670809",
+     *   "sport": "basketball",
+     *   "team1": "Niners_Chemnitz",
+     *   "team2": "Bayern_Munich"
+     * }
+     *
+     * Result: <a href="https://www.sportybet.com/ng/sport/basketball/live/Germany/BBL/Niners_Chemnitz_vs_Bayern_Munich/sr:match:62670809">...</a>
+     */
+    private static String buildSportyBetUrl(Map<String, String> crumbs) {
+        String eventId = crumbs.get("event_id");
+        String sport = crumbs.get("sport");
+        String country = crumbs.get("country");
+        String league = crumbs.get("league");
+        String team1 = crumbs.get("team1");
+        String team2 = crumbs.get("team2");
+
+        if (eventId == null || sport == null || country == null || league == null || team1 == null || team2 == null) {
+            log.warn("Missing required crumbs for SportyBet URL. Available: {}", crumbs.keySet());
+            return null;
+        }
+
+        String matchType = crumbs.getOrDefault("match_type", "live");
+
+        String url = String.format("https://www.sportybet.com/ng/sport/%s/%s/%s/%s/%s_vs_%s/sr:match:%s",
+                sport,
+                matchType,
+                country,
+                league,
+                team1,
+                team2,
+                eventId
+        );
+
+        log.debug("Built SportyBet URL: {}", url);
+        return url;
+    }
+
+    /**
+     * Build 1WIN URL from crumbs
+     * Format: <a href="https://1win.pro/betting/match/sport/">...</a>{team1}-vs-{team2}-{event_id}
+     *
+     * Example crumbs:
+     * {
+     *   "category_id": "228",
+     *   "event_id": "32089527",
+     *   "sport_id": "23",
+     *   "team1": "chemnitz",
+     *   "team2": "bayern-munich",
+     *   "tournament_id": "1343"
+     * }
+     *
+     * Result: <a href="https://1win.pro/betting/match/sport/chemnitz-vs-bayern-munich-32089527">...</a>
+     */
+    private static String buildOneWinUrl(Map<String, String> crumbs) {
+        String eventId = crumbs.get("event_id");
+        String team1 = crumbs.get("team1");
+        String team2 = crumbs.get("team2");
+
+        if (eventId == null || team1 == null || team2 == null) {
+            log.warn("Missing required crumbs for 1WIN URL. Available: {}", crumbs.keySet());
+            return null;
+        }
+
+        // Team names are already in lowercase with hyphens format in crumbs
+        String url = String.format("https://1win.pro/betting/match/sport/%s-vs-%s-%s",
+                team1,
+                team2,
+                eventId
+        );
+
+        log.debug("Built 1WIN URL: {}", url);
+        return url;
+    }
+
+
+    /**
+     * Build Bet9ja URL from crumbs
+     */
+    private static String buildBet9jaUrl(Map<String, String> crumbs) {
+        String eventId = crumbs.get("event_id");
+
+        if (eventId == null) {
+            log.warn("Missing event_id for Bet9ja URL");
+            return null;
+        }
+
+        String url = String.format("https://web.bet9ja.com/Sport/EventDetails?eventId=%s", eventId);
+
+        log.debug("Built Bet9ja URL: {}", url);
+        return url;
     }
 
     private MarketOutcome getMarketOutcome(BookMaker bookMaker, Map<String, String> crumbs) {
@@ -1040,6 +1271,7 @@ public class IngestionService {
                     .progress(outcomeData.getProgress())
                     .reordered(outcomeData.getReordered())
                     .initiator(outcomeData.getInitiator())
+                    .bookMakerUrl(outcomeData.getBookmakerUrl())
                     .build();
             arb.addOutcome(outcome);
         }
