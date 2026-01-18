@@ -575,7 +575,7 @@ public class SportyMarketUtil {
      * Optimized MSport bet selection - ~2x faster
      * Early exit + marks element for direct clicking
      */
-    public static boolean selectAndVerifyBetOptimized(Page page, BettingTask task, ArbOutcomeService arbOutcomeService) {
+    public static boolean selectAndVerifyBet(Page page, BettingTask task, ArbOutcomeService arbOutcomeService) {
         String market = task.marketType().trim();
         String outcome = task.outcome().trim();
 
