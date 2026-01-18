@@ -288,82 +288,133 @@ public class OneWinMarketUtil {
             String marketType = normalizeText(task.marketType());
             String outcome = normalizeText(task.outcome());
 
-            // ⚡ STEP 1: Use JavaScript to FIND the bet quickly (100-300ms)
+            // ⚡ STEP 1: Use JavaScript to FIND the exact market and bet
             String jsScript = String.format("""
-        (function() {
-            const marketType = '%s';
-            const outcome = '%s';
+    (function() {
+        const targetMarket = '%s';
+        const targetOutcome = '%s';
+        
+        function normalize(text) {
+            if (!text) return '';
+            return text.toLowerCase()
+                .trim()
+                .replace(/\\s+/g, ' ')
+                .replace(/[^a-z0-9\\s.:+-]/g, '');
+        }
+        
+        const normalizedTargetMarket = normalize(targetMarket);
+        const normalizedTargetOutcome = normalize(targetOutcome);
+        
+        const groups = document.querySelectorAll('div._group_ahjwn_2');
+        let matchedMarket = null;
+        
+        // First pass: Find the EXACT matching market
+        for (const group of groups) {
+            const titleElement = group.querySelector('div._title_8ulje_6');
+            if (!titleElement) continue;
             
-            function normalize(text) {
-                if (!text) return '';
-                return text.toLowerCase()
-                    .trim()
-                    .replace(/\\s+/g, ' ')
-                    .replace(/[^a-z0-9\\s.:+-]/g, '');
+            const marketTitle = titleElement.textContent.trim();
+            const normalizedMarket = normalize(marketTitle);
+            
+            // Exact match required
+            if (normalizedMarket === normalizedTargetMarket) {
+                matchedMarket = { group, titleElement, marketTitle };
+                break;
             }
+        }
+        
+        if (!matchedMarket) {
+            console.log('❌ Exact market not found:', targetMarket);
+            return { 
+                found: false, 
+                error: 'Exact market not found',
+                searchedMarket: targetMarket,
+                availableMarkets: Array.from(groups).map(g => 
+                    g.querySelector('div._title_8ulje_6')?.textContent.trim()
+                ).filter(Boolean)
+            };
+        }
+        
+        console.log('✅ Exact market found:', matchedMarket.marketTitle);
+        
+        // Second pass: Find EXACT outcome ONLY in the matched market
+        const { group, titleElement, marketTitle } = matchedMarket;
+        const betButtons = group.querySelectorAll('button._root_1hr84_2');
+        
+        let matchedOutcome = null;
+        
+        for (let i = 0; i < betButtons.length; i++) {
+            const button = betButtons[i];
             
-            const normalizedMarket = normalize(marketType);
-            const normalizedOutcome = normalize(outcome);
+            // Skip header cells
+            const cell = button.closest('div._cell_9pkob_21');
+            if (cell?.querySelector('div._headerCell_xgz91_2')) continue;
             
-            const groups = document.querySelectorAll('div._group_ahjwn_2');
+            const nameSpan = button.querySelector('span._name_1hr84_36');
+            const oddsSpan = button.querySelector('span._cf_17if8_2');
             
-            for (const group of groups) {
-                const titleElement = group.querySelector('div._title_8ulje_6');
-                if (!titleElement) continue;
+            if (!nameSpan || !oddsSpan) continue;
+            
+            const outcomeName = nameSpan.textContent.trim();
+            const normalizedOutcome = normalize(outcomeName);
+            
+            // Exact match required
+            if (normalizedOutcome === normalizedTargetOutcome) {
+                const oddsText = oddsSpan.textContent.trim();
+                const odds = parseFloat(oddsText);
                 
-                const title = normalize(titleElement.textContent);
+                if (isNaN(odds)) continue;
                 
-                const isMarketMatch = title.includes(normalizedMarket) || 
-                                     normalizedMarket.includes(title) ||
-                                     normalizedMarket.split(' ').some(word => title.includes(word));
+                const isDisabled = button.disabled || 
+                                  button.classList.contains('disabled') ||
+                                  button.classList.contains('_locked_1hr84_2');
                 
-                if (isMarketMatch) {
-                    const betButtons = group.querySelectorAll('button._root_1hr84_2:not(:has(div._headerCell_xgz91_2))');
-                    
-                    for (let i = 0; i < betButtons.length; i++) {
-                        const button = betButtons[i];
-                        
-                        // Skip header cells
-                        const headerCell = button.closest('div._cell_9pkob_21')?.querySelector('div._headerCell_xgz91_2');
-                        if (headerCell) continue;
-                        
-                        const nameSpan = button.querySelector('span._name_1hr84_36');
-                        const oddsSpan = button.querySelector('span._cf_17if8_2');
-                        
-                        if (nameSpan && oddsSpan) {
-                            const betName = normalize(nameSpan.textContent);
-                            const oddsText = oddsSpan.textContent.trim();
-                            const odds = parseFloat(oddsText);
-                            
-                            const isOutcomeMatch = betName.includes(normalizedOutcome) || 
-                                                  normalizedOutcome.includes(betName) ||
-                                                  betName.split(' ').every(word => normalizedOutcome.includes(word));
-                            
-                            if (isOutcomeMatch) {
-                                const isDisabled = button.disabled || 
-                                                  button.classList.contains('disabled') ||
-                                                  button.classList.contains('_locked_1hr84_2');
-                                
-                                // Add unique identifier to button for Playwright to find
-                                button.setAttribute('data-arb-target', 'true');
-                                
-                                return {
-                                    market: titleElement.textContent.trim(),
-                                    outcome: nameSpan.textContent.trim(),
-                                    odds: odds,
-                                    found: true,
-                                    disabled: isDisabled,
-                                    buttonIndex: i
-                                };
-                            }
-                        }
-                    }
-                }
+                matchedOutcome = {
+                    button,
+                    buttonIndex: i,
+                    outcomeName,
+                    odds,
+                    isDisabled
+                };
+                break;
             }
+        }
+        
+        if (!matchedOutcome) {
+            const availableOutcomes = Array.from(betButtons)
+                .map(btn => btn.querySelector('span._name_1hr84_36')?.textContent.trim())
+                .filter(Boolean);
             
-            return { found: false };
-        })();
-        """, escapeJs(marketType), escapeJs(outcome));
+            console.log('❌ Exact outcome not found in market:', marketTitle);
+            console.log('Searched for:', targetOutcome);
+            console.log('Available outcomes:', availableOutcomes);
+            
+            return {
+                found: false,
+                error: 'Exact outcome not found in market',
+                matchedMarket: marketTitle,
+                searchedOutcome: targetOutcome,
+                availableOutcomes
+            };
+        }
+        
+        console.log('✅ Exact outcome found:', matchedOutcome.outcomeName);
+        
+        // Mark the button for Playwright to click
+        matchedOutcome.button.setAttribute('data-arb-target', 'true');
+        matchedOutcome.button.setAttribute('data-arb-market', marketTitle);
+        matchedOutcome.button.setAttribute('data-arb-outcome', matchedOutcome.outcomeName);
+        
+        return {
+            found: true,
+            market: marketTitle,
+            outcome: matchedOutcome.outcomeName,
+            odds: matchedOutcome.odds,
+            disabled: matchedOutcome.isDisabled,
+            buttonIndex: matchedOutcome.buttonIndex
+        };
+    })();
+    """, escapeJs(marketType), escapeJs(outcome));
 
             // Execute JavaScript search
             Object resultObj = page.evaluate(jsScript);
@@ -371,8 +422,24 @@ public class OneWinMarketUtil {
 
             if (result == null || !(Boolean) result.getOrDefault("found", false)) {
                 log.error("❌ Bet not found - Market: {}, Outcome: {}", task.marketType(), task.outcome());
+
+                // Log why it failed
+                String error = (String) result.get("error");
+                log.error("Reason: {}", error);
+
+                if (result.containsKey("searchedMarket")) {
+                    log.info("Searched for market: '{}'", result.get("searchedMarket"));
+                }
+                if (result.containsKey("availableMarkets")) {
+                    log.info("Available markets: {}", result.get("availableMarkets"));
+                }
+                if (result.containsKey("matchedMarket")) {
+                    log.info("Matched market: '{}', but outcome not found", result.get("matchedMarket"));
+                    log.info("Searched for outcome: '{}'", result.get("searchedOutcome"));
+                    log.info("Available outcomes: {}", result.get("availableOutcomes"));
+                }
+
                 takeMarketScreenshot(page, "bet_not_found");
-                logAvailableMarkets(page);
                 return false;
             }
 
@@ -381,13 +448,14 @@ public class OneWinMarketUtil {
             Double foundOdds = ((Number) result.get("odds")).doubleValue();
             Boolean isDisabled = (Boolean) result.getOrDefault("disabled", false);
 
-            log.info("✅ Found bet - Market: '{}', Outcome: '{}', Odds: {}, Disabled: {}",
+            log.info("✅ Found exact bet - Market: '{}', Outcome: '{}', Odds: {}, Disabled: {}",
                     foundMarket, foundOutcome, foundOdds, isDisabled);
 
             takeMarketScreenshot(page, "bet_found");
 
             if (isDisabled) {
                 log.warn("⚠️ Bet button is disabled/locked");
+                page.evaluate("document.querySelector('button[data-arb-target]')?.removeAttribute('data-arb-target')");
                 return false;
             }
 
@@ -405,11 +473,11 @@ public class OneWinMarketUtil {
             if (!isOddsAcceptable(foundOdds, task)) {
                 log.warn("⚠️ Odds not acceptable -- Found: {}, Expected: {}, Min: {}, Max: {}",
                         foundOdds, task.expectedOdds(), task.minOdds(), task.maxOdds());
+                page.evaluate("document.querySelector('button[data-arb-target]')?.removeAttribute('data-arb-target')");
                 // return false; // TODO
             }
 
-            // 🎯 STEP 2: Use Playwright locator to CLICK the marked button (50-100ms)
-            // Find the button that JS marked with data-arb-target="true"
+            // 🎯 STEP 2: Click the marked button using Playwright locator
             Locator targetButton = page.locator("button[data-arb-target='true']");
 
             if (targetButton.count() == 0) {
@@ -424,24 +492,43 @@ public class OneWinMarketUtil {
                 targetButton.scrollIntoViewIfNeeded();
                 sleepRandom(200, 400);
 
-                // Click with timeout and force option
+                // Click with timeout
                 targetButton.click(new Locator.ClickOptions()
                         .setTimeout(5000)
-                        .setForce(false)); // Let Playwright check actionability
+                        .setForce(false));
 
                 log.info("✅ Bet button clicked successfully");
 
-                // Clean up the marker attribute
-                page.evaluate("document.querySelector('button[data-arb-target]')?.removeAttribute('data-arb-target')");
+                // Clean up marker attributes
+                page.evaluate("""
+                const btn = document.querySelector('button[data-arb-target]');
+                if (btn) {
+                    btn.removeAttribute('data-arb-target');
+                    btn.removeAttribute('data-arb-market');
+                    btn.removeAttribute('data-arb-outcome');
+                }
+            """);
 
             } catch (Exception e) {
                 log.error("❌ Failed to click bet button: {}", e.getMessage());
                 takeMarketScreenshot(page, "click_failed");
+
+                // Clean up on error
+                try {
+                    page.evaluate("""
+                    const btn = document.querySelector('button[data-arb-target]');
+                    if (btn) {
+                        btn.removeAttribute('data-arb-target');
+                        btn.removeAttribute('data-arb-market');
+                        btn.removeAttribute('data-arb-outcome');
+                    }
+                """);
+                } catch (Exception ignored) {}
+
                 return false;
             }
 
             sleepRandom(200, 400);
-//            takeMarketScreenshot(page, "bet_clicked");
 
             // Verify bet in betslip
             boolean verifyBetInSlip = verifyBetInBetslipJS(page, task);
@@ -452,17 +539,22 @@ public class OneWinMarketUtil {
             }
 
             log.info("✅ Bet verified in betslip");
-//            takeMarketScreenshot(page, "bet_verified");
-
             return true;
 
         } catch (Exception e) {
             log.error("❌ Failed to select bet: {}", e.getMessage(), e);
             takeMarketScreenshot(page, "exception");
 
-            // Clean up marker if it exists
+            // Clean up markers on exception
             try {
-                page.evaluate("document.querySelector('button[data-arb-target]')?.removeAttribute('data-arb-target')");
+                page.evaluate("""
+                const btn = document.querySelector('button[data-arb-target]');
+                if (btn) {
+                    btn.removeAttribute('data-arb-target');
+                    btn.removeAttribute('data-arb-market');
+                    btn.removeAttribute('data-arb-outcome');
+                }
+            """);
             } catch (Exception ignored) {}
 
             return false;
