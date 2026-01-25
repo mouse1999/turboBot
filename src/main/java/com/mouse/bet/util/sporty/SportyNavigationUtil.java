@@ -277,8 +277,8 @@ public class SportyNavigationUtil {
         }
 
         // Final confirmation
-        page.waitForSelector(".match-row, .m-content-row, .live-match",
-                new Page.WaitForSelectorOptions().setTimeout(12_000));
+//        page.waitForSelector(".match-row, .m-content-row, .live-match",
+//                new Page.WaitForSelectorOptions().setTimeout(12_000));
 
         randomHumanDelay(2200, 4200);
         log.info("{} Multi View ready! URL: {}", displayName, page.url());
@@ -520,7 +520,7 @@ private static boolean tryDirectNavigation(Page page, BettingTask task) {
         // Navigate directly to the URL
         page.navigate(bookmakerUrl, new Page.NavigateOptions()
                 .setTimeout(15000)
-                .setWaitUntil(WaitUntilState.NETWORKIDLE));
+                .setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
 
         log.info("✅ Successfully navigated to match page...");
         return true;

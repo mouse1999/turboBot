@@ -1,0 +1,1252 @@
+{
+    "filtered": 14,
+    "items": [
+        {
+            "id": "16193959391695113546:16:;22275:0.5::-2252784971906522918;22272:::-2252784972438203175;",
+            "event_id": "16193959391695113546",
+            "value": 3.52,
+            "roi": 119.98132295719844,
+            "created": "2026-01-25 13:24:44",
+            "f": "1",
+            "groups_ids": null,
+            "odds": [
+                {
+                    "sub_event_id": "16193959101803028698",
+                    "type_id": 22275,
+                    "value": 3.75,
+                    "prev": 3.7,
+                    "index": "0.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:30:40",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "16",
+                        "oid": "1714",
+                        "spec": "hcp=0.5"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959101271348441",
+                    "type_id": 22272,
+                    "value": 1.43,
+                    "prev": 1.42,
+                    "index": "",
+                    "bank": "",
+                    "updated": "2026-01-25 13:28:33",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "G": "1",
+                        "I": "689971980",
+                        "T": "3",
+                        "event_id": "689971980"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959251381657207:347:6;22263:19.5::-2252784973923535247;22264:19.5::-2252784974533634669;",
+            "event_id": "16193959251381657207",
+            "value": 3.49,
+            "roi": 118.95875486381324,
+            "created": "2026-01-25 13:31:01",
+            "f": "1",
+            "groups_ids": [
+                6
+            ],
+            "odds": [
+                {
+                    "sub_event_id": "16193959099786016369",
+                    "type_id": 22263,
+                    "value": 2.435,
+                    "prev": 2.2,
+                    "index": "19.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:31:18",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "G": "15",
+                        "I": "689976473",
+                        "P": "19.5",
+                        "T": "11",
+                        "event_id": "689976473"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959099175916947",
+                    "type_id": 22264,
+                    "value": 1.8,
+                    "prev": 1.75,
+                    "index": "19.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:31:07",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "756",
+                        "oid": "13",
+                        "spec": "total=19.5|quarternr=2"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959110901766342:351:6;22275:-1.5::-2252784976040387989;22276:1.5::-2252784975728719055;",
+            "event_id": "16193959110901766342",
+            "value": 1.98,
+            "roi": 67.48949416342413,
+            "created": "2026-01-25 13:31:26",
+            "f": "1",
+            "groups_ids": [
+                6
+            ],
+            "odds": [
+                {
+                    "sub_event_id": "16193959097669163627",
+                    "type_id": 22275,
+                    "value": 2.67,
+                    "prev": 2.195,
+                    "index": "-1.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:31:23",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "G": "2",
+                        "I": "689977318",
+                        "P": "-1.5",
+                        "T": "7",
+                        "event_id": "689977318"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959097980832561",
+                    "type_id": 22276,
+                    "value": 1.65,
+                    "prev": 1.85,
+                    "index": "1.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:31:17",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "303",
+                        "oid": "1715",
+                        "spec": "hcp=-1.5|quarternr=2"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959100986427458:876:6;22259:1.5::-2252784972160684066;22260:1.5::-2252784974967084635;",
+            "event_id": "16193959100986427458",
+            "value": 1.11,
+            "roi": 37.83501945525292,
+            "created": "2026-01-25 13:30:24",
+            "f": "1",
+            "groups_ids": [
+                6
+            ],
+            "odds": [
+                {
+                    "sub_event_id": "16193959101548867550",
+                    "type_id": 22259,
+                    "value": 2.05,
+                    "prev": 2,
+                    "index": "1.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:30:37",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "90",
+                        "oid": "12",
+                        "spec": "total=1.5"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959098742466981",
+                    "type_id": 22260,
+                    "value": 1.995,
+                    "prev": 1.96,
+                    "index": "1.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:31:01",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "G": "17",
+                        "I": "689967031",
+                        "P": "1.5",
+                        "T": "10",
+                        "event_id": "689967031"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959169477448134:19:5;22263:0.5::-2252784972770768807;22264:0.5::-2252784976098169094;",
+            "event_id": "16193959169477448134",
+            "value": 0.47,
+            "roi": 16.02023346303502,
+            "created": "2026-01-25 13:31:26",
+            "f": "1",
+            "groups_ids": [
+                5
+            ],
+            "odds": [
+                {
+                    "sub_event_id": "16193959100938782809",
+                    "type_id": 22263,
+                    "value": 3.435,
+                    "prev": 3.29,
+                    "index": "0.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:31:02",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "G": "15",
+                        "I": "689978807",
+                        "P": "0.5",
+                        "T": "11",
+                        "event_id": "689978807"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959097611382522",
+                    "type_id": 22264,
+                    "value": 1.42,
+                    "prev": 1.45,
+                    "index": "0.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:30:55",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "69",
+                        "oid": "13",
+                        "spec": "total=0.5"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959777064197478:4:;22299:::-2252784975435943209;22300:::-2252784974478774519;",
+            "event_id": "16193959777064197478",
+            "value": 0.08,
+            "roi": 2.7268482490272374,
+            "created": "2026-01-25 13:31:27",
+            "f": "1",
+            "groups_ids": null,
+            "odds": [
+                {
+                    "sub_event_id": "16193959098273608407",
+                    "type_id": 22299,
+                    "value": 11.1,
+                    "prev": 11,
+                    "index": "",
+                    "bank": "",
+                    "updated": "2026-01-25 13:31:25",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "G": "90",
+                        "I": "689952303",
+                        "T": "759",
+                        "event_id": "689952303"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959099230777097",
+                    "type_id": 22300,
+                    "value": 1.1,
+                    "prev": 1.09,
+                    "index": "",
+                    "bank": "",
+                    "updated": "2026-01-25 13:31:21",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "220",
+                        "oid": "76"
+                    }
+                }
+            ]
+        }
+    ],
+    "events": [
+        {
+            "sport_id": 1,
+            "id": "16193959391695113546",
+            "league": "Rwanda. Division 2",
+            "team_1": "Aspor",
+            "team_2": "Ejoheza",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 2,
+            "sub_events": [
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959101803028698",
+                    "sport": "Soccer",
+                    "league": "Rwanda Second Division",
+                    "team_1": "Aspor FC",
+                    "team_2": "Ejoheza FC",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_67964528",
+                    "reordered": false,
+                    "progress": "20'45\", 0:0",
+                    "crumbs": {
+                        "event_id": "67964528",
+                        "league": "Rwanda_Second_Division",
+                        "sport": "Soccer",
+                        "team1": "Aspor_FC",
+                        "team2": "Ejoheza_FC"
+                    }
+                },
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959101271348441",
+                    "sport": "Football",
+                    "league": "Rwanda. Division 2",
+                    "team_1": "Aspor",
+                    "team_2": "Ejoheza",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689971980",
+                    "reordered": false,
+                    "progress": "0:0, 1st half, 21'",
+                    "crumbs": {
+                        "event_id": "689971980",
+                        "league": "Rwanda-Division-2",
+                        "league_id": "1849396",
+                        "path": "/en/live/Football/1849396-Rwanda-Division-2/689971980-Aspor-Ejoheza/",
+                        "sport": "Football",
+                        "team1": "Aspor",
+                        "team2": "Ejoheza"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 5,
+            "id": "16193959251381657207",
+            "league": "Sweden. Superettan",
+            "team_1": "Djurgarden",
+            "team_2": "Malbas Oresund",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 8,
+            "sub_events": [
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959099786016369",
+                    "sport": "Basketball",
+                    "league": "Sweden. Superettan",
+                    "team_1": "Djurgarden",
+                    "team_2": "Malbas",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689972159",
+                    "reordered": true,
+                    "progress": "31:35, 2nd quarter, 15'",
+                    "crumbs": {
+                        "event_id": "689972159",
+                        "league": "Sweden-Superettan",
+                        "league_id": "1670512",
+                        "path": "/en/live/Basketball/1670512-Sweden-Superettan/689972159-Malbas-Djurgarden/",
+                        "sport": "Basketball",
+                        "team1": "Malbas",
+                        "team2": "Djurgarden"
+                    }
+                },
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959099175916947",
+                    "sport": "Basketball",
+                    "league": "Sweden Superettan",
+                    "team_1": "Djurgarden Basket",
+                    "team_2": "Malbas",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_61458595",
+                    "reordered": true,
+                    "progress": "31:33",
+                    "crumbs": {
+                        "event_id": "61458595",
+                        "league": "Sweden_Superettan",
+                        "sport": "Basketball",
+                        "team1": "Malbas",
+                        "team2": "Djurgarden_Basket"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 5,
+            "id": "16193959110901766342",
+            "league": "BNXT League",
+            "team_1": "Landstede Zwolle",
+            "team_2": "Oostende",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 1,
+            "sub_events": [
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959097669163627",
+                    "sport": "Basketball",
+                    "league": "BNXT League",
+                    "team_1": "Landstede Zwolle",
+                    "team_2": "Oostende",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689971748",
+                    "reordered": false,
+                    "progress": "26:38, 2nd quarter, 14'",
+                    "crumbs": {
+                        "event_id": "689971748",
+                        "league": "BNXT-League",
+                        "league_id": "2297530",
+                        "path": "/en/live/Basketball/2297530-BNXT-League/689971748-Landstede-Zwolle-Oostende/",
+                        "sport": "Basketball",
+                        "team1": "Landstede-Zwolle",
+                        "team2": "Oostende"
+                    }
+                },
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959097980832561",
+                    "sport": "Basketball",
+                    "league": "International BNXT League",
+                    "team_1": "Landstede Hammers",
+                    "team_2": "BC Oostende",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_61287227",
+                    "reordered": false,
+                    "progress": "26:38",
+                    "crumbs": {
+                        "event_id": "61287227",
+                        "league": "International_BNXT_League",
+                        "sport": "Basketball",
+                        "team1": "Landstede_Hammers",
+                        "team2": "BC_Oostende"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 1,
+            "id": "16193959100986427458",
+            "league": "Spain. LaLiga",
+            "team_1": "Atletico Madrid",
+            "team_2": "Mallorca",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 1,
+            "sub_events": [
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959101548867550",
+                    "sport": "Soccer",
+                    "league": "Spain LaLiga",
+                    "team_1": "Atletico Madrid",
+                    "team_2": "Mallorca",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_61624340",
+                    "reordered": false,
+                    "progress": "27'48\", 1:0",
+                    "crumbs": {
+                        "event_id": "61624340",
+                        "league": "Spain_LaLiga",
+                        "sport": "Soccer",
+                        "team1": "Atletico_Madrid",
+                        "team2": "Mallorca"
+                    }
+                },
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959098742466981",
+                    "sport": "Football",
+                    "league": "Spain. La Liga",
+                    "team_1": "Atletico Madrid",
+                    "team_2": "Mallorca",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689966877",
+                    "reordered": false,
+                    "progress": "1:0, 1st half, 28'",
+                    "crumbs": {
+                        "event_id": "689966877",
+                        "league": "Spain-La-Liga",
+                        "league_id": "127733",
+                        "path": "/en/live/Football/127733-Spain-La-Liga/689966877-Atletico-Madrid-Mallorca/",
+                        "sport": "Football",
+                        "team1": "Atletico-Madrid",
+                        "team2": "Mallorca"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 1,
+            "id": "16193959169477448134",
+            "league": "Coupe de France. Women",
+            "team_1": "Le Havre (Women)",
+            "team_2": "Nice (Women)",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 1,
+            "sub_events": [
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959100938782809",
+                    "sport": "Football",
+                    "league": "Coupe de France. Women",
+                    "team_1": "Le Havre (Women)",
+                    "team_2": "Nice (Women)",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689978768",
+                    "reordered": true,
+                    "progress": "0:0, 1st half, 4'",
+                    "crumbs": {
+                        "event_id": "689978768",
+                        "league": "Coupe-de-France-Women",
+                        "league_id": "165433",
+                        "path": "/en/live/Football/165433-Coupe-de-France-Women/689978768-Nice-Women-Le-Havre-Women/",
+                        "sport": "Football",
+                        "team1": "Nice-Women",
+                        "team2": "Le-Havre-Women"
+                    }
+                },
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959097611382522",
+                    "sport": "Soccer",
+                    "league": "France Coupe de France, Women",
+                    "team_1": "Le Havre AC",
+                    "team_2": "OGC Nice",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_67731164",
+                    "reordered": true,
+                    "progress": "3'49\", 0:0",
+                    "crumbs": {
+                        "event_id": "67731164",
+                        "league": "France_Coupe_de_France__Women",
+                        "sport": "Soccer",
+                        "team1": "OGC_Nice",
+                        "team2": "Le_Havre_AC"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 5,
+            "id": "16193959777064197478",
+            "league": "Women. Finland. 1st Division",
+            "team_1": "NMKY Helsinki(W)",
+            "team_2": "Tapiolan Honka 2(W)",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 1,
+            "sub_events": [
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959099230777097",
+                    "sport": "Basketball",
+                    "league": "Finland 1. Division, Women",
+                    "team_1": "Helsingin NMKY",
+                    "team_2": "Tapiolan Honka II",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_63131825",
+                    "reordered": true,
+                    "progress": "56:62",
+                    "crumbs": {
+                        "event_id": "63131825",
+                        "league": "Finland_1__Division__Women",
+                        "sport": "Basketball",
+                        "team1": "Tapiolan_Honka_II",
+                        "team2": "Helsingin_NMKY"
+                    }
+                },
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959098273608407",
+                    "sport": "Basketball",
+                    "league": "Finland. Division 1. Women",
+                    "team_1": "NMKY Helsinki (Women)",
+                    "team_2": "Tapiolan Honka II (Women)",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689952303",
+                    "reordered": true,
+                    "progress": "56:62, 4th quarter, 4'",
+                    "crumbs": {
+                        "event_id": "689952303",
+                        "league": "Finland-Division-1-Women",
+                        "league_id": "1731634",
+                        "path": "/en/live/Basketball/1731634-Finland-Division-1-Women/689952303-Tapiolan-Honka-II-Women-NMKY-Helsinki-Women/",
+                        "sport": "Basketball",
+                        "team1": "Tapiolan-Honka-II-Women",
+                        "team2": "NMKY-Helsinki-Women"
+                    }
+                }
+            ]
+        }
+    ],
+    "masked": false,
+    "timestamp": 1769347901
+}
+
+
+
+3.77%
+a few seconds
+Football
+Live
+Odds		Bet
+Msport
+Aspor FC - Ejoheza FC22'45", 0:0
+Soccer. Rwanda Second Division
+
+1X
+3.65
+28
+
+EUR
+2.2
+
+max
+1xbet
+Aspor - Ejoheza0:0, 1st half, 22'
+Football. Rwanda. Division 2
+
+2
+1.45
+
+
+
+===========================================================
+{
+    "filtered": 39,
+    "items": [
+        {
+            "id": "16193959174699257015:14:;22277::1:-2252784973264305950;22278::1:-2252784973688699132;",
+            "event_id": "16193959174699257015",
+            "value": 5.4,
+            "roi": 184.06225680933852,
+            "created": "2026-01-25 13:59:04",
+            "f": "1",
+            "groups_ids": null,
+            "odds": [
+                {
+                    "sub_event_id": "16193959100445245666",
+                    "type_id": 22277,
+                    "value": 1.42,
+                    "prev": 1.27,
+                    "index": "",
+                    "bank": "",
+                    "updated": "2026-01-25 13:59:01",
+                    "rules_ids": [
+                        1
+                    ],
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "219",
+                        "oid": "5",
+                        "spec": ""
+                    }
+                },
+                {
+                    "sub_event_id": "16193959100020852484",
+                    "type_id": 22278,
+                    "value": 4.09,
+                    "prev": 3.89,
+                    "index": "",
+                    "bank": "",
+                    "updated": "2026-01-25 13:59:04",
+                    "rules_ids": [
+                        1
+                    ],
+                    "initiator": true,
+                    "crumbs": {
+                        "G": "101",
+                        "I": "689953374",
+                        "T": "401",
+                        "event_id": "689953374"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959109649767747:350:3;22275:3.5::-2252784975450982892;22276:-3.5::-2252784974616561098;",
+            "event_id": "16193959109649767747",
+            "value": 4.74,
+            "roi": 161.56575875486382,
+            "created": "2026-01-25 13:58:25",
+            "f": "1",
+            "groups_ids": [
+                3
+            ],
+            "odds": [
+                {
+                    "sub_event_id": "16193959098258568724",
+                    "type_id": 22275,
+                    "value": 1.8,
+                    "prev": 1.7,
+                    "index": "3.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:59:21",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "mid": "66",
+                        "oid": "1715",
+                        "spec": "hcp=-3.5"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959099092990518",
+                    "type_id": 22276,
+                    "value": 2.505,
+                    "prev": 2.368,
+                    "index": "-3.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:59:09",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "G": "2",
+                        "I": "689986285",
+                        "P": "-3.5",
+                        "T": "7",
+                        "event_id": "689986285"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959119110019088:346:;22261:92.5:1:-2252784974379308356;22262:92.5:1:-2252784974553841512;",
+            "event_id": "16193959119110019088",
+            "value": 3.09,
+            "roi": 105.32451361867703,
+            "created": "2026-01-25 13:58:33",
+            "f": "1",
+            "groups_ids": null,
+            "odds": [
+                {
+                    "sub_event_id": "16193959099330243260",
+                    "type_id": 22261,
+                    "value": 1.94,
+                    "prev": 1.832,
+                    "index": "92.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:59:01",
+                    "rules_ids": [
+                        1
+                    ],
+                    "initiator": false,
+                    "crumbs": {
+                        "G": "15",
+                        "I": "689961017",
+                        "P": "92.5",
+                        "T": "11",
+                        "event_id": "689961017"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959099155710104",
+                    "type_id": 22262,
+                    "value": 2.2,
+                    "prev": 2,
+                    "index": "92.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:58:52",
+                    "rules_ids": [
+                        1
+                    ],
+                    "initiator": true,
+                    "crumbs": {
+                        "mid": "227",
+                        "oid": "13",
+                        "spec": "total=92.5"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959119087079437:877:3;22259:80.5::-2252784975983898175;22260:81.5::-2252784971868088624;",
+            "event_id": "16193959119087079437",
+            "value": 2.68,
+            "roi": 91.34941634241245,
+            "created": "2026-01-25 13:59:18",
+            "f": "1",
+            "groups_ids": [
+                3
+            ],
+            "odds": [
+                {
+                    "sub_event_id": "16193959097725653441",
+                    "type_id": 22259,
+                    "value": 2,
+                    "prev": 1.75,
+                    "index": "80.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:59:17",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "mid": "68",
+                        "oid": "12",
+                        "spec": "total=80.5"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959101841462992",
+                    "type_id": 22260,
+                    "value": 2.11,
+                    "prev": 2.07,
+                    "index": "81.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:58:48",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "68",
+                        "oid": "13",
+                        "spec": "total=81.5"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959102737549748:876:5;22259:2.5::-2252784973284147944;22260:2.5::-2252784974551382101;",
+            "event_id": "16193959102737549748",
+            "value": 1.36,
+            "roi": 46.35642023346304,
+            "created": "2026-01-25 13:59:05",
+            "f": "1",
+            "groups_ids": [
+                5
+            ],
+            "odds": [
+                {
+                    "sub_event_id": "16193959100425403672",
+                    "type_id": 22259,
+                    "value": 2,
+                    "prev": 1.95,
+                    "index": "2.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:59:01",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "68",
+                        "oid": "12",
+                        "spec": "total=2.5"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959099158169515",
+                    "type_id": 22260,
+                    "value": 2.055,
+                    "prev": 1.92,
+                    "index": "2.5",
+                    "bank": "",
+                    "updated": "2026-01-25 13:59:03",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "G": "17",
+                        "I": "689977381",
+                        "P": "2.5",
+                        "T": "10",
+                        "event_id": "689977381"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959913512190284:4:;22299:::-2252784975770829514;22300:::-2252784974224442243;",
+            "event_id": "16193959913512190284",
+            "value": 0.51,
+            "roi": 17.383657587548637,
+            "created": "2026-01-25 13:57:31",
+            "f": "1",
+            "groups_ids": null,
+            "odds": [
+                {
+                    "sub_event_id": "16193959097938722102",
+                    "type_id": 22299,
+                    "value": 14.5,
+                    "prev": 14.6,
+                    "index": "",
+                    "bank": "",
+                    "updated": "2026-01-25 13:58:42",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "G": "90",
+                        "I": "689969627",
+                        "T": "759",
+                        "event_id": "689969627"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959099485109373",
+                    "type_id": 22300,
+                    "value": 1.08,
+                    "prev": 1.07,
+                    "index": "",
+                    "bank": "",
+                    "updated": "2026-01-25 13:56:45",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "220",
+                        "oid": "76"
+                    }
+                }
+            ]
+        }
+    ],
+    "events": [
+        {
+            "sport_id": 5,
+            "id": "16193959174699257015",
+            "league": "VTB United League. Regular season",
+            "team_1": "MAI-MBA Moscow",
+            "team_2": "Parma",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": true,
+            "filtered": 2,
+            "sub_events": [
+                {
+                    "bookmaker_id": 43,
+                    "id": "16193959100445245666",
+                    "sport": "Basketball",
+                    "league": "International. United League",
+                    "team_1": "MBA Moscow",
+                    "team_2": "Parma Permsky Kray",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_62901909",
+                    "reordered": true,
+                    "progress": "OT, 42:34, 68:73",
+                    "crumbs": {
+                        "country": "International",
+                        "country_id": "sr:category:103",
+                        "event_id": "62901909",
+                        "league": "United League",
+                        "league_id": "sr:tournament:1438",
+                        "path": "/ng/sport/basketball/live/sr:category:103/sr:tournament:1438/sr:match:62901909",
+                        "sport": "basketball",
+                        "team1": "Parma_Permsky_Kray",
+                        "team2": "MBA_Moscow"
+                    }
+                },
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959100020852484",
+                    "sport": "Basketball",
+                    "league": "VTB United League",
+                    "team_1": "MBA-MAI Moscow",
+                    "team_2": "Parma Perm",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689953374",
+                    "reordered": true,
+                    "progress": "68:73, 1 Overtime, 42'",
+                    "crumbs": {
+                        "event_id": "689953374",
+                        "league": "VTB-United-League",
+                        "league_id": "118387",
+                        "path": "/en/live/Basketball/118387-VTB-United-League/689953374-Parma-Perm-MBA-MAI-Moscow/",
+                        "sport": "Basketball",
+                        "team1": "Parma-Perm",
+                        "team2": "MBA-MAI-Moscow"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 5,
+            "id": "16193959109649767747",
+            "league": "Greece Basket League",
+            "team_1": "Marousi",
+            "team_2": "Panathinaikos",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 7,
+            "sub_events": [
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959098258568724",
+                    "sport": "Basketball",
+                    "league": "Greece Basketball League",
+                    "team_1": "BC Maroussi Athens",
+                    "team_2": "Panathinaikos BC",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_63983987",
+                    "reordered": true,
+                    "progress": "4:14",
+                    "crumbs": {
+                        "event_id": "63983987",
+                        "league": "Greece_Basketball_League",
+                        "sport": "Basketball",
+                        "team1": "Panathinaikos_BC",
+                        "team2": "BC_Maroussi_Athens"
+                    }
+                },
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959099092990518",
+                    "sport": "Basketball",
+                    "league": "Greece. A1",
+                    "team_1": "Maroussi",
+                    "team_2": "Panathinaikos",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689983177",
+                    "reordered": true,
+                    "progress": "4:14, 1st quarter, 5'",
+                    "crumbs": {
+                        "event_id": "689983177",
+                        "league": "Greece-A1",
+                        "league_id": "115285",
+                        "path": "/en/live/Basketball/115285-Greece-A1/689983177-Panathinaikos-Maroussi/",
+                        "sport": "Basketball",
+                        "team1": "Panathinaikos",
+                        "team2": "Maroussi"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 5,
+            "id": "16193959119110019088",
+            "league": "International. United League",
+            "team_1": "Bc Lokomotiv Kuban",
+            "team_2": "Bc Samara",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 17,
+            "sub_events": [
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959099330243260",
+                    "sport": "Basketball",
+                    "league": "VTB United League",
+                    "team_1": "Lokomotiv Kuban",
+                    "team_2": "Samara",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689961017",
+                    "reordered": false,
+                    "progress": "75:69, 4th quarter, 32'",
+                    "crumbs": {
+                        "event_id": "689961017",
+                        "league": "VTB-United-League",
+                        "league_id": "118387",
+                        "path": "/en/live/Basketball/118387-VTB-United-League/689961017-Lokomotiv-Kuban-Samara/",
+                        "sport": "Basketball",
+                        "team1": "Lokomotiv-Kuban",
+                        "team2": "Samara"
+                    }
+                },
+                {
+                    "bookmaker_id": 43,
+                    "id": "16193959099155710104",
+                    "sport": "Basketball",
+                    "league": "International. United League",
+                    "team_1": "BC Lokomotiv Kuban",
+                    "team_2": "BC Samara",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_62901905",
+                    "reordered": false,
+                    "progress": "Q4, 32:54, 75:69",
+                    "crumbs": {
+                        "country": "International",
+                        "country_id": "sr:category:103",
+                        "event_id": "62901905",
+                        "league": "United League",
+                        "league_id": "sr:tournament:1438",
+                        "path": "/ng/sport/basketball/live/sr:category:103/sr:tournament:1438/sr:match:62901905",
+                        "sport": "basketball",
+                        "team1": "BC_Lokomotiv_Kuban",
+                        "team2": "BC_Samara"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 5,
+            "id": "16193959119087079437",
+            "league": "Belgium Top Division 1",
+            "team_1": "Guco Lier",
+            "team_2": "Basket Willebroek",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 6,
+            "sub_events": [
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959097725653441",
+                    "sport": "Basketball",
+                    "league": "Belgium Top Division 1",
+                    "team_1": "BC Guco Lier",
+                    "team_2": "Basket Willebroek",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_64113209",
+                    "reordered": false,
+                    "progress": "28:24",
+                    "crumbs": {
+                        "event_id": "64113209",
+                        "league": "Belgium_Top_Division_1",
+                        "sport": "Basketball",
+                        "team1": "BC_Guco_Lier",
+                        "team2": "Basket_Willebroek"
+                    }
+                },
+                {
+                    "bookmaker_id": 43,
+                    "id": "16193959101841462992",
+                    "sport": "Basketball",
+                    "league": "Belgium. Top Division 1",
+                    "team_1": "BC Guco Lier",
+                    "team_2": "Basket Willebroek",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_64113209",
+                    "reordered": false,
+                    "progress": "Q2, 13:04, 28:24",
+                    "crumbs": {
+                        "country": "Belgium",
+                        "country_id": "sr:category:189",
+                        "event_id": "64113209",
+                        "league": "Top Division 1",
+                        "league_id": "sr:tournament:1934",
+                        "path": "/ng/sport/basketball/live/sr:category:189/sr:tournament:1934/sr:match:64113209",
+                        "sport": "basketball",
+                        "team1": "BC_Guco_Lier",
+                        "team2": "Basket_Willebroek"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 1,
+            "id": "16193959102737549748",
+            "league": "Netherlands. Eredivisie",
+            "team_1": "Fortuna Sittard",
+            "team_2": "Groningen",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 6,
+            "sub_events": [
+                {
+                    "bookmaker_id": 43,
+                    "id": "16193959100425403672",
+                    "sport": "Football",
+                    "league": "Netherlands. Eredivisie",
+                    "team_1": "Fortuna Sittard",
+                    "team_2": "FC Groningen",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_61320031",
+                    "reordered": true,
+                    "progress": "H1, 26:34, 1:1",
+                    "crumbs": {
+                        "country": "Netherlands",
+                        "country_id": "sr:category:35",
+                        "event_id": "61320031",
+                        "league": "Eredivisie",
+                        "league_id": "sr:tournament:37",
+                        "path": "/ng/sport/football/live/sr:category:35/sr:tournament:37/sr:match:61320031",
+                        "sport": "football",
+                        "team1": "FC_Groningen",
+                        "team2": "Fortuna_Sittard"
+                    }
+                },
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959099158169515",
+                    "sport": "Football",
+                    "league": "Netherlands. Eredivisie",
+                    "team_1": "Fortuna Sittard",
+                    "team_2": "Groningen",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689977332",
+                    "reordered": true,
+                    "progress": "1:1, 1st half, 27'",
+                    "crumbs": {
+                        "event_id": "689977332",
+                        "league": "Netherlands-Eredivisie",
+                        "league_id": "2018750",
+                        "path": "/en/live/Football/2018750-Netherlands-Eredivisie/689977332-Groningen-Fortuna-Sittard/",
+                        "sport": "Football",
+                        "team1": "Groningen",
+                        "team2": "Fortuna-Sittard"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 5,
+            "id": "16193959913512190284",
+            "league": "Сенегал. 1-й дивизион. Женщины",
+            "team_1": "Жарааф (ж)",
+            "team_2": "Усепт (ж)",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 1,
+            "sub_events": [
+                {
+                    "bookmaker_id": 21,
+                    "id": "16193959097938722102",
+                    "sport": "Basketball",
+                    "league": "Senegal Championship. Division 1. Women",
+                    "team_1": "Jaraaf (Women)",
+                    "team_2": "Usept (Women)",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_689969627",
+                    "reordered": false,
+                    "progress": "29:27, 3rd quarter, 6'",
+                    "crumbs": {
+                        "event_id": "689969627",
+                        "league": "Senegal-Championship-Division-1-Women",
+                        "league_id": "1758880",
+                        "path": "/en/live/Basketball/1758880-Senegal-Championship-Division-1-Women/689969627-Jaraaf-Women-Usept-Women/",
+                        "sport": "Basketball",
+                        "team1": "Jaraaf-Women",
+                        "team2": "Usept-Women"
+                    }
+                },
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959099485109373",
+                    "sport": "Basketball",
+                    "league": "Senegal Division 1, Women",
+                    "team_1": "Jaraaf",
+                    "team_2": "Usept",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_68134392",
+                    "reordered": false,
+                    "progress": "29:27",
+                    "crumbs": {
+                        "event_id": "68134392",
+                        "league": "Senegal_Division_1__Women",
+                        "sport": "Basketball",
+                        "team1": "Jaraaf",
+                        "team2": "Usept"
+                    }
+                }
+            ]
+        }
+    ],
+    "masked": false,
+    "timestamp": 1769349572
+}

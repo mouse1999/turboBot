@@ -308,6 +308,45 @@ public class SportyBetLoginUtil {
         return masked + phoneNumber.substring(phoneNumber.length() - visibleDigits);
     }
 
+    public static void typeFastHumanLike(Locator locator, String text) {
+        // Optional: small random delay before starting (mimics human reaction)
+        randomDelay(80, 250);
+
+        // Focus the field first (critical for some betting sites)
+        locator.evaluate("el => el.focus()");
+
+        // Convert text to char array for per-character typing
+        char[] chars = text.toCharArray();
+
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            String charStr = String.valueOf(c);
+
+            // 1. Type the character
+            locator.press(charStr);
+
+            // 2. Human-like typing speed: 80–220 ms per character (avg ~140ms = ~7 chars/sec)
+            int baseDelay = 80 + (i % 3 == 0 ? 60 : 0); // slight rhythm variation
+            randomDelay(baseDelay, baseDelay + 140);
+
+            // 3. 3% chance of a tiny "thinking" pause (200–600ms) — makes it ultra-realistic
+            if (Math.random() < 0.03) {
+                randomDelay(200, 600);
+            }
+
+            // 4. 1% chance of a small backspace + retype (classic human typo fix)
+            if (Math.random() < 0.01 && i > 0) {
+                locator.press("Backspace");
+                randomDelay(100, 300);
+                locator.press(charStr); // retype the same char
+                randomDelay(120, 280);
+            }
+        }
+
+        // Final small pause after typing (human habit)
+        randomDelay(100, 350);
+    }
+
     private static int randomDelay(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }

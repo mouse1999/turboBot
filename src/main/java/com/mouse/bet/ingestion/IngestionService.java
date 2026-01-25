@@ -6,6 +6,7 @@ import com.mouse.bet.entity.ArbitrageOpportunity;
 import com.mouse.bet.entity.ArbOutcome;
 import com.mouse.bet.enums.ArbStatus;
 import com.mouse.bet.enums.BookMaker;
+import com.mouse.bet.enums.Sport;
 import com.mouse.bet.mapper.MSportBetMapper;
 import com.mouse.bet.mapper.OneWinMapper;
 import com.mouse.bet.mapper.OppositeOutcomeMapper;
@@ -16,6 +17,7 @@ import com.mouse.bet.repository.ArbOutcomeRepository;
 import com.mouse.bet.repository.ArbitrageRepository;
 import com.mouse.bet.service.ArbitrageService;
 import com.mouse.bet.transformation.BookMakerMapper;
+import com.mouse.bet.util.ArbCalculator;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +75,7 @@ public class IngestionService {
     private static final String EMOJI_POLLING = "🔄";
     private static final String EMOJI_CRUMBS = "🍪";
     private static final String EMOJI_MARKET = "🎯";
+    private static final BigDecimal TOTAL_STAKE = BigDecimal.valueOf(500);
 
 
     List<BookMaker> PREFERRED_BOOKMAKERS = Arrays.asList(
@@ -418,7 +421,7 @@ public class IngestionService {
                     log.info("{} {} Processing sub-event {}/{} (ID: {})...",
                             EMOJI_TRANSFORM, EMOJI_INFO, index + 1, sortedSubEvents.size(), subEvent.getId());
 
-                    return processSubEvent(subEvent, oddsMap, event, crumbsHolder, marketHolder, isLive);
+                    return processSubEvent(subEvent, oddsMap, event, crumbsHolder, marketHolder, isLive, profitInfo);
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -494,7 +497,7 @@ public class IngestionService {
                                         Event event,
                                         CrumbsHolder crumbsHolder,
                                         MarketInfoHolder marketHolder,
-                                        boolean isLive) {
+                                        boolean isLive, ArbitrageProfitInfo arbitrageProfitInfo) {
         Odd odd = oddsMap.get(subEvent.getId());
         BookMaker bookMaker = BookMakerMapper.getBookmakerName(subEvent.getBookmakerId());
 
@@ -534,7 +537,7 @@ public class IngestionService {
         }
 
         // Build and return outcome
-        OutcomeData outcome = buildOutcomeData(subEvent, bookMaker, oddsInfo, marketInfo, finalOutcome, bookmakerUrl);
+        OutcomeData outcome = buildOutcomeData(subEvent, bookMaker, oddsInfo, marketInfo, finalOutcome, bookmakerUrl, arbitrageProfitInfo);
 
         log.info("✅ Built outcome - bookMaker: {}, outcome: '{}', odds: {}, url: {}",
                 bookMaker, finalOutcome, oddsInfo.value, bookmakerUrl != null ? "✓" : "✗");
@@ -642,8 +645,8 @@ public class IngestionService {
         // Get market outcome
         return Optional.ofNullable(getMarketOutcome(bookMaker, crumbs))
                 .map(outcome -> {
-                    String marketType = outcome.getName();
-                    String outcomeName = outcome.getOutcome(oid);
+                    String marketType = outcome.getName().trim();
+                    String outcomeName = outcome.getOutcome(oid).trim();
 
                     log.info("{} {} {} Market resolved: marketType='{}', oid='{}', outcome='{}'",
                             EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType, oid, outcomeName);
@@ -675,8 +678,8 @@ public class IngestionService {
         return Optional.ofNullable(getMarketOutcome(bookMaker, crumbsHolder.savedCrumbs))
                 .map(outcome -> {
                     String oppositeOid = OppositeOutcomeMapper.getOppositeKey(crumbsHolder.savedOid);
-                    String marketType = outcome.getName();
-                    String outcomeName = outcome.getOutcome(oppositeOid);
+                    String marketType = outcome.getName().trim();
+                    String outcomeName = outcome.getOutcome(oppositeOid).trim();
 
                     log.info("{} {} {} Market outcome for 1WIN: marketType='{}', originalOid='{}', oppositeOid='{}', outcome='{}'",
                             EMOJI_SUCCESS, EMOJI_MARKET, EMOJI_CRUMBS, marketType,
@@ -699,10 +702,14 @@ public class IngestionService {
                                          OddsInfo oddsInfo,
                                          MarketInfo marketInfo,
                                          String finalOutcome,
-                                         String bookmakerUrl) {
+                                         String bookmakerUrl, ArbitrageProfitInfo profitInfo) {
         String marketType = bookMaker == BookMaker.SPORTYBET
+                ? (Sport.fromDisplayName(subEvent.getSport()) == Sport.BASKETBALL
                 ? marketInfo.marketType + " " + oddsInfo.index
+                : marketInfo.marketType)
                 : marketInfo.marketType;
+
+        BigDecimal stakeAmount = ArbCalculator.calculateStakeFromProfit(profitInfo.profitPercentage, oddsInfo.value, TOTAL_STAKE);
 
         return OutcomeData.builder()
                 .subEventId(subEvent.getId())
@@ -712,6 +719,7 @@ public class IngestionService {
                 .bookmakerId(subEvent.getBookmakerId())
                 .bookmakerName(bookMaker)
                 .sport(subEvent.getSport())
+                .stake(stakeAmount)
                 .league(subEvent.getLeague())
                 .marketType(marketType)
                 .team1(subEvent.getTeam1())
@@ -1240,6 +1248,8 @@ public class IngestionService {
                         : null)
                 .status(ArbStatus.ACTIVE)
                 .lastCheckedAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .confidenceScore(calculateConfidenceScore(
                         data.getProfitPercentage() != null ? data.getProfitPercentage() : BigDecimal.ZERO,
                         data.getCreated() != null
@@ -1249,7 +1259,7 @@ public class IngestionService {
                 .build();
 
         try {
-            arb.setRawData(objectMapper.writeValueAsString(data));
+//            arb.setRawData(objectMapper.writeValueAsString(data));
         } catch (Exception e) {
             log.debug("Could not serialize raw data: {}", e.getMessage());
         }
@@ -1268,6 +1278,7 @@ public class IngestionService {
                     .awayTeam(outcomeData.getTeam1())
                     .homeTeam(outcomeData.getTeam2())
                     .leagueName(outcomeData.getLeague())
+                    .stake(outcomeData.getStake())
                     .progress(outcomeData.getProgress())
                     .reordered(outcomeData.getReordered())
                     .initiator(outcomeData.getInitiator())

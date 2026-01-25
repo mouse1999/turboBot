@@ -3,6 +3,7 @@ package com.mouse.bet.window;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
 import com.mouse.bet.config.WindowConfig;
+import com.mouse.bet.entity.ArbOutcome;
 import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.enums.Sport;
 import com.mouse.bet.exception.CaptchaDetectedException;
@@ -12,10 +13,12 @@ import com.mouse.bet.manager.ProfileManager;
 import com.mouse.bet.manager.WindowSyncManager;
 import com.mouse.bet.monitor.PageHealthMonitor;
 import com.mouse.bet.orchestrator.Orchestrator;
+import com.mouse.bet.orchestrator.model.BetLeg;
 import com.mouse.bet.orchestrator.model.BetLegTask;
 import com.mouse.bet.profile.UserAgentProfile;
 import com.mouse.bet.service.ArbOutcomeService;
 import com.mouse.bet.util.sporty.SportyBetLoginUtil;
+import com.mouse.bet.util.sporty.SportyBetPlacement;
 import com.mouse.bet.util.sporty.SportyMarketUtil;
 import com.mouse.bet.util.sporty.SportyNavigationUtil;
 import jakarta.annotation.PostConstruct;
@@ -25,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,10 +36,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -135,12 +136,26 @@ public class SportyBet implements BettingWindow, Runnable {
         try {
             playwright = Playwright.create();
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setHeadless(false)
+                    .setHeadless(true)
                     .setArgs(Arrays.asList(
-                            "--start-maximized",
-                            "--window-size=2560,1440",
-                            "--force-device-scale-factor=1",
-                            "--disable-blink-features=AutomationControlled"
+//                            "--start-maximized",
+//                            "--window-size=2560,1440",
+//                            "--force-device-scale-factor=1",
+//                            "--disable-blink-features=AutomationControlled"
+
+                            "--disable-gpu",
+                            "--disable-dev-shm-usage",
+                            "--disable-extensions",
+                            "--disable-background-networking",
+                            "--disable-background-timer-throttling",
+                            "--disable-backgrounding-occluded-windows",
+                            "--disable-renderer-backgrounding",
+                            "--disable-features=TranslateUI",
+                            "--disable-features=site-per-process",
+                            "--no-sandbox",
+                            "--no-first-run",
+                            "--no-default-browser-check",
+                            "--mute-audio"
                     ))
                     .setSlowMo(0));
 
@@ -153,6 +168,7 @@ public class SportyBet implements BettingWindow, Runnable {
             log.error("{} {} Failed to initialize Playwright: {}", EMOJI_ERROR, EMOJI_INIT, e.getMessage(), e);
             throw new RuntimeException("Playwright initialization failed", e);
         }
+
     }
 
     // ========================================================================
@@ -169,7 +185,6 @@ public class SportyBet implements BettingWindow, Runnable {
         try {
             log.debug("{} {} Polling for BetLegTask from queue...", EMOJI_POLL, EMOJI_SEARCH);
 
-            // Poll with timeout to allow periodic checks of running state
             BetLegTask task = taskQueue.poll(pollIntervalMs, TimeUnit.MILLISECONDS);
 
             if (task != null) {
@@ -177,7 +192,6 @@ public class SportyBet implements BettingWindow, Runnable {
                         EMOJI_SUCCESS, EMOJI_POLL,
                         task.getArbId(), task.getBookmaker(), task.getOutcome(),
                         task.getExpectedOdds(), task.getStakeAmount());
-
 
                 log.info("{}", task.getArb().getOutcomeBreakdown());
             }
@@ -192,6 +206,48 @@ public class SportyBet implements BettingWindow, Runnable {
             log.error("{} {} Error polling task: {}", EMOJI_ERROR, EMOJI_POLL, e.getMessage(), e);
             return null;
         }
+
+//        ArbOutcome outcome1 = ArbOutcome.builder()
+//                .bookmakerId(1)
+//                .bookmakerName(BookMaker.MSPORT)
+//                .homeTeam("Putrajaya")
+//                .awayTeam("Perak")
+//                .marketType("Over/Under")
+//                .outComeName("Over 5.5")
+//                .odds(new BigDecimal(1.65))
+//                .previousOdds(new BigDecimal("2.10"))
+//                .stake(new BigDecimal("20"))
+//                .sport("Basketball")
+//                .progress("Not Started")
+//                .reordered(false)
+//                .initiator(true)
+//                .leagueName("NBA")
+//                .bookMakerUrl("https://www.sportybet.com/ng/sport/football/live/Guatemala/Liga_Nacional,_Clausura/Deportivo_Achuapa_vs_Comunicaciones_FC_Guatemala_City/sr:match:67524518")
+//                .build();
+//
+//
+//        BetLeg betLeg = new BetLeg(
+//                outcome1.getBookmakerName(),                    // BookMaker.MSPORT
+//                outcome1.getBookmakerId(),                      // 1
+//                outcome1.getMarketType(),                       // "Point Handicap"
+//                outcome1.getOutComeName(),                      // "Home (-12.5)"
+//                outcome1.getBookMakerUrl(),                     // "https://www.msport.com/..."
+//                outcome1.getOdds().doubleValue(),               // 1.88
+//                outcome1.getOdds().doubleValue() * (1.874), // 1.874 (min)
+//                outcome1.getOdds().doubleValue() * (1.886), // 1.886 (max)
+//                outcome1.getStake().doubleValue(),              // 531.91
+//                outcome1.getLeagueName(),                       // "NBA"
+//                outcome1.getHomeTeam(),                         // "Test Lakers"
+//                outcome1.getAwayTeam(),                         // "Test Celtics"
+//                ""                            // "demo_arb_001"
+//        );
+//        Phaser phaser = new Phaser(1);
+//        return BetLegTask.builder()
+//                .betLeg(betLeg)
+//                .barrier(phaser)
+//                .bookmaker(BookMaker.MSPORT)
+//                .build();
+
     }
 
     // ========================================================================
@@ -386,7 +442,7 @@ public class SportyBet implements BettingWindow, Runnable {
                 log.info("{} {} SIMULTANEOUS BETTING | ArbId: {} | Bookmaker: {}",
                         EMOJI_MONEY, EMOJI_BET, task.getArbId(), BOOKMAKER);
 
-                boolean betPlaced = SportyMarketUtil.placeBet(
+                boolean betPlaced = SportyBetPlacement.placeBet(
                         page, task.getBetLeg(), arbOutcomeService);
 
                 // Generate/extract bet ID
@@ -889,7 +945,7 @@ public class SportyBet implements BettingWindow, Runnable {
                 lastException = e;
                 if (attempt < maxRetryAttempts) {
                     recreateContext();
-                    waitBetweenRetries(attempt);
+                              waitBetweenRetries(attempt);
                 }
             }
         }

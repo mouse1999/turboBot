@@ -9,12 +9,16 @@ import com.microsoft.playwright.options.WaitForSelectorState;
 import com.mouse.bet.converter.ModelConverter;
 import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.enums.MarketType;
+import com.mouse.bet.enums.Sport;
 import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.model.MarketBlockResult;
 import com.mouse.bet.service.ArbOutcomeService;
+import com.mouse.bet.transformation.BookMakerMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -800,78 +804,631 @@ public class MSportMarketUtil {
 
 
     public static boolean selectAndVerifyBet(Page page, BettingTask task, ArbOutcomeService arbOutcomeService) {
-        String market = task.marketType();    // e.g. "Winner", "O/U Total Points", "Point Handicap"
-        String outcome = task.outcome();     // e.g. "Home", "Over 76.5", "+2.5"
+        String market = task.marketType().trim();
+        String outcome = task.outcome().trim();
+
+        log.info("Selecting: {} → {}", market, outcome);
 
         try {
-            log.info("Selecting: {} → {}", market, outcome);
-
-            // Find and expand market block
-            List<MarketBlockResult> marketBlock = findAndExpandMarkets(page, market);
-            if (marketBlock == null) {
+            // Ensure correct market tab is active (MSport has Main, Half, Points, Quarters, etc.)
+            if (!ensureCorrectGameTab(page, task)) {
+                log.error("Failed to navigate to correct market tab");
                 return false;
             }
 
-            // Detect market type and use appropriate selection strategy
-            MarketType marketType = detectMarketType(market, outcome);
-            log.info("Detected market type: {}", marketType);
-
-            // Select outcome based on market type
-            Locator outcomeCell = selectOutcomeByType(marketBlock, marketType, outcome, page);
-            if (outcomeCell == null) {
-                logAvailableOutcomes(marketBlock, marketType, page);
-                return false;
-            }
-
-            // Verify outcome is not disabled
-            if (isOutcomeDisabled(outcomeCell)) {
-                log.warn("Outcome '{}' is currently disabled/locked", outcome);
-                return false;
-            }
-
-            // Extract and verify odds
-            String displayedOdds = extractOdds(outcomeCell, marketType); //todo: get fresh betleg
-            if (displayedOdds == null) {
-                log.warn("No odds found for outcome '{}'", outcome);
-                return false;
-            }
-
-            log.info("FOUND: {} → {} @ {}", market, outcome, displayedOdds);
-
-            // Optional: verify odds tolerance
-//            if (!isOddsAcceptable(Objects.requireNonNull(arbOutcomeService.findByExternalIdAndBookmaker("", BOOK_MAKER.getBreakingBetId()).orElse(null)).getBookmakerId().doubleValue(), displayedOdds)) {
-//                log.warn("Odds drifted: expected {} → got {}", task.expectedOdds(), displayedOdds);
-////                return false; todo: enable this
-//            }
-
-            BettingTask freshTask = ModelConverter.convertFromArbOutcome(arbOutcomeService.findByExternalIdAndBookmaker(task.taskId(), task.bookmakerId()).orElse(null));
+            // Get fresh task for latest odds from database
+            BettingTask freshTask = getFreshTask(task, arbOutcomeService);
             if (freshTask != null) {
-                log.info("fresh betting task from DB is not null");
+                log.info("Using fresh betting task from DB");
                 task = freshTask;
-
+            } else {
+                log.warn("Could not fetch fresh task, using current task");
             }
 
-            if (!isOddsAcceptable(task.expectedOdds(), displayedOdds)) {
-                log.warn("Odds drifted: expected {} → got {}", task.expectedOdds(), displayedOdds);
-//                return false; todo: enable this
-            }
+            double expectedOdds = task.expectedOdds();
 
-            // Human-like interaction and click
-            if (!clickOutcome(outcomeCell, market, outcome, displayedOdds)) {
+            // ⚡ Use optimized MSport finder with automatic waiting
+            MsportMarketOutcomeFinder.OutcomeResult result =
+                    MsportMarketOutcomeFinder.findAndClickOutcome(page, market, outcome, expectedOdds);
+
+
+
+            // Handle not found
+            if (!result.found) {
+                log.error("Market '{}' or outcome '{}' NOT FOUND", market, outcome);
+
+                if (result.availableOutcomes != null && !result.availableOutcomes.isEmpty()) {
+                    log.warn("=== AVAILABLE OUTCOMES ===");
+                    result.availableOutcomes.forEach(entry -> {
+                        String status = (Boolean) entry.get("disabled") ? " [DISABLED]" : "";
+                        log.warn(" → {} @ {} | Market: {}{}",
+                                entry.get("outcomeText"), entry.get("odds"),
+                                entry.get("marketTitle"), status);
+                    });
+                    log.warn("=== END DEBUG ===");
+                }
+
+                takeMarketScreenshot(page, "not-found-" + safeFileName(market + "-" + outcome));
                 return false;
             }
 
-            // Verify bet was added to betslip
-            if (!verifyBetInBetslip(page, market, outcome)) {
-                log.warn("Bet may not have been added to betslip");
+            // Handle click/odds failure
+            if (!result.success) {
+                log.warn("Selection failed: {}", result.errorMessage);
+
+                if ("Odds not acceptable".equals(result.errorMessage)) {
+                    log.warn("Odds drifted:- expected {} → got {}", expectedOdds, result.odds);
+
+                    // Strict odds validation - re-fetch fresh task and verify again
+                    BettingTask revalidatedTask = getFreshTask(task, arbOutcomeService);
+                    if (revalidatedTask != null) {
+                        task = revalidatedTask;
+                        double latestExpectedOdds = task.expectedOdds();
+
+                        // Check if odds are acceptable with latest expected odds
+                        if (!isOddsWithinTolerance(latestExpectedOdds, result.odds)) {
+                            log.error("Odds still not acceptable after revalidation: expected {} → got {}",
+                                    latestExpectedOdds, result.odds);
+                            takeMarketScreenshot(page, "odds-rejected-" + safeFileName(market + "-" + outcome));
+                            // TODO: Uncomment to enable strict odds rejection
+                            // return false;
+                        } else {
+                            log.info("Odds acceptable after revalidation: expected {} → got {}",
+                                    latestExpectedOdds, result.odds);
+                        }
+                    }
+                }
+
+                if ("Click failed".equals(result.errorMessage)) {
+                    log.error("Failed to click outcome element");
+                    takeMarketScreenshot(page, "click-failed-" + safeFileName(market + "-" + outcome));
+                    return false;
+                }
+
+                takeMarketScreenshot(page, "failed-" + safeFileName(market + "-" + outcome));
                 return false;
+            }
+
+//            Thread.sleep(15000);
+
+            // Verify outcome match (sanity check)
+            if (!isOutcomeMatchValid(result.outcomeText, outcome)) {
+                log.warn("Outcome mismatch: expected '{}' → got '{}'", outcome, result.outcomeText);
+                takeMarketScreenshot(page, "mismatch-" + safeFileName(market + "-" + outcome));
+                return false;
+            }
+
+            log.info("FOUND:- {} → {} @ {}", result.marketTitle, result.outcomeText, result.odds);
+
+            randomHumanDelay(200, 400);
+
+
+            // Verify bet slip
+            if (!verifyBetInBetslip(page,market, outcome)) {
+                log.error("Bet slip verification failed");
+                takeMarketScreenshot(page, "betslip-failed-" + safeFileName(market + "-" + outcome));
+                return false;
+            }
+
+            log.info("✅ CLICKED: {} → {} @ {}", result.marketTitle, result.outcomeText, result.odds);
+            return true;
+
+        } catch (Exception e) {
+            log.error("FATAL: Failed to select {} → {} | Error: {}", market, outcome, e.getMessage(), e);
+            takeMarketScreenshot(page, "error-" + safeFileName(market + "-" + outcome));
+            return false;
+        }
+    }
+
+    /**
+     * Ensure the correct market tab is active for MSport
+     * MSport has tabs like: Main, Bet Builder, Half, Points, Quarters, Specials, Game
+     *
+     * Tab selection logic:
+     * - "1st Half", "2nd Half" -> Half tab
+     * - "1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter" -> Quarters tab
+     * - "1st Game", "2nd Game" -> Game tab
+     * - "Points", "1st Points", "Total Points" -> Points tab
+     * - If no match -> remain on Main tab
+     */
+
+//    Sport sport = Sport.fromDisplayName(task.sport());
+//            log.info("sport found: {}", sport);
+    private static boolean ensureCorrectGameTab(Page page, BettingTask task) {
+        try {
+            String market = task.marketType().trim();
+            Sport sport = Sport.fromDisplayName(task.sport());
+            log.info("sport found: {}", sport);
+            String targetTab = determineTabFromMarket(market, sport);
+
+            log.info("Market: '{}' → Target tab: '{}'", market, targetTab);
+
+            // WAIT for the tab navigation to be present before executing JavaScript
+            try {
+                page.waitForSelector(".m-sub-navs-wrapper ul.snap-nav",
+                        new Page.WaitForSelectorOptions().setTimeout(1000));
+                randomHumanDelay(200, 400); // Give it a moment to fully render
+            } catch (Exception e) {
+                log.warn("Tab navigation not found after waiting: {}", e.getMessage());
+//                return true; // Continue anyway
+            }
+
+            String jsEnsureTab = """
+(targetTabName) => {
+    // Try multiple selectors to find the tab navigation
+    let tabContainer = document.querySelector('.m-sub-navs-wrapper ul.snap-nav');
+    
+    if (!tabContainer) {
+        tabContainer = document.querySelector('.snap-nav-wrap ul.snap-nav');
+    }
+    
+    if (!tabContainer) {
+        tabContainer = document.querySelector('ul.snap-nav');
+    }
+    
+    if (!tabContainer) {
+        // Try to find any ul with snap-nav class
+        tabContainer = document.querySelector('.m-detail-markets ul[class*="snap-nav"]');
+    }
+    
+    if (!tabContainer) {
+        return { 
+            success: false, 
+            reason: 'Tab navigation not found',
+            debug: {
+                hasDetailMarkets: !!document.querySelector('.m-detail-markets'),
+                hasSubNavsWrapper: !!document.querySelector('.m-sub-navs-wrapper'),
+                hasSnapNavWrap: !!document.querySelector('.snap-nav-wrap')
+            }
+        };
+    }
+    
+    // Find all tab items
+    const tabItems = tabContainer.querySelectorAll('li.m-sub-nav-item');
+    
+    if (tabItems.length === 0) {
+        return {
+            success: false,
+            reason: 'No tab items found',
+            debug: {
+                containerFound: true,
+                tabItemsCount: 0
+            }
+        };
+    }
+    
+    const availableTabs = [];
+    let foundTab = null;
+    let currentActiveTab = null;
+    
+    for (const tab of tabItems) {
+        const tabText = tab.querySelector('span.m-group');
+        if (tabText) {
+            // Clean the text: remove HTML comments, extra whitespace, newlines
+            const cleanText = tabText.textContent
+                .replace(/<!---->/g, '')
+                .replace(/\\s+/g, ' ')
+                .trim();
+            
+            availableTabs.push(cleanText);
+            
+            // Track current active tab
+            if (tab.classList.contains('active')) {
+                currentActiveTab = tab;
+            }
+            
+            // Find target tab
+            if (cleanText === targetTabName) {
+                foundTab = tab;
+            }
+        }
+    }
+    
+    if (!foundTab) {
+        return { 
+            success: false, 
+            reason: 'Tab not found: ' + targetTabName,
+            availableTabs: availableTabs
+        };
+    }
+    
+    // Check if already active
+    if (foundTab.classList.contains('active')) {
+        return { success: true, alreadyActive: true, tabName: targetTabName };
+    }
+    
+    // Remove active from current tab and add to target tab
+    if (currentActiveTab) {
+        currentActiveTab.classList.remove('active');
+    }
+    
+    foundTab.classList.add('active');
+    
+    // Click the tab to trigger any event listeners
+    foundTab.click();
+    
+    return { 
+        success: true, 
+        alreadyActive: false, 
+        tabName: targetTabName,
+        previousTab: currentActiveTab ? currentActiveTab.querySelector('span.m-group').textContent.trim() : null
+    };
+}
+""";
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> result = (Map<String, Object>) page.evaluate(jsEnsureTab, targetTab);
+
+            if (result == null) {
+                log.error("JavaScript execution returned null");
+                return false;
+            }
+
+            boolean success = (Boolean) result.getOrDefault("success", false);
+
+            if (!success) {
+                String reason = (String) result.get("reason");
+                @SuppressWarnings("unchecked")
+                List<String> availableTabs = (List<String>) result.get("availableTabs");
+                @SuppressWarnings("unchecked")
+                Map<String, Object> debug = (Map<String, Object>) result.get("debug");
+
+                log.warn("{}", reason);
+                if (debug != null) {
+                    log.warn("Debug info: {}", debug);
+                }
+                if (availableTabs != null && !availableTabs.isEmpty()) {
+                    log.warn("Available tabs: {}", availableTabs);
+                    log.warn("Looking for: '{}'", targetTab);
+                }
+                return true; // Continue even if tab not found
+            }
+
+            boolean alreadyActive = (Boolean) result.getOrDefault("alreadyActive", false);
+            String tabName = (String) result.get("tabName");
+
+            if (alreadyActive) {
+                log.info("Tab '{}' is already active", tabName);
+            } else {
+                String previousTab = (String) result.get("previousTab");
+                log.info("Switched from '{}' to '{}' tab", previousTab, tabName);
+                randomHumanDelay(300, 600);
+
+                // Wait for markets to load
+                page.waitForSelector(".m-market-item", new Page.WaitForSelectorOptions().setTimeout(5000));
+                randomHumanDelay(200, 400);
             }
 
             return true;
 
         } catch (Exception e) {
-            log.error("FATAL: Failed to select {} → {}", market, outcome, e);
+            log.error("Error ensuring correct game tab: {}", e.getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Determine which tab to use based on market name
+     *
+     * @param market The market type (e.g., "1st Half Winner", "Total Points O/U", "2nd Quarter Handicap")
+     * @return Tab name (Main, Half, Points, Quarters, Game, Specials)
+     */
+    private static String determineTabFromMarket(String market, Sport sport) {
+        String marketLower = market.toLowerCase();
+
+        switch (sport) {
+            case BASKETBALL:
+                // Basketball tabs: Main, Bet Builder, Half, Points, Quarters, Specials
+
+                // Check for "Half" markets
+                if (marketLower.contains("half")) {
+                    return "Half";
+                }
+
+                // Check for "Quarter" markets
+                if (marketLower.contains("quarter")) {
+                    return "Quarters";
+                }
+
+                // Check for "Points" markets
+                // This handles: "Points O/U", "1st Points", "Total Points", "Home O/U", "Away O/U", etc.
+                if (marketLower.contains("point") ||
+                        marketLower.contains("home o/u") ||
+                        marketLower.contains("away o/u") ||
+                        marketLower.contains("home total") ||
+                        marketLower.contains("away total")) {
+                    return "Points";
+                }
+
+                // Check for "Specials" markets
+                if (marketLower.contains("special") || marketLower.contains("prop")) {
+                    return "Specials";
+                }
+
+                // Default to Main tab
+                return "Main";
+
+            case FOOTBALL:
+            case SOCCER:
+                // Football tabs: Main, Bet Builder, Goals, Half, Specials, Bookings, Corners, Player, Minutes
+
+                // Check for "Goals" markets
+                if (marketLower.contains("goal")) {
+                    return "Goals";
+                }
+
+                // Check for "Half" markets
+                if (marketLower.contains("half")) {
+                    return "Half";
+                }
+
+                // Check for "Corners" markets
+                if (marketLower.contains("corner")) {
+                    return "Corners";
+                }
+
+                // Check for "Bookings" or "Cards" markets
+                if (marketLower.contains("booking") || marketLower.contains("card") ||
+                        marketLower.contains("yellow") || marketLower.contains("red")) {
+                    return "Bookings";
+                }
+
+                // Check for "Player" markets
+                if (marketLower.contains("player")) {
+                    return "Player";
+                }
+
+                // Check for "Minutes" markets
+                if (marketLower.contains("minute")) {
+                    return "Minutes";
+                }
+
+                // Check for "Specials" markets
+                if (marketLower.contains("special") || marketLower.contains("prop")) {
+                    return "Specials";
+                }
+
+                // Default to Main tab
+                return "Main";
+
+            case TABLE_TENNIS:
+                // Table Tennis tabs: Main, Game
+
+                // Check for "Game" markets
+                if (marketLower.contains("game")) {
+                    return "Game";
+                }
+
+                // Default to Main tab
+                return "Main";
+
+            case TENNIS:
+                // Tennis tabs: Main, Game (similar to Table Tennis)
+
+                // Check for "Set" markets
+                if (marketLower.contains("set")) {
+                    return "Set";
+                }
+
+                // Check for "Game" markets
+                if (marketLower.contains("game")) {
+                    return "Game";
+                }
+
+                // Default to Main tab
+                return "Main";
+
+            default:
+                // For any other sport, use generic logic
+
+                // Check for "Half" markets
+                if (marketLower.contains("half")) {
+                    return "Half";
+                }
+
+                // Check for "Quarter" markets
+                if (marketLower.contains("quarter")) {
+                    return "Quarters";
+                }
+
+                // Check for "Game" markets
+                if (marketLower.contains("game")) {
+                    return "Game";
+                }
+
+                // Check for "Points" markets
+                if (marketLower.contains("point")) {
+                    return "Points";
+                }
+
+                // Check for "Specials" markets
+                if (marketLower.contains("special") || marketLower.contains("prop")) {
+                    return "Specials";
+                }
+
+                // Default to Main tab
+                return "Main";
+        }
+    }
+
+
+    /**
+     * Validate outcome match with flexible matching for handicaps
+     * Handles variations like "Home (-12.5)" vs "Home -12.5"
+     */
+    private static boolean isOutcomeMatchValid(String actualOutcome, String expectedOutcome) {
+        log.debug("🔍 Validating outcome match:");
+        log.debug("   Expected: '{}'", expectedOutcome);
+        log.debug("   Actual:   '{}'", actualOutcome);
+
+        if (actualOutcome == null || expectedOutcome == null) {
+            log.warn("❌ Outcome match validation failed: null value detected");
+            log.warn("   Expected: {}", expectedOutcome);
+            log.warn("   Actual:   {}", actualOutcome);
+            return false;
+        }
+
+        // Direct match
+        if (actualOutcome.equalsIgnoreCase(expectedOutcome)) {
+            log.info("✅ Outcome match: DIRECT match");
+            return true;
+        }
+
+        // Normalized match (remove spaces around parentheses and operators)
+        String normalizedActual = normalizeOutcome(actualOutcome);
+        String normalizedExpected = normalizeOutcome(expectedOutcome);
+
+        log.debug("   Normalized Expected: '{}'", normalizedExpected);
+        log.debug("   Normalized Actual:   '{}'", normalizedActual);
+
+        boolean matches = normalizedActual.equalsIgnoreCase(normalizedExpected);
+
+        if (matches) {
+            log.info("✅ Outcome match: NORMALIZED match");
+        } else {
+            log.warn("❌ Outcome match validation FAILED");
+            log.warn("   Expected (original):    '{}'", expectedOutcome);
+            log.warn("   Actual (original):      '{}'", actualOutcome);
+            log.warn("   Expected (normalized):  '{}'", normalizedExpected);
+            log.warn("   Actual (normalized):    '{}'", normalizedActual);
+        }
+
+        return matches;
+    }
+
+    /**
+     * Normalize outcome string for comparison
+     * Examples:
+     *   "Home (-12.5)" -> "home-12.5"
+     *   "Over 76.5" -> "over76.5"
+     *   "+2.5" -> "+2.5"
+     */
+    private static String normalizeOutcome(String outcome) {
+        return outcome.trim()
+                .toLowerCase()
+                .replaceAll("[\\s()]+", "")  // Remove spaces and parentheses
+                .replaceAll("\\s+", "");      // Remove any remaining whitespace
+    }
+
+    /**
+     * Get fresh task from database for latest odds
+     */
+    private static BettingTask getFreshTask(BettingTask currentTask, ArbOutcomeService arbOutcomeService) {
+        try {
+            if (arbOutcomeService == null) {
+                log.warn("ArbOutcomeService is null, cannot fetch fresh task");
+                return null;
+            }
+
+            return ModelConverter.convertFromArbOutcome(
+                    arbOutcomeService.findByExternalIdAndBookmaker(
+                            currentTask.taskId(),
+                            currentTask.bookmakerId()
+                    ).orElse(null)
+            );
+        } catch (Exception e) {
+            log.warn("Could not fetch fresh task from DB: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Check if odds are within acceptable tolerance
+     */
+    private static boolean isOddsWithinTolerance(double expectedOdds, Double actualOdds) {
+        if (actualOdds == null || expectedOdds <= 0) {
+            return false;
+        }
+
+        double tolerance = 0.003; // 0.3% tolerance
+        double lowerBound = expectedOdds * (1 - tolerance);
+        double upperBound = expectedOdds * (1 + tolerance);
+
+        return actualOdds >= lowerBound && actualOdds <= upperBound;
+    }
+
+    /**
+     * Verify bet was added to betslip
+     */
+    private static boolean verifyBetSlip(Page page, BettingTask task) {
+        try {
+            // Wait for betslip to update
+            randomHumanDelay(300, 500);
+
+            // Check if betslip has items
+            Locator betslipItems = page.locator(".betslip-item, .m-betslip-item");
+
+            if (betslipItems.count() == 0) {
+                log.error("Betslip is empty after selection");
+                return false;
+            }
+
+            // Verify the correct bet is in the betslip
+            String market = task.marketType().trim();
+            String outcome = task.outcome().trim();
+
+            // Look for market or outcome text in betslip
+            Locator betslipContent = page.locator(".betslip-content, .m-betslip-content");
+            String betslipText = betslipContent.textContent();
+
+            if (betslipText == null || betslipText.isEmpty()) {
+                log.warn("Could not read betslip content");
+                return true; // Continue anyway
+            }
+
+            // Flexible matching
+            boolean hasMarket = betslipText.toLowerCase().contains(market.toLowerCase());
+            boolean hasOutcome = betslipText.toLowerCase().contains(outcome.toLowerCase());
+
+            if (!hasMarket && !hasOutcome) {
+                log.warn("Betslip may not contain expected bet: {} → {}", market, outcome);
+                log.debug("Betslip content: {}", betslipText);
+                return false;
+            }
+
+            log.info("✅ Bet verified in betslip");
+            return true;
+
+        } catch (Exception e) {
+            log.error("Error verifying betslip: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Take screenshot for debugging
+     */
+    private static void takeMarketScreenshot(Page page, String filename) {
+        try {
+            String screenshotDir = "screenshots/msport/";
+            Files.createDirectories(Paths.get(screenshotDir));
+
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            String fullPath = screenshotDir + timestamp + "_" + filename + ".png";
+
+            page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get(fullPath)));
+            log.info("Screenshot saved: {}", fullPath);
+        } catch (Exception e) {
+            log.warn("Could not save screenshot: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Generate safe filename from market and outcome
+     */
+    private static String safeFileName(String text) {
+        return text.replaceAll("[^a-zA-Z0-9.-]", "_");
+    }
+
+    /**
+     * Random human-like delay
+     */
+    private static void randomHumanDelay(int minMs, int maxMs) {
+        try {
+            int delay = ThreadLocalRandom.current().nextInt(minMs, maxMs + 1);
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -1126,66 +1683,122 @@ public class MSportMarketUtil {
     /**
      * Verify that the selected bet appears in the betslip
      */
+    /**
+     * Verify that the selected bet appears in the betslip (fast JS version)
+     */
     private static boolean verifyBetInBetslip(Page page, String market, String outcome) {
-        try {
-            String countText = withLocatorRetry(page,
-                    "#target-betslip .m-count-ball, .m-count-ball-wrap .m-count-ball",
-                    loc -> loc.first().textContent().trim(),
-                    3, 5000, 1000);
-
-            if ("0".equals(countText) || countText.isEmpty()) {
-                log.warn("{} Betslip is empty (count = {})", EMOJI_WARNING, countText);
-                return false;
-            }
-
-            List<ElementHandle> selections = withLocatorRetry(page, "div.m-bet-selection",
-                    loc -> loc.elementHandles(),
-                    3, 5000, 1000);
-
-            if (selections == null || selections.isEmpty()) {
-                log.warn("{} No selections found in betslip", EMOJI_WARNING);
-                return false;
-            }
-
-            String normalizedMarket = normalizeText(market);
-            String normalizedOutcome = normalizeText(outcome);
-
-            log.debug("Searching betslip for: Market='{}' (normalized: '{}'), Outcome='{}' (normalized: '{}')",
-                    market, normalizedMarket, outcome, normalizedOutcome);
-
-            for (ElementHandle selectionHandle : selections) {
-                try {
-                    String teams = selectionHandle.querySelector(".m-teams").textContent().trim();
-                    String marketTitle = selectionHandle.querySelector("span.market-title").textContent().trim();
-                    String selectionMarket = selectionHandle.querySelector("div.selection-market").textContent().trim();
-                    String odds = selectionHandle.querySelector("span.m-betslip-odds span").textContent().trim();
-
-                    log.debug("Checking selection: Teams='{}' | Market='{}' | Outcome='{}' @ {}",
-                            teams, selectionMarket, marketTitle, odds);
-
-                    String normalizedActualMarket = normalizeText(selectionMarket);
-                    String normalizedActualOutcome = normalizeText(marketTitle);
-
-                    boolean marketMatches = normalizedActualMarket.contains(normalizedMarket)
-                            || normalizedMarket.contains(normalizedActualMarket);
-                    boolean outcomeMatches = normalizedActualOutcome.contains(normalizedOutcome)
-                            || normalizedOutcome.contains(normalizedActualOutcome);
-
-                    if (marketMatches && outcomeMatches) {
-                        log.info("{} ✅ Bet verified in betslip: {} → {} @ {}",
-                                EMOJI_SUCCESS, selectionMarket, marketTitle, odds);
-                        return true;
-                    }
-
-                } catch (Exception innerEx) {
-                    log.debug("Error reading selection details: {}", innerEx.getMessage());
-                    continue;
+        String jsVerify = """
+    (args) => {
+        const { market, outcome } = args;
+        
+        // Normalize text helper
+        const normalize = (text) => {
+            return text.toLowerCase()
+                .trim()
+                .replace(/\\s+/g, ' ')
+                .replace(/[^a-z0-9.\\s]/g, '');
+        };
+        
+        const normalizedMarket = normalize(market);
+        const normalizedOutcome = normalize(outcome);
+        
+        // Check betslip count
+        const countEl = document.querySelector('#target-betslip .m-count-ball, .m-count-ball-wrap .m-count-ball');
+        if (!countEl) {
+            return { found: false, error: 'Betslip count element not found' };
+        }
+        
+        const countText = countEl.textContent.trim();
+        if (countText === '0' || countText === '') {
+            return { found: false, error: 'Betslip is empty (count = ' + countText + ')' };
+        }
+        
+        // Get all selections
+        const selections = document.querySelectorAll('div.m-bet-selection');
+        if (!selections || selections.length === 0) {
+            return { found: false, error: 'No selections found in betslip' };
+        }
+        
+        // Search through selections
+        for (let i = 0; i < selections.length; i++) {
+            const selection = selections[i];
+            
+            try {
+                const teamsEl = selection.querySelector('.m-teams');
+                const marketTitleEl = selection.querySelector('span.market-title');
+                const selectionMarketEl = selection.querySelector('div.selection-market');
+                const oddsEl = selection.querySelector('span.m-betslip-odds span');
+                
+                if (!marketTitleEl || !selectionMarketEl) continue;
+                
+                const teams = teamsEl ? teamsEl.textContent.trim() : '';
+                const marketTitle = marketTitleEl.textContent.trim();
+                const selectionMarket = selectionMarketEl.textContent.trim();
+                const odds = oddsEl ? oddsEl.textContent.trim() : 'N/A';
+                
+                const normalizedActualMarket = normalize(selectionMarket);
+                const normalizedActualOutcome = normalize(marketTitle);
+                
+                // Check if market matches
+                const marketMatches = normalizedActualMarket.includes(normalizedMarket) ||
+                                    normalizedMarket.includes(normalizedActualMarket);
+                
+                // Check if outcome matches
+                const outcomeMatches = normalizedActualOutcome.includes(normalizedOutcome) ||
+                                     normalizedOutcome.includes(normalizedActualOutcome);
+                
+                if (marketMatches && outcomeMatches) {
+                    return {
+                        found: true,
+                        teams: teams,
+                        market: selectionMarket,
+                        outcome: marketTitle,
+                        odds: odds
+                    };
                 }
+                
+            } catch (err) {
+                continue;
+            }
+        }
+        
+        return { 
+            found: false, 
+            error: 'Bet not found in betslip',
+            expectedMarket: market,
+            expectedOutcome: outcome
+        };
+    }
+    """;
+
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> result = (Map<String, Object>) page.evaluate(
+                    jsVerify,
+                    Map.of("market", market, "outcome", outcome)
+            );
+
+            if (result == null) {
+                log.error("{} Failed to verify bet: null result", EMOJI_ERROR);
+                return false;
             }
 
-            log.warn("{} ❌ Bet NOT found in betslip | Expected: {} | Market: {}",
-                    EMOJI_WARNING, outcome, market);
-            return false;
+            Boolean found = (Boolean) result.get("found");
+
+            if (Boolean.TRUE.equals(found)) {
+                log.info("{} ✅ Bet verified in betslip: {} → {} @ {}",
+                        EMOJI_SUCCESS,
+                        result.get("market"),
+                        result.get("outcome"),
+                        result.get("odds"));
+                return true;
+            } else {
+                String error = (String) result.get("error");
+                log.warn("{} ❌ Bet NOT found in betslip | {}",
+                        EMOJI_WARNING,
+                        error != null ? error : "Unknown error");
+                return false;
+            }
 
         } catch (Exception e) {
             log.error("{} Failed to verify bet in betslip: {}", EMOJI_ERROR, e.getMessage(), e);
@@ -1206,7 +1819,7 @@ public class MSportMarketUtil {
     }
 
 
-    private static  <T> T withLocatorRetry(Page page, String selector, java.util.function.Function<Locator, T> action,
+    public static  <T> T withLocatorRetry(Page page, String selector, java.util.function.Function<Locator, T> action,
                                    int maxRetries, long timeoutPerAttemptMs, long delayMs) {
         Locator locator = page.locator(selector);
         for (int attempt = 1; attempt <= maxRetries; attempt++) {

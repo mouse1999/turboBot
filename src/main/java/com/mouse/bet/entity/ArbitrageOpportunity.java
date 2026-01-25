@@ -6,6 +6,7 @@ import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.orchestrator.model.LegResult;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -30,6 +31,7 @@ import java.util.Map;
 })
 @Data
 @Builder
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArbitrageOpportunity {
@@ -136,6 +138,8 @@ public class ArbitrageOpportunity {
     private static final long UPDATE_INTERVAL_SECONDS = 2L;
     private static final long MAX_UPDATE_GAP_SECONDS = 4L;
 
+    // In ArbitrageOpportunity.java
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -149,23 +153,21 @@ public class ArbitrageOpportunity {
         calculateAge();
     }
 
-    @PreUpdate
+    // ✅ Public method, NOT @PreUpdate
     public void onUpdate() {
         LocalDateTime now = LocalDateTime.now();
 
-        // ✅ Check if update gap exceeds threshold (more than 4 seconds)
+        // Check if update gap exceeds threshold (more than 4 seconds)
         if (updatedAt != null) {
             long secondsSinceLastUpdate = Duration.between(updatedAt, now).getSeconds();
 
             if (secondsSinceLastUpdate > MAX_UPDATE_GAP_SECONDS) {
                 // Reset createdAt to maintain consistent age
-                // This happens when there's a gap in updates (e.g., arb disappeared and reappeared)
                 createdAt = now;
-                updateCount = 0; // Reset update count as well
+                updateCount = 0;
 
-                // Optional: Log this event
-                // log.info("Age reset for arb {} - update gap was {} seconds",
-                //          externalId, secondsSinceLastUpdate);
+                log.debug("🔄 Age reset for arb {} - update gap was {} seconds",
+                        externalId, secondsSinceLastUpdate);
             }
         }
 
@@ -175,7 +177,6 @@ public class ArbitrageOpportunity {
             updateCount++;
         }
 
-        // Recalculate age after potential reset
         calculateAge();
     }
 

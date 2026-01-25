@@ -9,7 +9,8 @@ public record BetLeg(BookMaker bookmaker, Integer bookmakerId, String marketType
                      String bookmakerUrl,
                      double expectedOdds, double minOdds, double maxOdds, double stakeAmount,
                      String leagueName, String homeTeam, String awayTeam,
-                     String taskId) implements BettingTask {
+                     String taskId, String sport) implements BettingTask {
+
 
 //taskId is the arbitrageopportunity externalId
 

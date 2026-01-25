@@ -56,6 +56,7 @@ public class ModelConverter {
                 .expectedOdds(expectedOdds)
                 .minOdds(minOdds)
                 .maxOdds(maxOdds)
+                .sport(arbOutcome.getSport())
                 .stakeAmount(stakeAmount)
                 .leagueName(arbOutcome.getLeagueName() != null ? arbOutcome.getLeagueName() : "Unknown")
                 .homeTeam(arbOutcome.getHomeTeam())

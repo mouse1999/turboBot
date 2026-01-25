@@ -2,6 +2,7 @@ package com.mouse.bet.window;
 
 import com.microsoft.playwright.*;
 import com.mouse.bet.config.WindowConfig;
+import com.mouse.bet.entity.ArbOutcome;
 import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.enums.Sport;
 import com.mouse.bet.exception.CaptchaDetectedException;
@@ -11,9 +12,11 @@ import com.mouse.bet.manager.ProfileManager;
 import com.mouse.bet.manager.WindowSyncManager;
 import com.mouse.bet.monitor.PageHealthMonitor;
 import com.mouse.bet.orchestrator.Orchestrator;
+import com.mouse.bet.orchestrator.model.BetLeg;
 import com.mouse.bet.orchestrator.model.BetLegTask;
 import com.mouse.bet.profile.UserAgentProfile;
 import com.mouse.bet.service.ArbOutcomeService;
+import com.mouse.bet.util.onewin.OneWinBetPlacement;
 import com.mouse.bet.util.onewin.OneWinLoginUtil;
 import com.mouse.bet.util.onewin.OneWinMarketUtil;
 import com.mouse.bet.util.onewin.OneWinNavigationUtil;
@@ -24,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,10 +35,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -108,7 +109,7 @@ public class OneWin implements BettingWindow, Runnable {
     @Value("${partner.timeout.seconds:10}")
     private int partnerTimeout;
 
-    @Value("${deploy.timeout.seconds:3}")
+    @Value("${deploy.timeout.seconds:15}")
     private int deployTimeout;
 
     @Value("${fetch.enabled.football:false}")
@@ -135,7 +136,7 @@ public class OneWin implements BettingWindow, Runnable {
         try {
             playwright = Playwright.create();
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setHeadless(false)
+                    .setHeadless(true)
                     .setArgs(Arrays.asList(
                             "--start-maximized",
                             "--window-size=2560,1440",
@@ -152,6 +153,8 @@ public class OneWin implements BettingWindow, Runnable {
             log.error("{} {} Failed to initialize Playwright: {}", EMOJI_ERROR, EMOJI_INIT, e.getMessage(), e);
             throw new RuntimeException("Playwright initialization failed", e);
         }
+
+//        run();
     }
 
     /**
@@ -164,7 +167,6 @@ public class OneWin implements BettingWindow, Runnable {
         try {
             log.debug("{} {} Polling for BetLegTask from queue...", EMOJI_POLL, EMOJI_SEARCH);
 
-            // Poll with timeout to allow periodic checks of running state
             BetLegTask task = taskQueue.poll(pollIntervalMs, TimeUnit.MILLISECONDS);
 
             if (task != null) {
@@ -172,6 +174,7 @@ public class OneWin implements BettingWindow, Runnable {
                         EMOJI_SUCCESS, EMOJI_POLL,
                         task.getArbId(), task.getBookmaker(), task.getOutcome(),
                         task.getExpectedOdds(), task.getStakeAmount());
+
                 log.info("{}", task.getArb().getOutcomeBreakdown());
             }
 
@@ -185,6 +188,48 @@ public class OneWin implements BettingWindow, Runnable {
             log.error("{} {} Error polling task: {}", EMOJI_ERROR, EMOJI_POLL, e.getMessage(), e);
             return null;
         }
+//
+//        ArbOutcome outcome1 = ArbOutcome.builder()
+//                .bookmakerId(1)
+//                .bookmakerName(BookMaker.MSPORT)
+//                .homeTeam("Putrajaya")
+//                .awayTeam("Perak")
+//                .marketType("Winner (incl. OT)")
+//                .outComeName("Ohio State Buckeyes")
+//                .odds(new BigDecimal(1.35))
+//                .previousOdds(new BigDecimal("2.10"))
+//                .stake(new BigDecimal("160"))
+//                .sport("Basketball")
+//                .progress("Not Started")
+//                .reordered(false)
+//                .initiator(true)
+//                .leagueName("NBA")
+//                .bookMakerUrl("https://1win.ng/betting/match/sport/ohio-state-buckeyes-vs-minnesota-golden-gophers-32316687")
+//                .build();
+//
+//
+//        BetLeg betLeg = new BetLeg(
+//                outcome1.getBookmakerName(),                    // BookMaker.MSPORT
+//                outcome1.getBookmakerId(),                      // 1
+//                outcome1.getMarketType(),                       // "Point Handicap"
+//                outcome1.getOutComeName(),                      // "Home (-12.5)"
+//                outcome1.getBookMakerUrl(),                     // "https://www.msport.com/..."
+//                outcome1.getOdds().doubleValue(),               // 1.88
+//                outcome1.getOdds().doubleValue() * (1.874), // 1.874 (min)
+//                outcome1.getOdds().doubleValue() * (1.886), // 1.886 (max)
+//                outcome1.getStake().doubleValue(),              // 531.91
+//                outcome1.getLeagueName(),                       // "NBA"
+//                outcome1.getHomeTeam(),                         // "Test Lakers"
+//                outcome1.getAwayTeam(),                         // "Test Celtics"
+//                ""                            // "demo_arb_001"
+//        );
+//        Phaser phaser = new Phaser(1);
+//        return BetLegTask.builder()
+//                .betLeg(betLeg)
+//                .barrier(phaser)
+//                .bookmaker(BookMaker.MSPORT)
+//                .build();
+
     }
 
     /**
@@ -256,7 +301,7 @@ public class OneWin implements BettingWindow, Runnable {
 
             // ========================================
             // STEP 4: MARK DEPLOYMENT SUCCESS
-            // ========================================
+             //========================================
             boolean markedDeployed = syncManager.markDeploymentSuccess(
                     arbId,
                     BOOKMAKER
@@ -375,7 +420,7 @@ public class OneWin implements BettingWindow, Runnable {
                 log.info("{} {} SIMULTANEOUS BETTING | ArbId: {} | Bookmaker: {}",
                         EMOJI_MONEY, EMOJI_BET, task.getArbId(), BOOKMAKER);
 
-                boolean betPlaced = OneWinMarketUtil.placeBet(
+                boolean betPlaced = OneWinBetPlacement.placeBet(
                         page, task.getBetLeg(), arbOutcomeService);
 
                 // Generate/extract bet ID

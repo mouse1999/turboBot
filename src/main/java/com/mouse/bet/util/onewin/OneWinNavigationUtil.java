@@ -194,7 +194,7 @@ public class OneWinNavigationUtil {
             // Navigate directly to the URL
             page.navigate(bookmakerUrl, new Page.NavigateOptions()
                     .setTimeout(15000)
-                    .setWaitUntil(WaitUntilState.NETWORKIDLE));
+                    .setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
 
             log.info("✅ Successfully navigated to match page");
             return true;

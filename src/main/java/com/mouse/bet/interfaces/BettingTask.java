@@ -1,6 +1,9 @@
 package com.mouse.bet.interfaces;
 
 import com.mouse.bet.enums.BookMaker;
+import com.mouse.bet.enums.Sport;
+import lombok.Data;
+
 
 public interface BettingTask {
 
@@ -22,4 +25,6 @@ public interface BettingTask {
     String homeTeam();
     String awayTeam();
     String taskId();
+
+    String sport();
 }

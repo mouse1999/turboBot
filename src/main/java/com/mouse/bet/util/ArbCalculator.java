@@ -15,7 +15,7 @@ public class ArbCalculator {
     //method to roound the stake amount to avoid detection of arbing activites
     //a method to take in total stake amount and an arb as parammeter and return update arb with stakes for each betleg or bookie
     private static final int DEFAULT_DECIMAL_PLACES = 2;
-    private static final BigDecimal MIN_STAKE = new BigDecimal("10");
+    private static final BigDecimal MIN_STAKE = new BigDecimal("100");
     private static final BigDecimal MAX_RANDOMIZATION_PERCENTAGE = new BigDecimal("0.05"); // 5%
     private static final BigDecimal MAX_STAKE = new BigDecimal("50000");
     private static final BigDecimal STEP_50  = new BigDecimal("50");
@@ -140,6 +140,51 @@ public class ArbCalculator {
         // Final clamp & scale (if you insist on decimals, though NGN usually 0)
         return clamp(primary, MIN_STAKE, MAX_STAKE)
                 .setScale(Math.max(0, decimalPlaces), RoundingMode.DOWN);
+    }
+
+
+
+    /**
+     * Calculate stake for a specific odd based on profit percentage and total stake
+     * Formula: stake = totalStake / (1 + (profitPercent/100) * odds)
+     *
+     * @param profitPercent the profit percentage (e.g., 2.5 for 2.5% profit)
+     * @param odds the odds for this leg
+     * @param totalStake the total stake amount across all legs
+     * @return the stake amount for this specific odd
+     */
+    public static BigDecimal calculateStakeFromProfit(BigDecimal profitPercent, BigDecimal odds, BigDecimal totalStake) {
+        if (profitPercent == null || odds == null || totalStake == null) {
+            log.warn("Invalid inputs for stake calculation: profitPercent={}, odds={}, totalStake={}",
+                    profitPercent, odds, totalStake);
+            return BigDecimal.ZERO;
+        }
+
+        if (odds.compareTo(BigDecimal.ZERO) <= 0 || totalStake.compareTo(BigDecimal.ZERO) <= 0) {
+            log.warn("Odds and totalStake must be positive: odds={}, totalStake={}", odds, totalStake);
+            return BigDecimal.ZERO;
+        }
+
+        // Convert profit percentage to arbitrage percentage
+        // arbPercentage = 100 / (1 + profitPercent/100)
+        BigDecimal profitDecimal = profitPercent.divide(BigDecimal.valueOf(100), MC);
+        BigDecimal arbPercentage = BigDecimal.valueOf(100).divide(
+                BigDecimal.ONE.add(profitDecimal, MC), MC
+        );
+
+        // Calculate implied probability: 1/odds
+        BigDecimal impliedProb = BigDecimal.ONE.divide(odds, MC);
+
+        // Convert arb percentage to decimal: arbPercentage/100
+        BigDecimal arbDecimal = arbPercentage.divide(BigDecimal.valueOf(100), MC);
+
+        // Calculate stake: totalStake * (1/odds) / (arbPercentage/100)
+        BigDecimal stake = totalStake.multiply(impliedProb, MC).divide(arbDecimal, MC);
+
+        log.debug("Calculated stake: {} for odds: {}, profitPercent: {}%, arbPercentage: {}%, totalStake: {}",
+                stake, odds, profitPercent, arbPercentage, totalStake);
+
+        return stake;
     }
 
 

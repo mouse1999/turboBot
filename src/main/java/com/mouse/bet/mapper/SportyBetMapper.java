@@ -92,6 +92,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Additional Football Markets
         generate1X2Variants();
+        generateAdditionalFootballMarkets();
         generateFirstGoal();
         generateAwayHandicaps();
         generateRestOfMatchVariants();
@@ -1342,6 +1343,328 @@ public class SportyBetMapper extends SimilarBookieMapper {
             map.put("5", "Away");
             addMarket("230", "pointnr=" + points, "Race to " + points + " points (incl. overtime)", map);
         }
+    }
+
+
+
+    // ══════════════════════════════════════════════════════════════
+// ADD THESE METHODS TO THE SportyBetMapper CLASS
+// ══════════════════════════════════════════════════════════════
+
+// Add this call in initializeMarkets() after generateComboMarkets():
+// generateAdditionalFootballMarkets();
+
+    private void generateAdditionalFootballMarkets() {
+        // Extend Over/Under to 6.5 (currently only goes to 5.5)
+        Map<String, String> map6 = new HashMap<>();
+        map6.put("12", "Over 6.5");
+        map6.put("13", "Under 6.5");
+        addMarket("18", "total=6.5", "Over/Under", map6);
+
+        // Home No Bet
+        Map<String, String> homeNoBet = new HashMap<>();
+        homeNoBet.put("776", "Draw");
+        homeNoBet.put("778", "Away");
+        addMarket("12", null, "Home No Bet", homeNoBet);
+
+        // Away No Bet
+        Map<String, String> awayNoBet = new HashMap<>();
+        awayNoBet.put("780", "Home");
+        awayNoBet.put("782", "Draw");
+        addMarket("13", null, "Away No Bet", awayNoBet);
+
+        // Home Team To Score Yes/No
+        Map<String, String> homeToScore = new HashMap<>();
+        homeToScore.put("39", "Yes");
+        homeToScore.put("40", "No");
+        addMarket("900015", null, "Home Team To Score Yes/No", homeToScore);
+
+        // Away Team To Score Yes/No
+        Map<String, String> awayToScore = new HashMap<>();
+        awayToScore.put("39", "Yes");
+        awayToScore.put("40", "No");
+        addMarket("900014", null, "Away Team To Score Yes/No", awayToScore);
+
+        // Both Teams to Score in Both Halves Yes/No
+        Map<String, String> btsBothHalves = new HashMap<>();
+        btsBothHalves.put("39", "Yes");
+        btsBothHalves.put("40", "No");
+        addMarket("900027", null, "Both Teams to Score in Both Halves Yes/No", btsBothHalves);
+
+        // No Draw Both Teams To Score Yes/No
+        Map<String, String> noDrawBTS = new HashMap<>();
+        noDrawBTS.put("39", "Yes");
+        noDrawBTS.put("40", "No");
+        addMarket("900041", null, "No Draw Both Teams To Score Yes/No", noDrawBTS);
+
+        // 1X2 from 1 to X minute markets
+        int[] minutes = {40, 50, 55, 60, 65, 70, 75, 80, 85};
+        for (int minute : minutes) {
+            Map<String, String> map1X2Time = new HashMap<>();
+            map1X2Time.put("1", "Home");
+            map1X2Time.put("2", "Draw");
+            map1X2Time.put("3", "Away");
+            addMarket("900069", "minute=" + minute, "1X2 from 1 to " + minute + " minute", map1X2Time);
+        }
+
+        // 1st Half - 1st Goal
+        Map<String, String> firstHalfFirstGoal = new HashMap<>();
+        firstHalfFirstGoal.put("6", "Home");
+        firstHalfFirstGoal.put("7", "None");
+        firstHalfFirstGoal.put("8", "Away");
+        addMarket("62", "goalnr=1", "1st Half - 1st Goal", firstHalfFirstGoal);
+
+        // 1st Half - Which Team Wins the Rest (current score 0:0)
+        Map<String, String> firstHalfRest = new HashMap<>();
+        firstHalfRest.put("1", "Home");
+        firstHalfRest.put("2", "Draw");
+        firstHalfRest.put("3", "Away");
+        addMarket("61", "score=0:0", "1st Half - Which Team Wins the Rest (current score 0:0)", firstHalfRest);
+
+        // 1st Half - Draw No Bet
+        Map<String, String> firstHalfDNB = new HashMap<>();
+        firstHalfDNB.put("4", "Home");
+        firstHalfDNB.put("5", "Away");
+        addMarket("64", null, "1st Half - Draw No Bet", firstHalfDNB);
+
+        // 1st Half - Home Team Clean Sheet
+        Map<String, String> firstHalfHomeCS = new HashMap<>();
+        firstHalfHomeCS.put("74", "Yes");
+        firstHalfHomeCS.put("76", "No");
+        addMarket("76", null, "1st Half - Home Team Clean Sheet", firstHalfHomeCS);
+
+        // 1st Half - Away Team Clean Sheet
+        Map<String, String> firstHalfAwayCS = new HashMap<>();
+        firstHalfAwayCS.put("74", "Yes");
+        firstHalfAwayCS.put("76", "No");
+        addMarket("77", null, "1st Half - Away Team Clean Sheet", firstHalfAwayCS);
+
+        // 1st Half - 1X2 & GG/NG
+        Map<String, String> firstHalf1X2GG = new HashMap<>();
+        firstHalf1X2GG.put("78", "Home & yes");
+        firstHalf1X2GG.put("80", "Home & no");
+        firstHalf1X2GG.put("82", "Draw & yes");
+        firstHalf1X2GG.put("84", "Draw & no");
+        firstHalf1X2GG.put("86", "Away & yes");
+        firstHalf1X2GG.put("88", "Away & no");
+        addMarket("78", null, "1st Half - 1X2 & GG/NG", firstHalf1X2GG);
+
+        // 1st Half - 1X2 & Over/Under
+        Map<String, String> firstHalf1X2OU = new HashMap<>();
+        firstHalf1X2OU.put("794", "Home & Under 1.5");
+        firstHalf1X2OU.put("796", "Home & Over 1.5");
+        firstHalf1X2OU.put("798", "Draw & Under 1.5");
+        firstHalf1X2OU.put("800", "Draw & Over 1.5");
+        firstHalf1X2OU.put("802", "Away & Under 1.5");
+        firstHalf1X2OU.put("804", "Away & Over 1.5");
+        addMarket("79", "total=1.5", "1st Half - 1X2 & Over/Under", firstHalf1X2OU);
+
+        // Rest Of First Half Total Goals (current score 0:0)
+        Map<String, String> restFirstHalfTotal = new HashMap<>();
+        restFirstHalfTotal.put("30", "Over 0.5");
+        restFirstHalfTotal.put("31", "Under 0.5");
+        addMarket("900034", "total=0.5|score=0:0", "Rest Of First Half Total Goals (current score 0:0)", restFirstHalfTotal);
+
+        // Rest of First Half Asian Handicap (current score 0:0)
+        Map<String, String> restFirstHalfHcp = new HashMap<>();
+        restFirstHalfHcp.put("1", "Home -0.5");
+        restFirstHalfHcp.put("3", "Away +0.5");
+        addMarket("900039", "hcp=-0.5|score=0:0", "Rest of First Half Asian Handicap (current score 0:0)", restFirstHalfHcp);
+
+        // Half-time Home Team To Score Yes/No
+        Map<String, String> htHomeScore = new HashMap<>();
+        htHomeScore.put("39", "Yes");
+        htHomeScore.put("40", "No");
+        addMarket("900022", null, "Half-time Home Team To Score Yes/No", htHomeScore);
+
+        // Half-time Away Team to Score Yes/No
+        Map<String, String> htAwayScore = new HashMap<>();
+        htAwayScore.put("39", "Yes");
+        htAwayScore.put("40", "No");
+        addMarket("900021", null, "Half-time Away Team to Score Yes/No", htAwayScore);
+
+        // Half-time Home Team to Win to Nil Yes/No
+        Map<String, String> htHomeWTN = new HashMap<>();
+        htHomeWTN.put("39", "Yes");
+        htHomeWTN.put("40", "No");
+        addMarket("900036", null, "Half-time Home Team to Win to Nil Yes/No", htHomeWTN);
+
+        // Half-time Away Team to Win to Nil Yes/No
+        Map<String, String> htAwayWTN = new HashMap<>();
+        htAwayWTN.put("39", "Yes");
+        htAwayWTN.put("40", "No");
+        addMarket("900037", null, "Half-time Away Team to Win to Nil Yes/No", htAwayWTN);
+
+        // Half-time Home Team Total Goals Odd or Even
+        Map<String, String> htHomeOddEven = new HashMap<>();
+        htHomeOddEven.put("32", "Even");
+        htHomeOddEven.put("33", "Odd");
+        addMarket("900032", null, "Half-time Home Team Total Goals Odd or Even", htHomeOddEven);
+
+        // Half-time Away Team Total Goals Odd or Even
+        Map<String, String> htAwayOddEven = new HashMap<>();
+        htAwayOddEven.put("32", "Even");
+        htAwayOddEven.put("33", "Odd");
+        addMarket("900031", null, "Half-time Away Team Total Goals Odd or Even", htAwayOddEven);
+
+        // 2nd Half - Over/Under
+        double[] secondHalfTotals = {2.5};
+        for (double total : secondHalfTotals) {
+            String line = formatDecimal(total);
+            Map<String, String> map = new HashMap<>();
+            map.put("12", "Over " + line);
+            map.put("13", "Under " + line);
+            addMarket("90", "total=" + line, "2nd Half - Over/Under", map);
+        }
+
+        // 2nd Half - Double Chance
+        Map<String, String> secondHalfDC = new HashMap<>();
+        secondHalfDC.put("9", "Home or Draw");
+        secondHalfDC.put("10", "Home or Away");
+        secondHalfDC.put("11", "Draw or Away");
+        addMarket("85", null, "2nd Half - Double Chance", secondHalfDC);
+
+        // 2nd Half - Handicap 0:1 and 0:2
+        int[] secondHalfHcps = {1, 2};
+        for (int hcp : secondHalfHcps) {
+            Map<String, String> map = new HashMap<>();
+            map.put("1711", "Home (0:" + hcp + ")");
+            map.put("1712", "Draw (0:" + hcp + ")");
+            map.put("1713", "Away (0:" + hcp + ")");
+            addMarket("87", "hcp=0:" + hcp, "2nd Half - Handicap 0:" + hcp, map);
+        }
+
+        // 2nd Half - Draw No Bet
+        Map<String, String> secondHalfDNB = new HashMap<>();
+        secondHalfDNB.put("4", "Home");
+        secondHalfDNB.put("5", "Away");
+        addMarket("86", null, "2nd Half - Draw No Bet", secondHalfDNB);
+
+        // 2nd Half - Home Team Clean Sheet
+        Map<String, String> secondHalfHomeCS = new HashMap<>();
+        secondHalfHomeCS.put("74", "Yes");
+        secondHalfHomeCS.put("76", "No");
+        addMarket("96", null, "2nd Half - Home Team Clean Sheet", secondHalfHomeCS);
+
+        // 2nd Half - Away Team Clean Sheet
+        Map<String, String> secondHalfAwayCS = new HashMap<>();
+        secondHalfAwayCS.put("74", "Yes");
+        secondHalfAwayCS.put("76", "No");
+        addMarket("97", null, "2nd Half - Away Team Clean Sheet", secondHalfAwayCS);
+
+        // 2nd Half Home Team to Score Yes/No
+        Map<String, String> sh2HomeScore = new HashMap<>();
+        sh2HomeScore.put("39", "Yes");
+        sh2HomeScore.put("40", "No");
+        addMarket("900020", null, "2nd Half Home Team to Score Yes/No", sh2HomeScore);
+
+        // 2nd Half Away Team to Score Yes/No
+        Map<String, String> sh2AwayScore = new HashMap<>();
+        sh2AwayScore.put("39", "Yes");
+        sh2AwayScore.put("40", "No");
+        addMarket("900019", null, "2nd Half Away Team to Score Yes/No", sh2AwayScore);
+
+        // 2nd Half Home Team to Win to Nil Yes/No
+        Map<String, String> sh2HomeWTN = new HashMap<>();
+        sh2HomeWTN.put("39", "Yes");
+        sh2HomeWTN.put("40", "No");
+        addMarket("900038", null, "2nd Half Home Team to Win to Nil Yes/No", sh2HomeWTN);
+
+        // 2nd Half Away Team to Win to Nil Yes/No
+        Map<String, String> sh2AwayWTN = new HashMap<>();
+        sh2AwayWTN.put("39", "Yes");
+        sh2AwayWTN.put("40", "No");
+        addMarket("900052", null, "2nd Half Away Team to Win to Nil Yes/No", sh2AwayWTN);
+
+        // 2nd Half Home Team Total Goals Odd or Even
+        Map<String, String> sh2HomeOddEven = new HashMap<>();
+        sh2HomeOddEven.put("32", "Even");
+        sh2HomeOddEven.put("33", "Odd");
+        addMarket("900029", null, "2nd Half Home Team Total Goals Odd or Even", sh2HomeOddEven);
+
+        // 2nd Half Away Team Total Goals Odd or Even
+        Map<String, String> sh2AwayOddEven = new HashMap<>();
+        sh2AwayOddEven.put("32", "Even");
+        sh2AwayOddEven.put("33", "Odd");
+        addMarket("900030", null, "2nd Half Away Team Total Goals Odd or Even", sh2AwayOddEven);
+
+        // Half-time Double Chance & Total Goals
+        Map<String, String> htDCTotal = new HashMap<>();
+        htDCTotal.put("145", "Home/Draw & Over 1.5");
+        htDCTotal.put("146", "Home/Away & Over 1.5");
+        htDCTotal.put("147", "Draw/Away & Over 1.5");
+        htDCTotal.put("148", "Home/Draw & Under 1.5");
+        htDCTotal.put("149", "Home/Away & Under 1.5");
+        htDCTotal.put("150", "Draw/Away & Under 1.5");
+        addMarket("900042", "total=1.5", "Half-time Double Chance & Total Goals", htDCTotal);
+
+        // 2nd Half - 1X2 & Over/Under
+        Map<String, String> sh21X2OU = new HashMap<>();
+        sh21X2OU.put("794", "Home & Under 1.5");
+        sh21X2OU.put("796", "Home & Over 1.5");
+        sh21X2OU.put("798", "Draw & Under 1.5");
+        sh21X2OU.put("800", "Draw & Over 1.5");
+        sh21X2OU.put("802", "Away & Under 1.5");
+        sh21X2OU.put("804", "Away & Over 1.5");
+        addMarket("544", "total=1.5", "2nd Half - 1X2 & Over/Under", sh21X2OU);
+
+        // 2nd Half - 1X2 & GG/NG
+        Map<String, String> sh21X2GG = new HashMap<>();
+        sh21X2GG.put("78", "Home & yes");
+        sh21X2GG.put("80", "Home & no");
+        sh21X2GG.put("82", "Draw & yes");
+        sh21X2GG.put("84", "Draw & no");
+        sh21X2GG.put("86", "Away & yes");
+        sh21X2GG.put("88", "Away & no");
+        addMarket("543", null, "2nd Half - 1X2 & GG/NG", sh21X2GG);
+
+        // 2nd Half Double Chance & Total Goals
+        Map<String, String> sh2DCTotal = new HashMap<>();
+        sh2DCTotal.put("145", "Home/Draw & Over 1.5");
+        sh2DCTotal.put("146", "Home/Away & Over 1.5");
+        sh2DCTotal.put("147", "Draw/Away & Over 1.5");
+        sh2DCTotal.put("148", "Home/Draw & Under 1.5");
+        sh2DCTotal.put("149", "Home/Away & Under 1.5");
+        sh2DCTotal.put("150", "Draw/Away & Under 1.5");
+        addMarket("900043", "total=1.5", "2nd Half Double Chance & Total Goals", sh2DCTotal);
+
+        // 1st Half - Exact Goals
+        Map<String, String> firstHalfExact = new HashMap<>();
+        firstHalfExact.put("sr:exact_goals:3+:88", "0");
+        firstHalfExact.put("sr:exact_goals:3+:89", "1");
+        firstHalfExact.put("sr:exact_goals:3+:90", "2");
+        firstHalfExact.put("sr:exact_goals:3+:91", "3+");
+        addMarket("71", "variant=sr:exact_goals:3+", "1st Half - Exact Goals", firstHalfExact);
+
+        // 1st Half - Home Exact Goals
+        Map<String, String> firstHalfHomeExact = new HashMap<>();
+        firstHalfHomeExact.put("sr:exact_goals:3+:88", "0");
+        firstHalfHomeExact.put("sr:exact_goals:3+:89", "1");
+        firstHalfHomeExact.put("sr:exact_goals:3+:90", "2");
+        firstHalfHomeExact.put("sr:exact_goals:3+:91", "3+");
+        addMarket("72", "variant=sr:exact_goals:3+", "1st Half - Home Exact Goals", firstHalfHomeExact);
+
+        // 1st Half - Away Exact Goals
+        Map<String, String> firstHalfAwayExact = new HashMap<>();
+        firstHalfAwayExact.put("sr:exact_goals:3+:88", "0");
+        firstHalfAwayExact.put("sr:exact_goals:3+:89", "1");
+        firstHalfAwayExact.put("sr:exact_goals:3+:90", "2");
+        firstHalfAwayExact.put("sr:exact_goals:3+:91", "3+");
+        addMarket("73", "variant=sr:exact_goals:3+", "1st Half - Away Exact Goals", firstHalfAwayExact);
+
+        // 1st Half - Correct Score [0:0] - Live
+        Map<String, String> firstHalfCSLive = new HashMap<>();
+        firstHalfCSLive.put("442", "0:0");
+        firstHalfCSLive.put("444", "1:0");
+        firstHalfCSLive.put("446", "2:0");
+        firstHalfCSLive.put("448", "3:0");
+        firstHalfCSLive.put("450", "0:1");
+        firstHalfCSLive.put("452", "1:1");
+        firstHalfCSLive.put("454", "2:1");
+        firstHalfCSLive.put("456", "0:2");
+        firstHalfCSLive.put("458", "1:2");
+        firstHalfCSLive.put("460", "0:3");
+        addMarket("80", "score=0:0", "1st Half - Correct Score [0:0]", firstHalfCSLive);
     }
 
 // ──────────────────────────────────────────────────────────────

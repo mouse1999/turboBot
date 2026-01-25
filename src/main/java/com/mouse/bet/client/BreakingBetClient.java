@@ -312,6 +312,7 @@ public class BreakingBetClient {
                 .connectTimeout(connectionTimeout, TimeUnit.SECONDS)
                 .readTimeout(readTimeout, TimeUnit.SECONDS)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(false)
                 .addInterceptor(new SimpleHttpLoggingInterceptor())
                 .addInterceptor(chain -> {
                     Request req = chain.request();

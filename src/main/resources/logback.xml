@@ -225,6 +225,124 @@
         </encoder>
     </appender>
 
+
+    <appender name="MSPORTMRKFIN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/msportmarketoutcomefinder.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/msportmarketoutcomefinder.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="SPORTYMRKFIN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/sportymarketoutcomefinder.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/sportymarketoutcomefinder.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="ONEMRKFIN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/onewinmarketoutcomefinder.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/onewinmarketoutcomefinder.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="ONEPLACE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/onewinbetplacement.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/onewinbetplacement.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MSPORTPLACE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/msportbetplacement.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/msportbetplacement.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SPORTYPLACE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/sportybetplacement.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/sportybetplacement.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="ONEXLOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/login/onexbetloginutils.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/login/onexbetloginutils.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="ARBOUTCOMESERVICE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/service/arboutcomeservice.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/service/arboutcomeservice.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- ============================================= -->
     <!-- LOGGER CONFIGURATIONS -->
     <!-- ============================================= -->
@@ -294,9 +412,51 @@
         <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
+    <logger name="com.mouse.bet.util.msport.MsportMarketOutcomeFinder" level="DEBUG" additivity="false">
+        <appender-ref ref="MSPORTMRKFIN_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.util.sporty.SportyMarketOutcomeFinder" level="DEBUG" additivity="false">
+        <appender-ref ref="SPORTYMRKFIN_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.util.onewin.OneWinMarketOutcomeFinder" level="DEBUG" additivity="false">
+        <appender-ref ref="ONEMRKFIN_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
     <logger name="com.mouse.bet.util.onewin.OneWinMarketUtil" level="DEBUG" additivity="false">
         <appender-ref ref="ONEWINMRK_FILE"/>
         <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.util.onewin.OneWinBetPlacement" level="DEBUG" additivity="false">
+        <appender-ref ref="ONEPLACE_FILE"/>
+                <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="com.mouse.bet.util.msport.MSportBetPlacement" level="DEBUG" additivity="false">
+        <appender-ref ref="MSPORTPLACE_FILE"/>
+                <appender-ref ref="CONSOLE"/>
+    </logger>
+
+
+    <logger name="com.mouse.bet.util.sporty.SportyBetPlacement" level="DEBUG" additivity="false">
+        <appender-ref ref="SPORTYPLACE_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="com.mouse.bet.util.onexbet.OneXBetLoginUtils" level="DEBUG" additivity="false">
+        <appender-ref ref="ONEXLOG_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+
+    <logger name="com.mouse.bet.service.ArbOutcomeService" level="DEBUG" additivity="false">
+        <appender-ref ref="ARBOUTCOMESERVICE_FILE"/>
+<!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
     <!-- Root logger (everything else) -->

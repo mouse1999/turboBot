@@ -11,6 +11,7 @@ import lombok.Getter;
 public enum Sport {
 
     FOOTBALL(1, "Football"),
+    SOCCER(1, "Soccer"),
     TENNIS(2, "Tennis"),
     BASKETBALL(3, "Basketball"),
     ICE_HOCKEY(4, "Ice Hockey"),
@@ -20,7 +21,6 @@ public enum Sport {
     BASEBALL(16, "Baseball"),
     AMERICAN_FOOTBALL(18, "American Football"),
     E_SPORTS(91, "E-Sports"),
-    SOCCER(1000, ""),
     CRICKET(2000, ""),
     DOTA_2(3000, ""),
     CS2(5000, ""),

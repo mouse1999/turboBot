@@ -110,11 +110,11 @@ public class Player {
             log.info("{} window submitted to executor", BookMaker.MSPORT);
 
             // Small delay to stagger startup
-            Thread.sleep(50000);
+            Thread.sleep(30000);
             runningTasks.add(bookMakerFuture(sportyWindow, BookMaker.SPORTYBET));
             log.info("{} window submitted to executor", BookMaker.SPORTYBET);
 
-            Thread.sleep(50000);
+            Thread.sleep(30000);
 
             runningTasks.add(bookMakerFuture(oneWinWindow, BookMaker._1WIN));
             log.info("{} window submitted to executor", BookMaker._1WIN);

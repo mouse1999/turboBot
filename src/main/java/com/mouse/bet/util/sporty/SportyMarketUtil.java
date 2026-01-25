@@ -46,59 +46,150 @@ public class SportyMarketUtil {
 
     private static final int TOLERANCE_PERCENT = (int) 0.003;
 
-    private static boolean verifyBetSlip(Page page,  BettingTask task) {
+    private static boolean verifyBetSlip(Page page, BettingTask task) {
         String market = task.marketType();
         String outcome = task.outcome();
 
+        String jsVerify = """
+        (args) => {
+            const { expectedOutcome, expectedMarket } = args;
+            
+            try {
+                // Find bet slip container
+                const betslipContainer = document.querySelector('.m-betslips .m-list');
+                if (!betslipContainer) {
+                    return { success: false, error: 'Betslip container not found' };
+                }
+                
+                // Get all bet items
+                const betItems = betslipContainer.querySelectorAll('.m-item');
+                
+                if (betItems.length === 0) {
+                    return { success: false, error: 'No bets in slip' };
+                }
+                
+                if (betItems.length > 1) {
+                    return { 
+                        success: false, 
+                        error: `Multiple bets found (${betItems.length}). Expected single bet.` 
+                    };
+                }
+                
+                // Extract bet details from first (and only) item
+                const betItem = betItems[0];
+                
+                const outcomeEl = betItem.querySelector('.m-item-play span');
+                const marketEl = betItem.querySelector('.m-item-market');
+                const oddsEl = betItem.querySelector('.m-item-odds .m-text-main');
+                const teamEl = betItem.querySelector('.m-item-team');
+                const liveIcon = betItem.querySelector('.m-icon-live');
+                
+                if (!outcomeEl || !marketEl) {
+                    return { 
+                        success: false, 
+                        error: 'Missing required elements in bet item' 
+                    };
+                }
+                
+                const displayedOutcome = outcomeEl.textContent.trim();
+                const displayedMarket = marketEl.textContent.trim();
+                const displayedOdds = oddsEl ? oddsEl.textContent.trim() : 'N/A';
+                const displayedTeam = teamEl ? teamEl.textContent.trim() : 'N/A';
+                const isLive = liveIcon !== null;
+                
+                // Case-insensitive comparison
+                const outcomeMatch = displayedOutcome.toLowerCase() === expectedOutcome.toLowerCase();
+                const marketMatch = displayedMarket.toLowerCase() === expectedMarket.toLowerCase();
+                
+                if (!outcomeMatch) {
+                    return {
+                        success: false,
+                        error: 'Outcome mismatch',
+                        expected: expectedOutcome,
+                        actual: displayedOutcome,
+                        displayedMarket,
+                        displayedOdds,
+                        displayedTeam,
+                        isLive
+                    };
+                }
+                
+                if (!marketMatch) {
+                    return {
+                        success: false,
+                        error: 'Market mismatch',
+                        expected: expectedMarket,
+                        actual: displayedMarket,
+                        displayedOutcome,
+                        displayedOdds,
+                        displayedTeam,
+                        isLive
+                    };
+                }
+                
+                return {
+                    success: true,
+                    displayedOutcome,
+                    displayedMarket,
+                    displayedOdds,
+                    displayedTeam,
+                    isLive
+                };
+                
+            } catch (err) {
+                return { 
+                    success: false, 
+                    error: 'JavaScript error: ' + err.message 
+                };
+            }
+        }
+        """;
+
         try {
-            // 1. Fast check: is there exactly 1 bet item in the slip?
-            Locator betItem = page.locator(".m-betslips .m-list .m-item") // More resilient than #j_betslip
-                    .first();
+            // Wait briefly for betslip to populate
+            page.waitForTimeout(1500);
 
-            // Wait for it to be visible (auto-waiting + low timeout)
-            if (!betItem.isVisible(new Locator.IsVisibleOptions().setTimeout(3000))) {
-                log.warn("⏱️ Bet not appeared in slip within 3s");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> result = (Map<String, Object>) page.evaluate(
+                    jsVerify,
+                    Map.of(
+                            "expectedOutcome", outcome,
+                            "expectedMarket", market
+                    )
+            );
+
+            if (result == null) {
+                log.warn("❌ Bet verification returned null");
                 debugBetslipContents(page, outcome, market);
                 return false;
             }
 
-            // 2. Extract all texts in parallel — super fast for single item
-            String displayedOutcome = betItem.locator(".m-item-play span")
-                    .first()
-                    .textContent(new Locator.TextContentOptions().setTimeout(1000))
-                    .trim();
+            Boolean success = (Boolean) result.get("success");
 
-            String displayedMarket = betItem.locator(".m-item-market")
-                    .textContent(new Locator.TextContentOptions().setTimeout(800))
-                    .trim();
+            if (Boolean.TRUE.equals(success)) {
+                log.info("✅ BET VERIFIED IN SLIP: {} | Market: {} | Odds: {} | Match: {} | Live: {}",
+                        result.get("displayedOutcome"),
+                        result.get("displayedMarket"),
+                        result.get("displayedOdds"),
+                        result.get("displayedTeam"),
+                        result.get("isLive"));
+                return true;
+            } else {
+                String error = (String) result.get("error");
 
-            String displayedOdds = betItem.locator(".m-item-odds .m-text-main")
-                    .textContent(new Locator.TextContentOptions().setTimeout(800))
-                    .trim();
+                if ("Outcome mismatch".equals(error)) {
+                    log.warn("⚠️ Outcome mismatch: expected '{}' → got '{}'",
+                            result.get("expected"), result.get("actual"));
+                } else if ("Market mismatch".equals(error)) {
+                    log.warn("⚠️ Market mismatch: expected '{}' → got '{}'",
+                            result.get("expected"), result.get("actual"));
+                } else {
+                    log.warn("⚠️ Bet verification failed: {}", error);
+                }
 
-            String displayedTeam = betItem.locator(".m-item-team")
-                    .textContent(new Locator.TextContentOptions().setTimeout(800))
-                    .trim();
-
-            boolean isLive = betItem.locator(".m-icon-live").count() > 0;
-
-            // 3. Verification
-            if (!displayedOutcome.equalsIgnoreCase(outcome)) {
-                log.warn("⚠️ Outcome mismatch: expected '{}' → got '{}'", outcome, displayedOutcome);
                 debugBetslipContents(page, outcome, market);
                 return false;
             }
-
-            if (!displayedMarket.equalsIgnoreCase(market)) {
-                log.warn("⚠️ Market mismatch: expected '{}' → got '{}'", market, displayedMarket);
-                debugBetslipContents(page, outcome, market);
-                return false;
-            }
-
-            log.info("✅ BET VERIFIED IN SLIP: {} | Market: {} | Odds: {} | Match: {} | Live: {}",
-                    displayedOutcome, displayedMarket, displayedOdds, displayedTeam, isLive);
-
-            return true;
 
         } catch (Exception e) {
             log.warn("❌ Error verifying bet slip: {}", e.getMessage());
@@ -583,134 +674,10 @@ public class SportyMarketUtil {
 
         try {
             // Ensure "All" tab is active
-            Locator allTab = page.locator("div.m-nav-item:has-text('All')");
-            if (allTab.isVisible()) {
-                String classes = allTab.getAttribute("class");
-                if (classes == null || !classes.contains("m-nav-item--active")) {
-                    allTab.click(new Locator.ClickOptions().setTimeout(3000));
-                    randomHumanDelay(200, 400);
-                }
-            }
+            ensureAllTabActive(page);
 
-            // ⚡ OPTIMIZED: Early exit + mark element for clicking
-            String jsFind = """
-            (args) => {
-                const { market, outcome } = args;
-                const marketNorm = market.trim();
-                const outcomeNorm = outcome.trim();
-                const outcomeLower = outcomeNorm.toLowerCase();
-                const wrappers = document.querySelectorAll('div.m-table__wrapper');
-                
-                // ✅ Early exit on first match
-                for (let wrapperIndex = 0; wrapperIndex < wrappers.length; wrapperIndex++) {
-                    const wrapper = wrappers[wrapperIndex];
-                    const header = wrapper.querySelector('span.m-table-header-title');
-                    
-                    if (!header || !header.textContent.trim().includes(marketNorm)) {
-                        continue;
-                    }
-                    
-                    const cells = wrapper.querySelectorAll('div.m-table-cell--responsive');
-                    
-                    for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
-                        const cell = cells[cellIndex];
-                        const textSpan = cell.querySelector('span.m-table-cell-item');
-                        
-                        if (!textSpan) continue;
-                        
-                        const text = textSpan.textContent.trim();
-                        const disabled = cell.classList.contains('m-table-cell--disable');
-                        
-                        if (disabled) continue;
-                        
-                        if (text === outcomeNorm || text.toLowerCase() === outcomeLower) {
-                            const oddsSpans = cell.querySelectorAll('span.m-table-cell-item');
-                            const odds = oddsSpans.length > 1 ? oddsSpans[1].textContent.trim() : 'N/A';
-                            
-                            // ✅ Mark element for direct clicking (no re-query needed)
-                            cell.setAttribute('data-bet-target', 'true');
-                            
-                            return {
-                                found: true,
-                                marketTitle: header.textContent.trim(),
-                                outcomeText: text,
-                                odds: odds,
-                                wrapperIndex: wrapperIndex,
-                                cellIndex: cellIndex
-                            };
-                        }
-                    }
-                }
-                
-                // ❌ Not found - gather debug info
-                const allOutcomes = [];
-                wrappers.forEach(wrapper => {
-                    const header = wrapper.querySelector('span.m-table-header-title');
-                    if (!header) return;
-                    
-                    const cells = wrapper.querySelectorAll('div.m-table-cell--responsive');
-                    cells.forEach(cell => {
-                        const textSpan = cell.querySelector('span.m-table-cell-item');
-                        if (!textSpan) return;
-                        
-                        const text = textSpan.textContent.trim();
-                        const oddsSpans = cell.querySelectorAll('span.m-table-cell-item');
-                        const odds = oddsSpans.length > 1 ? oddsSpans[1].textContent.trim() : 'N/A';
-                        const disabled = cell.classList.contains('m-table-cell--disable');
-                        
-                        allOutcomes.push({
-                            marketTitle: header.textContent.trim(),
-                            outcomeText: text,
-                            odds: odds,
-                            disabled: disabled
-                        });
-                    });
-                });
-                
-                return {
-                    found: false,
-                    allOutcomes: allOutcomes
-                };
-            }
-            """;
-
-            @SuppressWarnings("unchecked")
-            Map<String, Object> result = (Map<String, Object>) page.evaluate(jsFind, Map.of("market", market, "outcome", outcome));
-
-            Boolean found = (Boolean) result.get("found");
-
-            if (!found) {
-                log.error("Market '{}' or outcome '{}' NOT FOUND", market, outcome);
-                @SuppressWarnings("unchecked")
-                List<Map<String, Object>> allOutcomes = (List<Map<String, Object>>) result.get("allOutcomes");
-                log.warn("=== AVAILABLE OUTCOMES ===");
-                allOutcomes.forEach(entry -> {
-                    String status = (Boolean) entry.get("disabled") ? " [DISABLED]" : "";
-                    log.warn(" → {} @ {} | Market: {}{}",
-                            entry.get("outcomeText"), entry.get("odds"), entry.get("marketTitle"), status);
-                });
-                log.warn("=== END DEBUG ===");
-                takeMarketScreenshot(page, "not-found-" + safeFileName(market + "-" + outcome));
-                return false;
-            }
-
-            String actualOutcome = (String) result.get("outcomeText");
-            String actualOddsStr = (String) result.get("odds");
-            String marketTitle = (String) result.get("marketTitle");
-
-            log.info("FOUND: {} → {} @ {}", marketTitle, actualOutcome, actualOddsStr);
-
-            // Verify outcome match
-            if (!actualOutcome.equalsIgnoreCase(outcome)) {
-                log.warn("Outcome mismatch: expected '{}' → got '{}'", outcome, actualOutcome);
-                takeMarketScreenshot(page, "mismatch-" + safeFileName(market + "-" + outcome));
-                return false;
-            }
-
-            // Get fresh task
-            BettingTask freshTask = ModelConverter.convertFromArbOutcome(
-                    arbOutcomeService.findByExternalIdAndBookmaker(task.taskId(), task.bookmakerId())
-                            .orElse(null));
+            // Get fresh task for latest odds
+            BettingTask freshTask = getFreshTask(task, arbOutcomeService);
             if (freshTask != null) {
                 log.info("Using fresh betting task from DB");
                 task = freshTask;
@@ -718,43 +685,50 @@ public class SportyMarketUtil {
 
             double expectedOdds = task.expectedOdds();
 
-            // Odds check
-            if (!isOddsAcceptable(expectedOdds, actualOddsStr)) {
-                log.warn("Odds drifted: expected ≥ {} → got {}", expectedOdds, actualOddsStr);
-                // return false; // TODO: Enable odds drift check
-            }
+            // ⚡ Use optimized finder with automatic waiting
+            SportyMarketOutcomeFinder.OutcomeResult result =
+                    SportyMarketOutcomeFinder.findAndClickOutcome(page, market, outcome, expectedOdds);
 
-            // ⚡ OPTIMIZED: Direct click on marked element (no re-query needed!)
-            Locator targetCell = page.locator("div.m-table-cell--responsive[data-bet-target='true']");
+            // Handle not found
+            if (!result.found) {
+                log.error("Market '{}' or outcome '{}' NOT FOUND", market, outcome);
 
-            if (targetCell.count() == 0) {
-                log.error("Target cell not found (marking failed)");
-                takeMarketScreenshot(page, "target-missing-" + safeFileName(market + "-" + outcome));
+                if (result.availableOutcomes != null && !result.availableOutcomes.isEmpty()) {
+                    log.warn("=== AVAILABLE OUTCOMES ===");
+                    result.availableOutcomes.forEach(entry -> {
+                        String status = (Boolean) entry.get("disabled") ? " [DISABLED]" : "";
+                        log.warn(" → {} @ {} | Market: {}{}",
+                                entry.get("outcomeText"), entry.get("odds"),
+                                entry.get("marketTitle"), status);
+                    });
+                    log.warn("=== END DEBUG ===");
+                }
+
+                takeMarketScreenshot(page, "not-found-" + safeFileName(market + "-" + outcome));
                 return false;
             }
 
-            // Verify cell content before clicking
-            String cellText = targetCell.locator("span.m-table-cell-item").first().textContent().trim();
-            if (!cellText.equalsIgnoreCase(outcome)) {
-                log.error("Cell content mismatch: expected '{}' → got '{}'", outcome, cellText);
-                takeMarketScreenshot(page, "cell-mismatch-" + safeFileName(market + "-" + outcome));
+            // Handle click/odds failure
+            if (!result.success) {
+                log.warn("Selection failed: {}", result.errorMessage);
+
+                if ("Odds not acceptable".equals(result.errorMessage)) {
+                    log.warn("Odds drifted: expected {} → got {}", expectedOdds, result.odds);
+                    // TODO: Uncomment to enable strict odds rejection
+                    // takeMarketScreenshot(page, "odds-rejected-" + safeFileName(market + "-" + outcome));
+                    // return false;
+                }
+
+                takeMarketScreenshot(page, "failed-" + safeFileName(market + "-" + outcome));
                 return false;
             }
 
-            // Click with visual feedback
-            targetCell.scrollIntoViewIfNeeded();
-            try {
-                targetCell.evaluate("el => el.style.border = '3px solid red'");
-                randomHumanDelay(100, 200);
-                targetCell.click(new Locator.ClickOptions().setForce(true).setTimeout(8000));
-                targetCell.evaluate("el => el.style.border = ''");
-            } catch (Exception e) {
-                log.warn("Primary click failed, attempting fallback click");
-                targetCell.evaluate("el => el.click()");
+            // Verify outcome match (sanity check)
+            if (!result.outcomeText.equalsIgnoreCase(outcome)) {
+                log.warn("Outcome mismatch: expected '{}' → got '{}'", outcome.trim(), result.outcomeText);
+                takeMarketScreenshot(page, "mismatch-" + safeFileName(market + "-" + outcome));
+                return false;
             }
-
-            // Clean up marker
-            page.evaluate("document.querySelector('[data-bet-target]')?.removeAttribute('data-bet-target')");
 
             randomHumanDelay(200, 400);
 
@@ -764,34 +738,52 @@ public class SportyMarketUtil {
                 return false;
             }
 
-            log.info("✅ CLICKED: {} → {} @ {}", marketTitle, actualOutcome, actualOddsStr);
+            log.info("✅ CLICKED: {} → {} @ {}", result.marketTitle, result.outcomeText, result.odds);
             return true;
 
         } catch (Exception e) {
             log.error("Failed to select {} → {} | Error: {}", market, outcome, e.getMessage());
             takeMarketScreenshot(page, "error-" + safeFileName(market + "-" + outcome));
-
-            // Clean up marker if it exists
-            try {
-                page.evaluate("document.querySelector('[data-bet-target]')?.removeAttribute('data-bet-target')");
-            } catch (Exception ignored) {}
-
             return false;
         }
     }
 
+
+
     /**
-     * Speed comparison:
-     *
-     * Original:  250-500ms  (searches all, re-queries cell)
-     * Optimized: 100-250ms  (early exit, direct click) ⚡
-     *
-     * Improvements:
-     * - Early exit on first match (saves ~100ms)
-     * - Marks element instead of re-querying (saves ~50-100ms)
-     * - Only builds debug data when not found
-     * - Total: ~2x faster
+     * Ensure "All" tab is active
      */
+    private static void ensureAllTabActive(Page page) {
+        try {
+            Locator allTab = page.locator("div.m-nav-item:has-text('All')");
+            if (allTab.isVisible()) {
+                String classes = allTab.getAttribute("class");
+                if (classes == null || !classes.contains("m-nav-item--active")) {
+                    allTab.click(new Locator.ClickOptions().setTimeout(3000));
+                    randomHumanDelay(200, 400);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Could not ensure All tab active: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Get fresh task from database
+     */
+    private static BettingTask getFreshTask(BettingTask task, ArbOutcomeService arbOutcomeService) {
+        try {
+            return ModelConverter.convertFromArbOutcome(
+                    arbOutcomeService.findByExternalIdAndBookmaker(task.taskId(), task.bookmakerId())
+                            .orElse(null)
+            );
+        } catch (Exception e) {
+            log.warn("Could not fetch fresh task: {}", e.getMessage());
+            return null;
+        }
+    }
+
+
 
     private static String safeFileName(String name) {
         return name.replaceAll("[^a-zA-Z0-9_-]", "_");
@@ -799,59 +791,7 @@ public class SportyMarketUtil {
 
 
 
-    /**
-     * Checks if the displayed odds are acceptable within a symmetric tolerance percentage.
-     *
-     * Acceptance rules:
-     * - Displayed odds must be within ±tolerance% of expected odds
-     * - Examples with expected = 1.80 and tolerance = 5%:
-     *   - Acceptable range: 1.71 to 1.89
-     *   - 1.75 → accept
-     *   - 1.90 → reject (too high)
-     *   - 1.65 → reject (too low)
-     *
-     * @param expectedOdds       The target odds (e.g., 1.80)
-     * @param displayedOddsStr   The odds string from the site (e.g., "1.75")
-     * @return true if within tolerance, false otherwise
-     */
-    private static boolean isOddsAcceptable(double expectedOdds, String displayedOddsStr) {
-        if (displayedOddsStr == null || displayedOddsStr.trim().isEmpty()) {
-            log.warn("Displayed odds string is null or empty");
-            return false;
-        }
 
-        try {
-            double displayedOdds = Double.parseDouble(displayedOddsStr.trim());
-
-            if (expectedOdds <= 0) {
-                log.warn("Expected odds must be positive: {}", expectedOdds);
-                return false;
-            }
-
-            // Calculate allowed range
-            double lowerBound = expectedOdds * (1 - TOLERANCE_PERCENT);
-            double upperBound = expectedOdds * (1 + TOLERANCE_PERCENT);
-
-            boolean isAcceptable = displayedOdds >= lowerBound && displayedOdds <= upperBound;
-
-            if (isAcceptable) {
-                double percentDiff = ((displayedOdds - expectedOdds) / expectedOdds) * 100.0;
-                log.debug("Displayed odds {} is {}% from expected {} → ACCEPTED (±{}% tolerance)",
-                        displayedOdds, percentDiff, expectedOdds, TOLERANCE_PERCENT);
-            } else {
-                String reason = displayedOdds < lowerBound ? "too low" : "too high";
-                double percentDiff = ((displayedOdds - expectedOdds) / expectedOdds) * 100.0;
-                log.debug("Displayed odds {} is {}% {} expected {} → REJECTED (±{}% tolerance)",
-                        displayedOdds, Math.abs(percentDiff), reason, expectedOdds, TOLERANCE_PERCENT);
-            }
-
-            return isAcceptable;
-
-        } catch (NumberFormatException e) {
-            log.warn("Could not parse displayed odds string: '{}'", displayedOddsStr);
-            return false; // Reject if can't parse
-        }
-    }
 
 
 

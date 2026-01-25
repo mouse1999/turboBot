@@ -238,6 +238,8 @@ public class ArbitrageService {
         }
     }
 
+
+
     private SaveResult saveOrUpdateWithRetry(ArbitrageOpportunity opportunity) {
         int attempt = 0;
 
@@ -268,6 +270,8 @@ public class ArbitrageService {
         throw new IllegalStateException("Should never reach here");
     }
 
+
+
     private SaveResult saveOrUpdateWithLock(ArbitrageOpportunity opportunity) {
         if (opportunity.getExternalId() == null) {
             arbitrageRepository.save(opportunity);
@@ -287,7 +291,10 @@ public class ArbitrageService {
         ArbitrageOpportunity existingArb = existing.get();
         log.debug("🔄 Updating existing arb: {}", opportunity.getExternalId());
 
+        // Update basic fields
         existingArb.setLastCheckedAt(LocalDateTime.now());
+        existingArb.setCreatedAt(LocalDateTime.now());
+        existingArb.setUpdatedAt(LocalDateTime.now());
         existingArb.setProfitPercentage(opportunity.getProfitPercentage());
         existingArb.setConfidenceScore(opportunity.getConfidenceScore());
         existingArb.setStatus(opportunity.getStatus());
@@ -297,6 +304,7 @@ public class ArbitrageService {
         existingArb.setMarketType(opportunity.getMarketType());
         existingArb.setOutCome(opportunity.getOutCome());
 
+        // Update outcomes if present
         if (opportunity.getOutcomes() != null && !opportunity.getOutcomes().isEmpty()) {
             existingArb.getOutcomes().removeIf(existingOutcome ->
                     opportunity.getOutcomes().stream()
@@ -318,6 +326,7 @@ public class ArbitrageService {
                     outcomeToUpdate.setOutComeName(newOutcome.getOutComeName());
                     outcomeToUpdate.setMarketType(newOutcome.getMarketType());
                     outcomeToUpdate.setProgress(newOutcome.getProgress());
+                    outcomeToUpdate.setUpdatedAt(LocalDateTime.now());
                     outcomeToUpdate.setInitiator(newOutcome.getInitiator());
                 } else {
                     ArbOutcome outcomeToAdd = ArbOutcome.builder()
@@ -334,15 +343,18 @@ public class ArbitrageService {
                             .homeTeam(newOutcome.getHomeTeam())
                             .leagueName(newOutcome.getLeagueName())
                             .progress(newOutcome.getProgress())
+                            .updatedAt(LocalDateTime.now())
                             .reordered(newOutcome.getReordered())
                             .initiator(newOutcome.getInitiator())
                             .stake(newOutcome.getStake())
                             .build();
                     existingArb.addOutcome(outcomeToAdd);
-                    existingArb.onUpdate();
                 }
             }
         }
+
+        // ✅ ALWAYS call onUpdate before saving
+        existingArb.onUpdate();
 
         arbitrageRepository.save(existingArb);
         return SaveResult.UPDATED;

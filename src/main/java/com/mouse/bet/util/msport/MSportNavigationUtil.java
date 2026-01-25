@@ -248,8 +248,8 @@ public class MSportNavigationUtil {
 
             // Navigate directly to the URL
             page.navigate(bookmakerUrl, new Page.NavigateOptions()
-                    .setTimeout(15000)
-                    .setWaitUntil(WaitUntilState.NETWORKIDLE));
+                    .setTimeout(5000)
+                    .setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
 
             log.info("✅ Successfully navigated to match page...");
             return true;

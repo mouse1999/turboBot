@@ -15,6 +15,7 @@ import com.mouse.bet.orchestrator.Orchestrator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
@@ -226,7 +227,7 @@ public class ArbPollingService {
             LocalDateTime cutoffTime = LocalDateTime.now().minusSeconds(freshnessSeconds);
 
             // Fetch fresh active arbs from database
-            List<ArbitrageOpportunity> freshArbs = arbitrageRepository.findActiveArbsByMaxAge(cutoffTime);
+            List<ArbitrageOpportunity> freshArbs = arbitrageRepository.findActiveArbsCreatedAfterWithMinProfit(cutoffTime, BigDecimal.valueOf(minProfitPercentage));
 
             if (freshArbs.isEmpty()) {
                 log.trace("{} No fresh arbitrage opportunities found", EMOJI_SKIPPED);
@@ -293,7 +294,13 @@ public class ArbPollingService {
             return false;
         }
 
-        // Filter 2: Check sport is enabled
+        if (arb.getCreatedAt().isBefore(LocalDateTime.now().minusSeconds(freshnessSeconds))){
+            log.info("it not within the time frame");
+            return false;
+
+        }
+
+        // Filter : Check sport is enabled
         if (!isSportEnabled(arb)) {
             Sport sport = parseSport(arb);
             log.debug("{} Filtered (sport disabled) | ArbId: {} | Sport: {} | EnabledSports: {}",

@@ -13,7 +13,8 @@ public class OneWinLoginUtil {
     public static boolean checkIfLoggedIn(Page page) {
         try {
             // Check if the Deposit button is visible (indicates user is logged in)
-            Locator depositButton = page.locator("div.base_content-EW6Gm:has-text('Deposit')");
+            // Use data-testid which is more stable than dynamic class names
+            Locator depositButton = page.locator("button[data-testid='header-balance-deposit-button']");
 
             // Wait for a short time to see if element exists
             depositButton.waitFor(new Locator.WaitForOptions()

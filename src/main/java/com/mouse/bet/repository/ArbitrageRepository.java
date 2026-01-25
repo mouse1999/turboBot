@@ -156,7 +156,7 @@ public interface ArbitrageRepository extends JpaRepository<ArbitrageOpportunity,
      * Find all active arbs where age (time since creation) is not more than X seconds
      * Age = current time - createdAt
      *
-     * @param maxAgeSeconds Maximum age in seconds (e.g., 30 for arbs not older than 30 seconds)
+//     * @param maxAgeSeconds Maximum age in seconds (e.g., 30 for arbs not older than 30 seconds)
      * @return List of active arbs that are not older than maxAgeSeconds
      */
     @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
@@ -302,4 +302,18 @@ public interface ArbitrageRepository extends JpaRepository<ArbitrageOpportunity,
     @Query("UPDATE ArbitrageOpportunity a SET a.status = 'EXPIRED', a.expiredAt = :now " +
             "WHERE a.id IN :ids")
     int expireArbsByIds(@Param("ids") List<Long> ids, @Param("now") LocalDateTime now);
+
+
+    /**
+     * Find active arbs created within last X seconds with minimum profit
+     */
+    @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
+            "WHERE a.status = 'ACTIVE' " +
+            "AND a.createdAt >= :createdAfter " +
+            "AND a.profitPercentage >= :minProfit " +
+            "ORDER BY a.profitPercentage DESC")
+    List<ArbitrageOpportunity> findActiveArbsCreatedAfterWithMinProfit(
+            @Param("createdAfter") LocalDateTime createdAfter,
+            @Param("minProfit") BigDecimal minProfit);
+
 }

@@ -16,6 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -281,283 +283,319 @@ public class OneWinMarketUtil {
      * Fast search (JS) + Reliable click (Locator)
      */
     public static boolean selectAndVerifyBetJS(Page page, BettingTask task, ArbOutcomeService arbOutcomeService) {
+        String market = task.marketType().trim();
+        String outcome = task.outcome().trim();
+
+        log.info("Selecting: {} → {}", market, outcome);
+
         try {
-            log.info("🔍 Searching for bet -- Market: {}, Outcome: {}, Expected Odds: {}",
-                    task.marketType(), task.outcome(), task.expectedOdds());
-
-            String marketType = normalizeText(task.marketType());
-            String outcome = normalizeText(task.outcome());
-
-            // ⚡ STEP 1: Use JavaScript to FIND the exact market and bet
-            String jsScript = String.format("""
-    (function() {
-        const targetMarket = '%s';
-        const targetOutcome = '%s';
-        
-        function normalize(text) {
-            if (!text) return '';
-            return text.toLowerCase()
-                .trim()
-                .replace(/\\s+/g, ' ')
-                .replace(/[^a-z0-9\\s.:+-]/g, '');
-        }
-        
-        const normalizedTargetMarket = normalize(targetMarket);
-        const normalizedTargetOutcome = normalize(targetOutcome);
-        
-        const groups = document.querySelectorAll('div._group_ahjwn_2');
-        let matchedMarket = null;
-        
-        // First pass: Find the EXACT matching market
-        for (const group of groups) {
-            const titleElement = group.querySelector('div._title_8ulje_6');
-            if (!titleElement) continue;
-            
-            const marketTitle = titleElement.textContent.trim();
-            const normalizedMarket = normalize(marketTitle);
-            
-            // Exact match required
-            if (normalizedMarket === normalizedTargetMarket) {
-                matchedMarket = { group, titleElement, marketTitle };
-                break;
-            }
-        }
-        
-        if (!matchedMarket) {
-            console.log('❌ Exact market not found:', targetMarket);
-            return { 
-                found: false, 
-                error: 'Exact market not found',
-                searchedMarket: targetMarket,
-                availableMarkets: Array.from(groups).map(g => 
-                    g.querySelector('div._title_8ulje_6')?.textContent.trim()
-                ).filter(Boolean)
-            };
-        }
-        
-        console.log('✅ Exact market found:', matchedMarket.marketTitle);
-        
-        // Second pass: Find EXACT outcome ONLY in the matched market
-        const { group, titleElement, marketTitle } = matchedMarket;
-        const betButtons = group.querySelectorAll('button._root_1hr84_2');
-        
-        let matchedOutcome = null;
-        
-        for (let i = 0; i < betButtons.length; i++) {
-            const button = betButtons[i];
-            
-            // Skip header cells
-            const cell = button.closest('div._cell_9pkob_21');
-            if (cell?.querySelector('div._headerCell_xgz91_2')) continue;
-            
-            const nameSpan = button.querySelector('span._name_1hr84_36');
-            const oddsSpan = button.querySelector('span._cf_17if8_2');
-            
-            if (!nameSpan || !oddsSpan) continue;
-            
-            const outcomeName = nameSpan.textContent.trim();
-            const normalizedOutcome = normalize(outcomeName);
-            
-            // Exact match required
-            if (normalizedOutcome === normalizedTargetOutcome) {
-                const oddsText = oddsSpan.textContent.trim();
-                const odds = parseFloat(oddsText);
-                
-                if (isNaN(odds)) continue;
-                
-                const isDisabled = button.disabled || 
-                                  button.classList.contains('disabled') ||
-                                  button.classList.contains('_locked_1hr84_2');
-                
-                matchedOutcome = {
-                    button,
-                    buttonIndex: i,
-                    outcomeName,
-                    odds,
-                    isDisabled
-                };
-                break;
-            }
-        }
-        
-        if (!matchedOutcome) {
-            const availableOutcomes = Array.from(betButtons)
-                .map(btn => btn.querySelector('span._name_1hr84_36')?.textContent.trim())
-                .filter(Boolean);
-            
-            console.log('❌ Exact outcome not found in market:', marketTitle);
-            console.log('Searched for:', targetOutcome);
-            console.log('Available outcomes:', availableOutcomes);
-            
-            return {
-                found: false,
-                error: 'Exact outcome not found in market',
-                matchedMarket: marketTitle,
-                searchedOutcome: targetOutcome,
-                availableOutcomes
-            };
-        }
-        
-        console.log('✅ Exact outcome found:', matchedOutcome.outcomeName);
-        
-        // Mark the button for Playwright to click
-        matchedOutcome.button.setAttribute('data-arb-target', 'true');
-        matchedOutcome.button.setAttribute('data-arb-market', marketTitle);
-        matchedOutcome.button.setAttribute('data-arb-outcome', matchedOutcome.outcomeName);
-        
-        return {
-            found: true,
-            market: marketTitle,
-            outcome: matchedOutcome.outcomeName,
-            odds: matchedOutcome.odds,
-            disabled: matchedOutcome.isDisabled,
-            buttonIndex: matchedOutcome.buttonIndex
-        };
-    })();
-    """, escapeJs(marketType), escapeJs(outcome));
-
-            // Execute JavaScript search
-            Object resultObj = page.evaluate(jsScript);
-            Map<String, Object> result = (Map<String, Object>) resultObj;
-
-            if (result == null || !(Boolean) result.getOrDefault("found", false)) {
-                log.error("❌ Bet not found - Market: {}, Outcome: {}", task.marketType(), task.outcome());
-
-                // Log why it failed
-                String error = (String) result.get("error");
-                log.error("Reason: {}", error);
-
-                if (result.containsKey("searchedMarket")) {
-                    log.info("Searched for market: '{}'", result.get("searchedMarket"));
-                }
-                if (result.containsKey("availableMarkets")) {
-                    log.info("Available markets: {}", result.get("availableMarkets"));
-                }
-                if (result.containsKey("matchedMarket")) {
-                    log.info("Matched market: '{}', but outcome not found", result.get("matchedMarket"));
-                    log.info("Searched for outcome: '{}'", result.get("searchedOutcome"));
-                    log.info("Available outcomes: {}", result.get("availableOutcomes"));
-                }
-
-                takeMarketScreenshot(page, "bet_not_found");
-                return false;
-            }
-
-            String foundMarket = (String) result.get("market");
-            String foundOutcome = (String) result.get("outcome");
-            Double foundOdds = ((Number) result.get("odds")).doubleValue();
-            Boolean isDisabled = (Boolean) result.getOrDefault("disabled", false);
-
-            log.info("✅ Found exact bet - Market: '{}', Outcome: '{}', Odds: {}, Disabled: {}",
-                    foundMarket, foundOutcome, foundOdds, isDisabled);
-
-//            takeMarketScreenshot(page, "bet_found");
-
-            if (isDisabled) {
-                log.warn("⚠️ Bet button is disabled/locked");
-                page.evaluate("document.querySelector('button[data-arb-target]')?.removeAttribute('data-arb-target')");
-                return false;
-            }
-
-            // Get fresh task from DB
-            BettingTask freshTask = ModelConverter.convertFromArbOutcome(
-                    arbOutcomeService.findByExternalIdAndBookmaker(task.taskId(), task.bookmakerId())
-                            .orElse(null));
-
+            // Get fresh task for latest odds from database
+            BettingTask freshTask = getFreshTask(task, arbOutcomeService);
             if (freshTask != null) {
-                log.info("🔄 Using fresh betting task from DB");
+                log.info("Using fresh betting task from DB");
                 task = freshTask;
+            } else {
+                log.warn("Could not fetch fresh task, using current task");
             }
 
-            // Verify odds
-            if (!isOddsAcceptable(foundOdds, task)) {
-                log.warn("⚠️ Odds not acceptable -- Found: {}, Expected: {}, Min: {}, Max: {}",
-                        foundOdds, task.expectedOdds(), task.minOdds(), task.maxOdds());
-                page.evaluate("document.querySelector('button[data-arb-target]')?.removeAttribute('data-arb-target')");
-                // return false; // TODO
-            }
+            double expectedOdds = task.expectedOdds();
 
-            // 🎯 STEP 2: Click the marked button using Playwright locator
-            Locator targetButton = page.locator("button[data-arb-target='true']");
+            // ⚡ Use optimized OneWin finder with automatic waiting
+            OneWinMarketOutcomeFinder.OutcomeResult result =
+                    OneWinMarketOutcomeFinder.findAndClickOutcome(page, market, outcome, expectedOdds);
 
-            if (targetButton.count() == 0) {
-                log.error("❌ Target button not found (JS marking failed)");
-                takeMarketScreenshot(page, "target_not_found");
-                return false;
-            }
+            // Handle not found
+            if (!result.found) {
+                log.error("Market '{}' or outcome '{}' NOT FOUND", market, outcome);
 
-            log.info("🖱️ Clicking target button using Playwright locator...");
-            try {
-                // Scroll into view
-                targetButton.scrollIntoViewIfNeeded();
-                sleepRandom(200, 400);
-
-                // Click with timeout
-                targetButton.click(new Locator.ClickOptions()
-                        .setTimeout(5000)
-                        .setForce(false));
-
-                log.info("✅ Bet button clicked successfully");
-
-                // Clean up marker attributes
-                page.evaluate("""
-                const btn = document.querySelector('button[data-arb-target]');
-                if (btn) {
-                    btn.removeAttribute('data-arb-target');
-                    btn.removeAttribute('data-arb-market');
-                    btn.removeAttribute('data-arb-outcome');
+                if (result.availableOutcomes != null && !result.availableOutcomes.isEmpty()) {
+                    log.warn("=== AVAILABLE OUTCOMES ===");
+                    result.availableOutcomes.forEach(entry -> {
+                        String status = (Boolean) entry.get("disabled") ? " [DISABLED]" : "";
+                        log.warn(" → {} @ {} | Market: {}{}",
+                                entry.get("outcomeText"), entry.get("odds"),
+                                entry.get("marketTitle"), status);
+                    });
+                    log.warn("=== END DEBUG ===");
                 }
-            """);
 
-            } catch (Exception e) {
-                log.error("❌ Failed to click bet button: {}", e.getMessage());
-                takeMarketScreenshot(page, "click_failed");
+                takeMarketScreenshot(page, "not-found-" + safeFileName(market + "-" + outcome));
+                return false;
+            }
 
-                // Clean up on error
-                try {
-                    page.evaluate("""
-                    const btn = document.querySelector('button[data-arb-target]');
-                    if (btn) {
-                        btn.removeAttribute('data-arb-target');
-                        btn.removeAttribute('data-arb-market');
-                        btn.removeAttribute('data-arb-outcome');
+            // Handle click/odds failure
+            if (!result.success) {
+                log.warn("Selection failed: {}", result.errorMessage);
+
+                if ("Outcome is disabled/locked".equals(result.errorMessage)) {
+                    log.error("Outcome '{}' is currently disabled/locked", outcome);
+                    takeMarketScreenshot(page, "disabled-" + safeFileName(market + "-" + outcome));
+                    return false;
+                }
+
+                if ("Odds not acceptable".equals(result.errorMessage)) {
+                    log.warn("Odds drifted: expected {} → got {}", expectedOdds, result.odds);
+
+                    // Strict odds validation - re-fetch fresh task and verify again
+                    BettingTask revalidatedTask = getFreshTask(task, arbOutcomeService);
+                    if (revalidatedTask != null) {
+                        task = revalidatedTask;
+                        double latestExpectedOdds = task.expectedOdds();
+
+                        // Check if odds are acceptable with latest expected odds
+                        if (!isOddsWithinTolerance(latestExpectedOdds, result.odds)) {
+                            log.error("Odds still not acceptable after revalidation: expected {} → got {}",
+                                    latestExpectedOdds, result.odds);
+                            takeMarketScreenshot(page, "odds-rejected-" + safeFileName(market + "-" + outcome));
+                            // TODO: Uncomment to enable strict odds rejection
+                            // return false;
+                        } else {
+                            log.info("Odds acceptable after revalidation: expected {} → got {}",
+                                    latestExpectedOdds, result.odds);
+                        }
                     }
-                """);
-                } catch (Exception ignored) {}
+                }
 
+                if ("Click failed".equals(result.errorMessage)) {
+                    log.error("Failed to click outcome element");
+                    takeMarketScreenshot(page, "click-failed-" + safeFileName(market + "-" + outcome));
+                    return false;
+                }
+
+                takeMarketScreenshot(page, "failed-" + safeFileName(market + "-" + outcome));
                 return false;
             }
 
-            sleepRandom(200, 400);
-
-            // Verify bet in betslip
-            boolean verifyBetInSlip = verifyBetInBetslipJS(page, task);
-            if (!verifyBetInSlip) {
-                log.warn("⚠️ Bet in slip may not match expected outcome");
-                takeMarketScreenshot(page, "betslip_mismatch");
+            // Verify outcome match (sanity check)
+            if (!isOutcomeMatchValid(result.outcomeText, outcome)) {
+                log.warn("Outcome mismatch: expected '{}' → got '{}'", outcome, result.outcomeText);
+                takeMarketScreenshot(page, "mismatch-" + safeFileName(market + "-" + outcome));
                 return false;
             }
 
-            log.info("✅ Bet verified in betslip");
+            log.info("FOUND: {} → {} @ {}", result.marketTitle, result.outcomeText, result.odds);
+
+            randomHumanDelay(200, 400);
+
+            // Verify bet slip
+            if (!verifyBetSlip(page, task)) {
+                log.error("Bet slip verification failed");
+                takeMarketScreenshot(page, "betslip-failed-" + safeFileName(market + "-" + outcome));
+                return false;
+            }
+
+            log.info("✅ CLICKED: {} → {} @ {}", result.marketTitle, result.outcomeText, result.odds);
             return true;
 
         } catch (Exception e) {
-            log.error("❌ Failed to select bet: {}", e.getMessage(), e);
-            takeMarketScreenshot(page, "exception");
-
-            // Clean up markers on exception
-            try {
-                page.evaluate("""
-                const btn = document.querySelector('button[data-arb-target]');
-                if (btn) {
-                    btn.removeAttribute('data-arb-target');
-                    btn.removeAttribute('data-arb-market');
-                    btn.removeAttribute('data-arb-outcome');
-                }
-            """);
-            } catch (Exception ignored) {}
-
+            log.error("FATAL: Failed to select {} → {} | Error: {}", market, outcome, e.getMessage(), e);
+            takeMarketScreenshot(page, "error-" + safeFileName(market + "-" + outcome));
             return false;
+        }
+    }
+
+    /**
+     * Get fresh task from database for latest odds
+     */
+    private static BettingTask getFreshTask(BettingTask currentTask, ArbOutcomeService arbOutcomeService) {
+        try {
+            if (arbOutcomeService == null) {
+                log.warn("ArbOutcomeService is null, cannot fetch fresh task");
+                return null;
+            }
+
+            return ModelConverter.convertFromArbOutcome(
+                    arbOutcomeService.findByExternalIdAndBookmaker(
+                            currentTask.taskId(),
+                            currentTask.bookmakerId()
+                    ).orElse(null)
+            );
+        } catch (Exception e) {
+            log.warn("Could not fetch fresh task from DB: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Check if odds are within acceptable tolerance
+     */
+    private static boolean isOddsWithinTolerance(double expectedOdds, Double actualOdds) {
+        if (actualOdds == null || expectedOdds <= 0) {
+            return false;
+        }
+
+        double tolerance = 0.003; // 0.3% tolerance
+        double lowerBound = expectedOdds * (1 - tolerance);
+        double upperBound = expectedOdds * (1 + tolerance);
+
+        return actualOdds >= lowerBound && actualOdds <= upperBound;
+    }
+
+    /**
+     * Validate outcome match with flexible matching
+     * Handles variations in text formatting
+     */
+    private static boolean isOutcomeMatchValid(String actualOutcome, String expectedOutcome) {
+        if (actualOutcome == null || expectedOutcome == null) {
+            return false;
+        }
+
+        // Direct match
+        if (actualOutcome.equalsIgnoreCase(expectedOutcome)) {
+            return true;
+        }
+
+        // Normalized match
+        String normalizedActual = normalizeOutcome(actualOutcome);
+        String normalizedExpected = normalizeOutcome(expectedOutcome);
+
+        return normalizedActual.equalsIgnoreCase(normalizedExpected);
+    }
+
+    /**
+     * Normalize outcome string for comparison
+     * Examples:
+     *   "Home Team" -> "hometeam"
+     *   "Over 76.5" -> "over76.5"
+     *   "Home (+2.5)" -> "home+2.5"
+     */
+    private static String normalizeOutcome(String outcome) {
+        return outcome.trim()
+                .toLowerCase()
+                .replaceAll("\\s+", "")          // Remove all spaces
+                .replaceAll("[^a-z0-9.:+-]", ""); // Keep only alphanumeric and . : + -
+    }
+
+    /**
+     * Verify bet was added to betslip
+     */
+    private static boolean verifyBetSlip(Page page, BettingTask task) {
+        String jsVerify = """
+    (args) => {
+        const { market, outcome } = args;
+        
+        // Normalize text helper
+        const normalize = (text) => {
+            return text.toLowerCase()
+                .trim()
+                .replace(/\\s+/g, ' ')
+                .replace(/[^a-z0-9.\\s]/g, '');
+        };
+        
+        const normalizedMarket = normalize(market);
+        const normalizedOutcome = normalize(outcome);
+        
+        // Find all coupon items
+        const coupons = document.querySelectorAll("div[class*='_coupon_']");
+        
+        if (!coupons || coupons.length === 0) {
+            return { found: false, error: 'Betslip is empty' };
+        }
+        
+        // Check each coupon for matching outcome
+        for (let i = 0; i < coupons.length; i++) {
+            const coupon = coupons[i];
+            
+            // Get the outcome text (e.g., "4th quarter. Away team to score, No 20.0")
+            const outcomeEl = coupon.querySelector("div[class*='_outcome_']");
+            
+            if (!outcomeEl) continue;
+            
+            const outcomeText = outcomeEl.textContent.trim();
+            const normalizedText = normalize(outcomeText);
+            
+            // Check if it contains market or outcome
+            const hasMarket = normalizedText.includes(normalizedMarket);
+            const hasOutcome = normalizedText.includes(normalizedOutcome);
+            
+            if (hasMarket || hasOutcome) {
+                // Get odds for additional info
+                const oddsEl = coupon.querySelector("span[class*='_root_1lnnj_']");
+                const odds = oddsEl ? oddsEl.textContent.trim() : 'N/A';
+                
+                return {
+                    found: true,
+                    outcomeText: outcomeText,
+                    odds: odds
+                };
+            }
+        }
+        
+        return { 
+            found: false, 
+            error: 'Bet not found in betslip'
+        };
+    }
+    """;
+
+        try {
+            // Wait for betslip to update
+            randomHumanDelay(300, 500);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> result = (Map<String, Object>) page.evaluate(
+                    jsVerify,
+                    Map.of("market", task.marketType().trim(), "outcome", task.outcome().trim())
+            );
+
+            if (result == null) {
+                log.error("Failed to verify betslip: null result");
+                return false;
+            }
+
+            Boolean found = (Boolean) result.get("found");
+
+            if (Boolean.TRUE.equals(found)) {
+                log.info("✅ Bet verified in betslip: {} @ {}",
+                        result.get("outcomeText"),
+                        result.get("odds"));
+                return true;
+            } else {
+                String error = (String) result.get("error");
+                log.warn("❌ {}: {} → {}", error, task.marketType(), task.outcome());
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("Error verifying betslip: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Take screenshot for debugging
+     */
+//    private static void takeMarketScreenshot(Page page, String filename) {
+//        try {
+//            String screenshotDir = "screenshots/onewin/";
+//            Files.createDirectories(Paths.get(screenshotDir));
+//
+//            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+//            String fullPath = screenshotDir + timestamp + "_" + filename + ".png";
+//
+//            page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get(fullPath)));
+//            log.info("Screenshot saved: {}", fullPath);
+//        } catch (Exception e) {
+//            log.warn("Could not save screenshot: {}", e.getMessage());
+//        }
+//    }
+
+    /**
+     * Generate safe filename from market and outcome
+     */
+    private static String safeFileName(String text) {
+        return text.replaceAll("[^a-zA-Z0-9.-]", "_");
+    }
+
+    /**
+     * Random human-like delay
+     */
+    private static void randomHumanDelay(int minMs, int maxMs) {
+        try {
+            int delay = ThreadLocalRandom.current().nextInt(minMs, maxMs + 1);
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -597,105 +635,9 @@ public class OneWinMarketUtil {
     }
 
 
-    /**
-     * Capture screenshot with context information
-     *
-     * @param page Playwright page
-     * @param task Betting task
-     * @param stage Stage of the process (bet-found, bet-clicked, etc.)
-     * @param foundMarket Market found (can be null)
-     * @param foundOutcome Outcome found (can be null)
-     */
-    private static void captureScreenshot(Page page, BettingTask task, String stage,
-                                          String foundMarket, String foundOutcome) {
-        try {
-            // Create screenshots directory if it doesn't exist
-            String screenshotsDir = "screenshots/" + task.bookmakerId() + "/";
-            java.nio.file.Files.createDirectories(java.nio.file.Paths.get(screenshotsDir));
 
-            // Generate filename with timestamp and context
-            String timestamp = java.time.LocalDateTime.now()
-                    .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS"));
 
-            String sanitizedMarket = sanitizeFilename(task.marketType());
-            String sanitizedOutcome = sanitizeFilename(task.outcome());
 
-            String filename = String.format("%s%s_%s_%s_%s_%s.png",
-                    screenshotsDir,
-                    timestamp,
-                    task.taskId(),
-                    stage,
-                    sanitizedMarket,
-                    sanitizedOutcome);
-
-            // Capture full page screenshot
-            page.screenshot(new Page.ScreenshotOptions()
-                    .setPath(java.nio.file.Paths.get(filename))
-                    .setFullPage(true));
-
-            log.info("📸 Screenshot captured: {} | Stage: {} | Market: {} | Outcome: {}",
-                    filename, stage,
-                    foundMarket != null ? foundMarket : task.marketType(),
-                    foundOutcome != null ? foundOutcome : task.outcome());
-
-            // Optional: Also create a metadata file with details
-            createScreenshotMetadata(filename, task, stage, foundMarket, foundOutcome);
-
-        } catch (Exception e) {
-            log.error("❌ Failed to capture screenshot: {}", e.getMessage());
-            // Don't throw - screenshot failure shouldn't break the main flow
-        }
-    }
-
-    /**
-     * Create metadata file alongside screenshot with context information
-     */
-    private static void createScreenshotMetadata(String screenshotPath, BettingTask task,
-                                                 String stage, String foundMarket, String foundOutcome) {
-        try {
-            String metadataPath = screenshotPath.replace(".png", "_metadata.txt");
-
-            StringBuilder metadata = new StringBuilder();
-            metadata.append("Screenshot Metadata\n");
-            metadata.append("===================\n\n");
-            metadata.append("Timestamp: ").append(java.time.LocalDateTime.now()).append("\n");
-            metadata.append("Stage: ").append(stage).append("\n\n");
-            metadata.append("Task Details:\n");
-            metadata.append("  Task ID: ").append(task.taskId()).append("\n");
-            metadata.append("  Bookmaker: ").append(task.bookmakerId()).append("\n");
-            metadata.append("  Expected Market: ").append(task.marketType()).append("\n");
-            metadata.append("  Expected Outcome: ").append(task.outcome()).append("\n");
-            metadata.append("  Expected Odds: ").append(task.expectedOdds()).append("\n");
-            metadata.append("  Min Odds: ").append(task.minOdds()).append("\n");
-            metadata.append("  Max Odds: ").append(task.maxOdds()).append("\n\n");
-
-            if (foundMarket != null || foundOutcome != null) {
-                metadata.append("Found Details:\n");
-                metadata.append("  Found Market: ").append(foundMarket != null ? foundMarket : "N/A").append("\n");
-                metadata.append("  Found Outcome: ").append(foundOutcome != null ? foundOutcome : "N/A").append("\n");
-            }
-
-            java.nio.file.Files.writeString(
-                    java.nio.file.Paths.get(metadataPath),
-                    metadata.toString());
-
-        } catch (Exception e) {
-            log.error("❌ Failed to create screenshot metadata: {}", e.getMessage());
-        }
-    }
-
-    /**
-     * Sanitize filename by removing invalid characters
-     */
-    private static String sanitizeFilename(String filename) {
-        if (filename == null) {
-            return "null";
-        }
-        return filename
-                .replaceAll("[^a-zA-Z0-9.-]", "_")
-                .replaceAll("_+", "_")
-                .substring(0, Math.min(filename.length(), 50)); // Limit length
-    }
 
     /**
      * Click bet button using Playwright locator (more reliable than JavaScript click)

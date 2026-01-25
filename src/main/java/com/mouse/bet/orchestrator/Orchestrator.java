@@ -76,7 +76,7 @@ public class Orchestrator {
     @Value("${sporty.poll.interval.ms:1000}")
     private long pollIntervalMs;
 
-    @Value("${arb.leg.max.retries:2}")
+    @Value("${arb.leg.max.retries:1}")
     private int maxRetries;
 
     @Value("${arb.leg.retry.backoff.seconds:3}")
