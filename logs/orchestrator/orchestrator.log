@@ -306,3 +306,5 @@ java.lang.NullPointerException: Cannot invoke "org.hibernate.engine.spi.EntityEn
 2026-01-18 01:13:07.655 [arb-orchestrator] INFO  c.m.bet.orchestrator.Orchestrator - ✅ ======== Completed ArbitrageOpportunity ========
 2026-01-18 01:13:07.655 [arb-orchestrator] INFO  c.m.bet.orchestrator.Orchestrator - ℹ️ ArbId: 34 | FinalStatus: FAILED
 2026-01-18 01:13:07.655 [arb-orchestrator] DEBUG c.m.bet.orchestrator.Orchestrator - ℹ️ Human delay | DurationMs: 22954
+2026-01-25 16:58:00.511 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: 1xBet | QueueCapacity: 2147483647
+2026-01-25 16:58:00.511 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: 1xBet | TotalRegisteredWorkers: 1

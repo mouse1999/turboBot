@@ -3,6 +3,7 @@ package com.mouse.bet.window;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.LoadState;
+import com.microsoft.playwright.options.WaitUntilState;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Paths;
@@ -11,602 +12,568 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class OneXBetLoginTest {
 
-    private static final String ONEXBET_URL = "https://1xbet.com";
-    private static final boolean HEADLESS = false;
-    private static final int SLOW_MO = 50;
+    private static final String EMOJI_NAVIGATION = "🧭";
+    private static final String EMOJI_SUCCESS = "✅";
+    private static final String EMOJI_ERROR = "❌";
+    private static final String EMOJI_WARNING = "⚠️";
+    private static final String EMOJI_START = "▶️";
+    private static final String EMOJI_BET = "🎯";
+    private static final String EMOJI_SEARCH = "🔍";
+    private static final String EMOJI_GAME = "🎮";
+    private static final String EMOJI_CLOCK = "⏰";
+    private static final String EMOJI_HEALTH = "💚";
 
-    public static void main(String[] args) {
-        testLogin();
-    }
 
-    /**
-     * Test the login functionality
-     */
-    public static void testLogin() {
-        String username = System.getenv("ONEXBET_USERNAME");
-        String password = System.getenv("ONEXBET_PASSWORD");
-
-        if (username == null || password == null) {
-            System.err.println("❌ Please set ONEXBET_USERNAME and ONEXBET_PASSWORD environment variables");
-            System.out.println("💡 Example: export ONEXBET_USERNAME=your_username");
-            System.out.println("💡 Example: export ONEXBET_PASSWORD=your_password");
-
-            username = "kufreedwarde26@gmail.com";
-            password = "Victor?!$#070";
-            System.out.println("⚠️ Using default test credentials (will likely fail)");
-        }
-
-        System.out.println("\n🚀 Starting 1xBet Login Test");
-        System.out.println("📝 Username: " + username);
-        System.out.println("🔑 Password: " + password.substring(0, Math.min(4, password.length())) + "********");
-
-        Playwright playwright = null;
-        Browser browser = null;
-        BrowserContext context = null;
-        Page page = null;
+    public static void detectOutcomeCoordinates(Page page, String gameUrl) {
+        log.info("{} {} === OUTCOME COORDINATE DETECTOR ===", EMOJI_GAME, EMOJI_SEARCH);
 
         try {
-            System.out.println("\n🎭 Launching Playwright...");
-            playwright = Playwright.create();
+            // Navigate to the specific game page
+            log.info("{} {} Navigating to: {}", EMOJI_NAVIGATION, EMOJI_GAME, gameUrl);
+            page.navigate(gameUrl, new Page.NavigateOptions()
+                    .setTimeout(60000)
+                    .setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
 
-            System.out.println("🌐 Launching browser...");
-            browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setHeadless(HEADLESS)
-                    .setSlowMo(SLOW_MO)
-                    .setArgs(java.util.Arrays.asList(
-                            "--start-maximized",
-                            "--window-size=2560,1440",
-                            "--force-device-scale-factor=1",
-                            "--disable-blink-features=AutomationControlled"
-                    ))
-            );
+            Thread.sleep(3000); // Wait for page to fully load
 
-            System.out.println("📄 Creating browser context...");
-            context = browser.newContext(new Browser.NewContextOptions()
-                    .setViewportSize(1920, 1080)
-                    .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-                    .setLocale("en-US")
-                    .setTimezoneId("America/New_York")
-            );
+            // Find the canvas
+            var canvas = page.locator("canvas.market-grid-canvas__canvas").first();
 
-            System.out.println("📃 Creating new page...");
-            page = context.newPage();
-
-            System.out.println("🌍 Navigating to " + ONEXBET_URL + "...");
-            page.navigate(ONEXBET_URL, new Page.NavigateOptions().setTimeout(30000));
-            System.out.println("✅ Page loaded successfully");
-
-            // Wait for DOM to be ready (don't use NETWORKIDLE - it times out on betting sites)
-            page.waitForLoadState(LoadState.DOMCONTENTLOADED);
-            Thread.sleep(4000); // Wait for Vue to render
-
-            System.out.println("\n🔍 Checking login status...");
-            boolean alreadyLoggedIn = checkIfLoggedIn(page);
-
-            if (alreadyLoggedIn) {
-                System.out.println("✅ Already logged in!");
+            if (!canvas.isVisible()) {
+                log.error("{} {} Canvas not found!", EMOJI_ERROR, EMOJI_BET);
                 return;
             }
 
-            System.out.println("\n🔐 Attempting login...");
-            boolean loginSuccess = performLogin(page, username, password);
+            var canvasBox = canvas.boundingBox();
+            log.info("=== CANVAS DIMENSIONS ===");
+            log.info("Canvas X: {}", canvasBox.x);
+            log.info("Canvas Y: {}", canvasBox.y);
+            log.info("Canvas Width: {}", canvasBox.width);
+            log.info("Canvas Height: {}", canvasBox.height);
 
-            if (loginSuccess) {
-                System.out.println("\n==================================================");
-                System.out.println("✅✅✅ LOGIN TEST PASSED ✅✅✅");
-                System.out.println("🎉 Successfully logged in to 1xBet");
-                System.out.println("==================================================\n");
+            // Find market search input and search for common markets
+            String[] testMarkets = {"Match Winner", "1X2", "Total", "Handicap", "Double Chance"};
 
-                takeScreenshot(page, "login_success.png");
+            for (String marketName : testMarkets) {
+                log.info("\n{} {} === Testing Market: '{}' ===", EMOJI_SEARCH, EMOJI_BET, marketName);
 
-                System.out.println("⏳ Keeping browser open for 5 seconds...");
-                Thread.sleep(5000);
+                try {
+                    // Search for market
+                    var searchInput = page.locator("input.ui-search-default__input[placeholder='Search by market']");
+                    if (searchInput.isVisible()) {
+                        searchInput.click();
+                        Thread.sleep(300);
+                        searchInput.fill(marketName);
+                        Thread.sleep(1500);
 
-            } else {
-                System.err.println("\n==================================================");
-                System.err.println("❌❌❌ LOGIN TEST FAILED ❌❌❌");
-                System.err.println("❌ Failed to log in to 1xBet");
-                System.err.println("==================================================\n");
+                        // Find the market element
+                        var marketElement = findMarketElementAfterSearch(page, marketName);
 
-                takeScreenshot(page, "login_failure.png");
+                        if (marketElement != null && marketElement.isVisible()) {
+                            marketElement.scrollIntoViewIfNeeded();
+                            Thread.sleep(500);
 
-                System.out.println("⏳ Keeping browser open for 10 seconds for investigation...");
-                Thread.sleep(10000);
+                            var marketBox = marketElement.boundingBox();
+                            log.info("Market '{}' found at:", marketName);
+                            log.info("  Market X: {}", marketBox.x);
+                            log.info("  Market Y: {}", marketBox.y);
+                            log.info("  Market Width: {}", marketBox.width);
+                            log.info("  Market Height: {}", marketBox.height);
+
+                            double rowY = marketBox.y + (marketBox.height / 2);
+
+                            // Test different X positions across the row
+                            log.info("\n  Testing outcome positions (Y = {}):", rowY);
+
+                            // Scan across the canvas width to find clickable areas
+                            detectClickableAreas(page, canvasBox, rowY);
+
+                        } else {
+                            log.warn("Market '{}' not found", marketName);
+                        }
+
+                        // Clear search
+                        searchInput.fill("");
+                        Thread.sleep(500);
+                    }
+
+                } catch (Exception e) {
+                    log.error("Error testing market '{}': {}", marketName, e.getMessage());
+                }
             }
+
+            // Take a screenshot for reference
+            page.screenshot(new Page.ScreenshotOptions()
+                    .setPath(Paths.get("outcome_detection.png"))
+                    .setFullPage(true));
+            log.info("{} {} Screenshot saved to: outcome_detection.png", EMOJI_SUCCESS, EMOJI_GAME);
 
         } catch (Exception e) {
-            System.err.println("\n❌ Test failed with exception: " + e.getMessage());
-            e.printStackTrace();
-
-            if (page != null) {
-                takeScreenshot(page, "login_error.png");
-            }
-
-        } finally {
-            cleanup(page, context, browser, playwright);
+            log.error("{} {} Error during coordinate detection: {}", EMOJI_ERROR, EMOJI_GAME, e.getMessage(), e);
         }
     }
 
-    /**
-     * Check if user is already logged in
-     */
-    private static boolean checkIfLoggedIn(Page page) {
-        try {
-            System.out.println("🔍 Checking if already logged in...");
-
-            Locator loginButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Log in"));
+    private static void detectClickableAreas(Page page, com.microsoft.playwright.options.BoundingBox canvasBox, double rowY) {
+        // Scan across canvas in 5% increments
+        for (int percentile = 50; percentile <= 100; percentile += 5) {
+            double xPosition = canvasBox.x + (canvasBox.width * (percentile / 100.0));
 
             try {
-                boolean isVisible = loginButton.isVisible(new Locator.IsVisibleOptions().setTimeout(3000));
+                // Move mouse to position
+                page.mouse().move(xPosition, rowY);
+                Thread.sleep(100);
 
-                if (isVisible) {
-                    System.out.println("❌ User is NOT logged in - Login button is visible");
-                    return false;
+                // Check cursor style (pointer = clickable)
+                String cursorStyle = (String) page.evaluate(
+                        String.format("() => window.getComputedStyle(document.elementFromPoint(%f, %f)).cursor",
+                                xPosition, rowY)
+                );
+
+                // Get element at position
+                String elementInfo = (String) page.evaluate(
+                        String.format("() => { " +
+                                "const el = document.elementFromPoint(%f, %f); " +
+                                "return el ? el.tagName + ' ' + (el.className || '') : 'none'; " +
+                                "}", xPosition, rowY)
+                );
+
+                // Check if background color changes (might indicate hover state)
+                String bgColor = (String) page.evaluate(
+                        String.format("() => window.getComputedStyle(document.elementFromPoint(%f, %f)).backgroundColor",
+                                xPosition, rowY)
+                );
+
+                boolean isClickable = "pointer".equals(cursorStyle);
+
+                if (isClickable) {
+                    log.info("  {}% ({}) - CLICKABLE! Cursor: {}, Element: {}, BG: {}",
+                            percentile, xPosition, cursorStyle, elementInfo, bgColor);
                 } else {
-                    System.out.println("✅ User is logged in - Login button is not visible");
+                    log.debug("  {}% ({}) - Cursor: {}, Element: {}",
+                            percentile, xPosition, cursorStyle, elementInfo);
+                }
+
+            } catch (Exception e) {
+                log.debug("  Error at {}%: {}", percentile, e.getMessage());
+            }
+        }
+    }
+
+    // Enhanced version that clicks and shows what happens
+    public static void interactiveOutcomeDetection(Page page, String gameUrl) {
+        log.info("{} {} === INTERACTIVE OUTCOME DETECTOR ===", EMOJI_GAME, EMOJI_SEARCH);
+
+        try {
+            page.navigate(gameUrl, new Page.NavigateOptions()
+                    .setTimeout(60000)
+                    .setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
+
+            Thread.sleep(3000);
+
+            var canvas = page.locator("canvas.market-grid-canvas__canvas").first();
+            var canvasBox = canvas.boundingBox();
+
+            // Search for "Match Winner" or "1X2"
+            var searchInput = page.locator("input.ui-search-default__input[placeholder='Search by market']");
+            searchInput.click();
+            Thread.sleep(300);
+            searchInput.fill("Match Winner");
+            Thread.sleep(1500);
+
+            var marketElement = findMarketElementAfterSearch(page, "Both Teams To Score");
+
+            if (marketElement == null) {
+                // Try alternate market name
+                searchInput.fill("1X2");
+                Thread.sleep(1500);
+                marketElement = findMarketElementAfterSearch(page, "1X2");
+            }
+
+            if (marketElement != null) {
+                marketElement.scrollIntoViewIfNeeded();
+                Thread.sleep(500);
+
+                var marketBox = marketElement.boundingBox();
+                double rowY = marketBox.y + (marketBox.height / 2);
+
+                log.info("\n=== TESTING OUTCOME CLICKS ===");
+                log.info("Market Y position: {}", rowY);
+                log.info("Canvas: X={}, Width={}", canvasBox.x, canvasBox.width);
+
+                // Test positions for outcomes 1, X, 2
+                double[] testOffsets = {0.70, 0.75, 0.80, 0.85, 0.90, 0.95};
+                String[] outcomeLabels = {"Potential 1", "Potential X", "Potential 2"};
+
+                for (int i = 0; i < testOffsets.length; i++) {
+                    double xPosition = canvasBox.x + (canvasBox.width * testOffsets[i]);
+
+                    log.info("\n--- Testing {}% offset (X={}) ---", (int)(testOffsets[i] * 100), xPosition);
+
+                    // Count current betslip items before click
+                    int betslipCountBefore = getBetslipCount(page);
+
+                    // Move and click
+                    page.mouse().move(xPosition, rowY);
+                    Thread.sleep(300);
+                    page.mouse().click(xPosition, rowY);
+                    Thread.sleep(1500);
+
+                    // Check if betslip changed
+                    int betslipCountAfter = getBetslipCount(page);
+
+                    if (betslipCountAfter > betslipCountBefore) {
+                        log.info("✅ SUCCESS! Bet added at {}% offset!", (int)(testOffsets[i] * 100));
+                        log.info("   Betslip count: {} -> {}", betslipCountBefore, betslipCountAfter);
+
+                        // Try to get the bet details from betslip
+                        String betDetails = getBetslipDetails(page);
+                        log.info("   Bet details: {}", betDetails);
+
+                        // Remove bet to continue testing
+                        removeBetFromSlip(page);
+                        Thread.sleep(1000);
+                    } else {
+                        log.info("❌ No bet added at {}% offset", (int)(testOffsets[i] * 100));
+                    }
+                }
+            }
+
+            searchInput.fill("");
+
+            // Take final screenshot
+            page.screenshot(new Page.ScreenshotOptions()
+                    .setPath(Paths.get("interactive_outcome_detection.png"))
+                    .setFullPage(true));
+
+            log.info("\n{} {} Detection complete! Check interactive_outcome_detection.png",
+                    EMOJI_SUCCESS, EMOJI_GAME);
+
+        } catch (Exception e) {
+            log.error("{} {} Error: {}", EMOJI_ERROR, EMOJI_GAME, e.getMessage(), e);
+        }
+    }
+
+    private static int getBetslipCount(Page page) {
+        try {
+            var countSelectors = new String[]{
+                    "[class*='betslip-count']",
+                    "[class*='coupon-count']",
+                    "[class*='bet-count']",
+                    "[class*='cart-count']"
+            };
+
+            for (String selector : countSelectors) {
+                var element = page.locator(selector);
+                if (element.count() > 0 && element.first().isVisible()) {
+                    String text = element.first().textContent().trim();
+                    if (!text.isEmpty() && text.matches("\\d+")) {
+                        return Integer.parseInt(text);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return 0;
+    }
+
+    private static String getBetslipDetails(Page page) {
+        try {
+            var betslip = page.locator("[class*='betslip'], [class*='coupon']").first();
+            if (betslip.isVisible()) {
+                return betslip.textContent().substring(0, Math.min(100, betslip.textContent().length()));
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return "Could not retrieve betslip details";
+    }
+
+    private static void removeBetFromSlip(Page page) {
+        try {
+            // Try to find and click remove/close button
+            var removeButtons = page.locator(
+                    "[class*='remove'], [class*='delete'], [class*='close'], " +
+                            "[aria-label*='remove'], [aria-label*='delete']"
+            );
+
+            for (int i = 0; i < Math.min(5, removeButtons.count()); i++) {
+                var btn = removeButtons.nth(i);
+                if (btn.isVisible()) {
+                    btn.click();
+                    Thread.sleep(500);
+                    return;
+                }
+            }
+
+            // Alternative: clear all bets button
+            var clearAll = page.locator("text=/clear all/i, text=/remove all/i");
+            if (clearAll.count() > 0) {
+                clearAll.first().click();
+            }
+
+        } catch (Exception e) {
+            log.debug("Could not remove bet: {}", e.getMessage());
+        }
+    }
+
+
+    public static boolean clickOutcomeByMarketSearch(Page page, String marketName, String outcome) {
+        log.info("{} {} Searching for market: '{}' with outcome: '{}'",
+                EMOJI_SEARCH, EMOJI_BET, marketName, outcome);
+
+        try {
+            // Step 1: Find and click the market search input
+            var searchInput = page.locator("input.ui-search-default__input[placeholder='Search by market']");
+
+            if (!searchInput.isVisible(new com.microsoft.playwright.Locator.IsVisibleOptions().setTimeout(5000))) {
+                log.error("{} {} Market search input not visible", EMOJI_ERROR, EMOJI_SEARCH);
+                return false;
+            }
+
+            // Step 2: Clear any existing search text
+            searchInput.click();
+            Thread.sleep(300);
+            searchInput.fill("");
+            Thread.sleep(300);
+
+            // Step 3: Type the market name
+            log.info("{} {} Typing market name: '{}'", EMOJI_SEARCH, EMOJI_BET, marketName);
+            searchInput.fill(marketName);
+            Thread.sleep(1000); // Wait for search results to filter
+
+            // Step 4: Find the market element (it should now be visible/highlighted)
+            var marketElement = findMarketElementAfterSearch(page, marketName);
+
+            if (marketElement == null) {
+                log.error("{} {} Market '{}' not found after search", EMOJI_ERROR, EMOJI_BET, marketName);
+                // Clear search to restore view
+                searchInput.fill("");
+                return false;
+            }
+
+            // Step 5: Get market position
+            marketElement.scrollIntoViewIfNeeded();
+            Thread.sleep(500);
+
+            var marketBox = marketElement.boundingBox();
+            if (marketBox == null) {
+                log.error("{} {} Could not get market bounding box", EMOJI_ERROR, EMOJI_BET);
+                searchInput.fill("");
+                return false;
+            }
+
+            log.info("{} {} Found market at position: ({}, {})",
+                    EMOJI_SUCCESS, EMOJI_SEARCH, marketBox.x, marketBox.y);
+
+            // Step 6: Get canvas and calculate click position
+            var canvas = page.locator("canvas.market-grid-canvas__canvas").first();
+            var canvasBox = canvas.boundingBox();
+
+            if (canvasBox == null) {
+                log.error("{} {} Canvas not found", EMOJI_ERROR, EMOJI_BET);
+                searchInput.fill("");
+                return false;
+            }
+
+            // Calculate outcome position
+            double clickX = calculateOutcomeXPosition(canvasBox, outcome);
+            double clickY = marketBox.y + (marketBox.height / 2);
+
+            log.info("{} {} Clicking outcome '{}' at coordinates: ({}, {})",
+                    EMOJI_BET, EMOJI_GAME, outcome, clickX, clickY);
+
+            // Step 7: Hover first to see if it highlights (optional but helpful)
+            page.mouse().move(clickX, clickY);
+            Thread.sleep(300);
+
+            // Step 8: Click the outcome
+            page.mouse().click(clickX, clickY);
+            Thread.sleep(1000);
+
+            // Step 9: Clear the search to restore full market view
+            searchInput.fill("");
+            Thread.sleep(500);
+
+            // Step 10: Verify bet was added
+            if (verifyBetAddedToSlip(page, marketName, outcome)) {
+                log.info("{} {} Successfully added '{}' from '{}' to betslip",
+                        EMOJI_SUCCESS, EMOJI_BET, outcome, marketName);
+                return true;
+            } else {
+                log.warn("{} {} Clicked but bet may not have been added to betslip",
+                        EMOJI_WARNING, EMOJI_BET);
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("{} {} Failed to click outcome via market search: {}",
+                    EMOJI_ERROR, EMOJI_BET, e.getMessage(), e);
+
+            // Clean up: clear search on error
+            try {
+                page.locator("input.ui-search-default__input[placeholder='Search by market']").fill("");
+            } catch (Exception cleanupError) {
+                // Ignore cleanup errors
+            }
+
+            return false;
+        }
+    }
+
+    private static Locator findMarketElementAfterSearch(Page page, String marketName) {
+        try {
+            // After searching, the market should be visible
+            // Try to find it by exact text match first
+            var exactMatch = page.locator(String.format("text='%s'", marketName)).first();
+            if (exactMatch.isVisible(new com.microsoft.playwright.Locator.IsVisibleOptions().setTimeout(2000))) {
+                return exactMatch;
+            }
+
+            // Try partial match
+            var partialMatch = page.locator(String.format("text=/%s/i", marketName)).first();
+            if (partialMatch.isVisible(new com.microsoft.playwright.Locator.IsVisibleOptions().setTimeout(2000))) {
+                return partialMatch;
+            }
+
+            // Try finding in common market name containers
+            var marketContainers = page.locator("[class*='market'], [class*='caption'], span, div").all();
+            for (var container : marketContainers) {
+                try {
+                    String text = container.textContent().trim();
+                    if (text.equalsIgnoreCase(marketName) || text.contains(marketName)) {
+                        if (container.isVisible()) {
+                            return container;
+                        }
+                    }
+                } catch (Exception e) {
+                    // Skip this element
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("{} {} Error finding market after search: {}",
+                    EMOJI_ERROR, EMOJI_SEARCH, e.getMessage());
+        }
+
+        return null;
+    }
+
+    private static double calculateOutcomeXPosition(com.microsoft.playwright.options.BoundingBox canvasBox, String outcome) {
+        // 1xBet typically displays outcomes in columns on the right side of the canvas
+        // Typical layout from left to right: [Market Names] [Outcome 1] [Outcome X] [Outcome 2]
+
+        double canvasLeft = canvasBox.x;
+        double canvasWidth = canvasBox.width;
+
+        // Outcomes typically start around 65-70% of canvas width
+        // Each outcome column is roughly 10% of canvas width
+        double outcomeAreaStart = canvasLeft + (canvasWidth * 0.68);
+        double columnWidth = canvasWidth * 0.10;
+
+        String outcomeUpper = outcome.toUpperCase();
+
+        // First outcome column (Home/1/Over/Yes)
+        if (outcomeUpper.equals("1") ||
+                outcomeUpper.equals("HOME") ||
+                outcomeUpper.equals("OVER") ||
+                outcomeUpper.equals("YES")) {
+            return outcomeAreaStart + (columnWidth * 0.5);
+        }
+
+        // Second outcome column (Draw/X)
+        else if (outcomeUpper.equals("X") ||
+                outcomeUpper.equals("DRAW")) {
+            return outcomeAreaStart + columnWidth + (columnWidth * 0.5);
+        }
+
+        // Third outcome column (Away/2/Under/No)
+        else if (outcomeUpper.equals("2") ||
+                outcomeUpper.equals("AWAY") ||
+                outcomeUpper.equals("UNDER") ||
+                outcomeUpper.equals("NO")) {
+            return outcomeAreaStart + (columnWidth * 2) + (columnWidth * 0.5);
+        }
+
+        // For handicap values like "1.5", "2.5", etc.
+        else if (outcome.matches("\\d+\\.\\d+")) {
+            // These are typically in the first or second column
+            return outcomeAreaStart + (columnWidth * 0.5);
+        }
+
+        // Default to first outcome column
+        log.warn("{} {} Unknown outcome type '{}', using default position",
+                EMOJI_WARNING, EMOJI_BET, outcome);
+        return outcomeAreaStart + (columnWidth * 0.5);
+    }
+
+    private static boolean verifyBetAddedToSlip(Page page, String marketName, String outcome) {
+        try {
+            Thread.sleep(800); // Wait for betslip animation
+
+            // Check various betslip indicators
+            var betslipIndicators = new String[]{
+                    "[class*='betslip-count']:visible",
+                    "[class*='coupon-count']:visible",
+                    "[class*='bet-count']:visible",
+                    "[class*='cart-count']:visible"
+            };
+
+            for (String selector : betslipIndicators) {
+                try {
+                    var indicator = page.locator(selector);
+                    if (indicator.count() > 0) {
+                        String count = indicator.first().textContent();
+                        if (count != null && !count.trim().isEmpty() && !count.equals("0")) {
+                            log.info("{} {} Betslip count detected: {}",
+                                    EMOJI_SUCCESS, EMOJI_BET, count);
+                            return true;
+                        }
+                    }
+                } catch (Exception e) {
+                    // Try next indicator
+                }
+            }
+
+            // Check if betslip panel/drawer is visible
+            var betslipPanel = page.locator("[class*='betslip'], [class*='coupon'], [class*='bet-slip']");
+            if (betslipPanel.count() > 0) {
+                var firstPanel = betslipPanel.first();
+                if (firstPanel.isVisible()) {
+                    log.info("{} {} Betslip panel is visible", EMOJI_SUCCESS, EMOJI_BET);
                     return true;
                 }
-            } catch (Exception e) {
-                System.out.println("✅ User appears to be logged in - No login button found");
-                return true;
             }
 
+            log.warn("{} {} Could not verify bet addition", EMOJI_WARNING, EMOJI_BET);
+            return false;
+
         } catch (Exception e) {
-            System.err.println("❌ Error checking login status: " + e.getMessage());
+            log.error("{} {} Error verifying bet addition: {}",
+                    EMOJI_ERROR, EMOJI_BET, e.getMessage());
             return false;
         }
     }
 
-    /**
-     * Perform login
-     */
-    private static boolean performLogin(Page page, String username, String password) {
-        try {
-            System.out.println("\n==================================================");
-            System.out.println("🔐 Starting 1xBet login process...");
-            System.out.println("==================================================");
 
-            if (checkIfLoggedIn(page)) {
-                System.out.println("✅ Already logged in - skipping login");
-                return true;
-            }
+    public static void main(String[] args) {
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
+                    .setHeadless(false)  // Set to false to see what's happening
+                    .setSlowMo(500));    // Slow down actions
 
-            // Find login button
-            System.out.println("\n📱 Looking for login button...");
-            System.out.println("--------------------------------------------------");
+            Page page = browser.newPage();
 
-            Locator loginButton = null;
+            // Run the interactive detector
+            interactiveOutcomeDetection(page,
+                    "https://1xbet.ng/en/live/football/12821-france-ligue-1/690026914-paris-angers-sco");
 
-            // Strategy 1: By role and name
-            try {
-                System.out.println("🔍 Strategy 1: Finding by role and name 'Log in'...");
-                loginButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Log in"));
+            // Keep browser open to review results
+            Thread.sleep(10000);
 
-                int count = loginButton.count();
-                System.out.println("   Found " + count + " button(s) with role and name 'Log in'");
-
-                if (count > 0 && loginButton.first().isVisible()) {
-                    System.out.println("   ✅ Login button found via role+name strategy");
-                } else {
-                    System.out.println("   ⚠️ Button found but not visible");
-                    loginButton = null;
-                }
-            } catch (Exception e) {
-                System.out.println("   ❌ Strategy 1 failed: " + e.getMessage());
-                loginButton = null;
-            }
-
-            // Strategy 2: By text content
-            if (loginButton == null) {
-                try {
-                    System.out.println("🔍 Strategy 2: Finding by text 'Log in'...");
-                    loginButton = page.getByText("Log in", new Page.GetByTextOptions().setExact(true));
-
-                    int count = loginButton.count();
-                    System.out.println("   Found " + count + " element(s) with exact text 'Log in'");
-
-                    if (count > 0) {
-                        loginButton = loginButton.locator("xpath=ancestor-or-self::button").first();
-
-                        if (loginButton.isVisible()) {
-                            System.out.println("   ✅ Login button found via text strategy");
-                        } else {
-                            System.out.println("   ⚠️ Element found but not a visible button");
-                            loginButton = null;
-                        }
-                    } else {
-                        loginButton = null;
-                    }
-                } catch (Exception e) {
-                    System.out.println("   ❌ Strategy 2 failed: " + e.getMessage());
-                    loginButton = null;
-                }
-            }
-
-            // Strategy 3: By class name
-            if (loginButton == null) {
-                try {
-                    System.out.println("🔍 Strategy 3: Finding by class 'auth-dropdown-trigger'...");
-                    loginButton = page.locator("button.auth-dropdown-trigger");
-
-                    int count = loginButton.count();
-                    System.out.println("   Found " + count + " button(s) with class 'auth-dropdown-trigger'");
-
-                    if (count > 0 && loginButton.first().isVisible()) {
-                        loginButton = loginButton.first();
-                        System.out.println("   ✅ Login button found via class strategy");
-                    } else {
-                        System.out.println("   ⚠️ Button found but not visible");
-                        loginButton = null;
-                    }
-                } catch (Exception e) {
-                    System.out.println("   ❌ Strategy 3 failed: " + e.getMessage());
-                    loginButton = null;
-                }
-            }
-
-            // Strategy 4: Find all buttons and check text
-            if (loginButton == null) {
-                try {
-                    System.out.println("🔍 Strategy 4: Checking all buttons for 'Log in' text...");
-                    Locator allButtons = page.locator("button");
-
-                    int totalButtons = allButtons.count();
-                    System.out.println("   Total buttons on page: " + totalButtons);
-
-                    System.out.println("   Checking button texts:");
-                    for (int i = 0; i < totalButtons; i++) {
-                        Locator button = allButtons.nth(i);
-                        String buttonText = button.textContent();
-
-                        if (i < 10) {
-                            System.out.println("   Button " + i + ": text='" + (buttonText != null ? buttonText.trim() : "null") + "'");
-                        }
-
-                        if (buttonText != null && buttonText.trim().equals("Log in")) {
-                            if (button.isVisible()) {
-                                loginButton = button;
-                                System.out.println("   ✅ Login button found at index " + i + " via all-buttons strategy");
-                                break;
-                            }
-                        }
-                    }
-
-                    if (loginButton == null) {
-                        System.err.println("   ❌ Login button not found in " + totalButtons + " buttons");
-
-                        try {
-                            page.screenshot(new Page.ScreenshotOptions()
-                                    .setPath(Paths.get("debug_no_login_button.png"))
-                                    .setFullPage(true));
-                            System.out.println("   📸 Screenshot saved: debug_no_login_button.png");
-                        } catch (Exception ex) {
-                            System.out.println("   ⚠️ Could not save screenshot: " + ex.getMessage());
-                        }
-
-                        return false;
-                    }
-                } catch (Exception e) {
-                    System.err.println("   ❌ Strategy 4 failed: " + e.getMessage());
-                    e.printStackTrace();
-                    return false;
-                }
-            }
-
-            // Click login button
-            System.out.println("\n📱 Clicking login button...");
-            System.out.println("--------------------------------------------------");
-
-            try {
-                loginButton.scrollIntoViewIfNeeded();
-                sleepRandom(300, 500);
-
-                String buttonClass = loginButton.getAttribute("class");
-                System.out.println("   Button class: " + buttonClass);
-
-                loginButton.click();
-                System.out.println("   ✅ Login button clicked successfully");
-
-            } catch (Exception e) {
-                System.err.println("   ❌ Failed to click login button: " + e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
-
-            System.out.println("   ⏳ Waiting for dropdown to appear...");
-            sleepRandom(2500, 3500);
-
-            // Find username field
-            System.out.println("\n📝 Looking for username field...");
-            System.out.println("--------------------------------------------------");
-
-            Locator usernameField = null;
-
-            String[] usernameSelectors = {
-                    "input#username",
-                    "input[placeholder*='mail' i]",
-                    "input[placeholder*='ID' i]",
-                    "input[type='text'][id*='username' i]",
-                    "input[type='text']"
-            };
-
-            for (String selector : usernameSelectors) {
-                try {
-                    System.out.println("   🔍 Trying username selector: " + selector);
-                    Locator field = page.locator(selector).first();
-
-                    if (field.isVisible(new Locator.IsVisibleOptions().setTimeout(2000))) {
-                        usernameField = field;
-                        System.out.println("   ✅ Username field found with selector: " + selector);
-                        break;
-                    } else {
-                        System.out.println("   ⚠️ Field found but not visible");
-                    }
-                } catch (Exception e) {
-                    System.out.println("   ⚠️ Selector '" + selector + "' not found or not visible");
-                }
-            }
-
-            if (usernameField == null) {
-                System.err.println("   ❌ Username field not found");
-
-                try {
-                    Locator allInputs = page.locator("input");
-                    int inputCount = allInputs.count();
-                    System.out.println("   📊 Total inputs on page: " + inputCount);
-
-                    System.out.println("   Input details:");
-                    for (int i = 0; i < Math.min(inputCount, 10); i++) {
-                        Locator input = allInputs.nth(i);
-                        String id = input.getAttribute("id");
-                        String placeholder = input.getAttribute("placeholder");
-                        String type = input.getAttribute("type");
-                        boolean visible = input.isVisible();
-
-                        System.out.println("   Input " + i + ": id='" + id + "', placeholder='" + placeholder +
-                                "', type='" + type + "', visible=" + visible);
-                    }
-                } catch (Exception e) {
-                    System.err.println("   ❌ Could not debug inputs: " + e.getMessage());
-                }
-
-                return false;
-            }
-
-            // Type username
-            System.out.println("\n✍️ Typing username...");
-            try {
-                usernameField.scrollIntoViewIfNeeded();
-                usernameField.click();
-                usernameField.fill(username);
-                System.out.println("   ✅ Username entered: " + username);
-            } catch (Exception e) {
-                System.err.println("   ❌ Failed to type username: " + e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
-
-            sleepRandom(600, 1200);
-
-            // Find password field
-            System.out.println("\n🔑 Looking for password field...");
-            System.out.println("--------------------------------------------------");
-
-            Locator passwordField = null;
-
-            String[] passwordSelectors = {
-                    "input#username-password",
-                    "input[type='password']",
-                    "input[placeholder*='password' i]"
-            };
-
-            for (String selector : passwordSelectors) {
-                try {
-                    System.out.println("   🔍 Trying password selector: " + selector);
-                    Locator field = page.locator(selector).first();
-
-                    if (field.isVisible(new Locator.IsVisibleOptions().setTimeout(2000))) {
-                        passwordField = field;
-                        System.out.println("   ✅ Password field found with selector: " + selector);
-                        break;
-                    } else {
-                        System.out.println("   ⚠️ Field found but not visible");
-                    }
-                } catch (Exception e) {
-                    System.out.println("   ⚠️ Selector '" + selector + "' not found or not visible");
-                }
-            }
-
-            if (passwordField == null) {
-                System.err.println("   ❌ Password field not found");
-                return false;
-            }
-
-            // Type password
-            System.out.println("\n✍️ Typing password...");
-            try {
-                passwordField.scrollIntoViewIfNeeded();
-                passwordField.click();
-                passwordField.fill(password);
-                System.out.println("   ✅ Password entered (hidden for security)");
-            } catch (Exception e) {
-                System.err.println("   ❌ Failed to type password: " + e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
-
-            sleepRandom(1000, 1500);
-
-            // Find submit button
-            System.out.println("\n🚀 Looking for submit button...");
-            System.out.println("--------------------------------------------------");
-
-            Locator submitButton = null;
-
-            try {
-                System.out.println("   🔍 Looking for button with type='submit'...");
-                submitButton = page.locator("button[type='submit']").first();
-
-                if (submitButton.isVisible(new Locator.IsVisibleOptions().setTimeout(2000))) {
-                    System.out.println("   ✅ Submit button found (type=submit)");
-                } else {
-                    System.out.println("   ⚠️ Submit button found but not visible");
-                    submitButton = null;
-                }
-            } catch (Exception e) {
-                System.out.println("   ⚠️ Submit button with type=submit not found");
-                submitButton = null;
-            }
-
-            if (submitButton == null) {
-                try {
-                    System.out.println("   🔍 Looking for buttons inside forms...");
-                    Locator formButtons = page.locator("form button");
-                    int count = formButtons.count();
-
-                    System.out.println("   Found " + count + " buttons inside forms");
-
-                    for (int i = 0; i < count; i++) {
-                        Locator btn = formButtons.nth(i);
-                        String text = btn.textContent();
-
-                        System.out.println("   Form button " + i + ": text='" + (text != null ? text.trim() : "null") + "'");
-
-                        if (text != null && (text.trim().equals("Log in") || text.trim().equals("LOGIN"))) {
-                            if (btn.isVisible()) {
-                                submitButton = btn;
-                                System.out.println("   ✅ Submit button found (text='" + text.trim() + "') at index " + i);
-                                break;
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println("   ⚠️ Could not find submit button in forms: " + e.getMessage());
-                }
-            }
-
-            if (submitButton == null) {
-                System.err.println("   ❌ Submit button not found");
-                return false;
-            }
-
-            // Click submit
-            System.out.println("\n🚀 Clicking submit button...");
-            try {
-                submitButton.scrollIntoViewIfNeeded();
-                sleepRandom(300, 500);
-                submitButton.click();
-                System.out.println("   ✅ Submit button clicked");
-            } catch (Exception e) {
-                System.err.println("   ❌ Failed to click submit: " + e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
-
-            System.out.println("\n⏳ Waiting for login to process...");
-            sleepRandom(5000, 7000);
-
-            // Verify login
-            System.out.println("\n🔍 Verifying login status...");
-            System.out.println("--------------------------------------------------");
-            boolean loggedIn = checkIfLoggedIn(page);
-
-            if (loggedIn) {
-                System.out.println("\n==================================================");
-                System.out.println("✅✅✅ LOGIN SUCCESSFUL! ✅✅✅");
-                System.out.println("==================================================\n");
-                return true;
-            } else {
-                System.err.println("\n==================================================");
-                System.err.println("❌ Login failed - still showing login button");
-                System.err.println("==================================================\n");
-
-                try {
-                    Locator errorMessages = page.locator(".error, .alert, [class*='error']");
-                    int errorCount = errorMessages.count();
-
-                    if (errorCount > 0) {
-                        System.out.println("⚠️ Found " + errorCount + " error message(s):");
-                        for (int i = 0; i < errorCount; i++) {
-                            Locator error = errorMessages.nth(i);
-                            if (error.isVisible()) {
-                                String errorText = error.textContent();
-                                System.err.println("   Error " + i + ": " + errorText);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println("⚠️ Could not check for errors: " + e.getMessage());
-                }
-
-                return false;
-            }
-
+            browser.close();
         } catch (Exception e) {
-            System.err.println("\n❌ Exception during login: " + e.getMessage());
             e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Take screenshot
-     */
-    private static void takeScreenshot(Page page, String filename) {
-        try {
-            page.screenshot(new Page.ScreenshotOptions()
-                    .setPath(Paths.get("screenshots", filename))
-                    .setFullPage(true)
-            );
-            System.out.println("📸 Screenshot saved: screenshots/" + filename);
-        } catch (Exception e) {
-            System.out.println("⚠️ Failed to take screenshot: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Cleanup resources
-     */
-    private static void cleanup(Page page, BrowserContext context, Browser browser, Playwright playwright) {
-        System.out.println("\n🧹 Cleaning up resources...");
-
-        try {
-            if (page != null) page.close();
-        } catch (Exception e) {
-            System.out.println("⚠️ Failed to close page: " + e.getMessage());
-        }
-
-        try {
-            if (context != null) context.close();
-        } catch (Exception e) {
-            System.out.println("⚠️ Failed to close context: " + e.getMessage());
-        }
-
-        try {
-            if (browser != null) browser.close();
-        } catch (Exception e) {
-            System.out.println("⚠️ Failed to close browser: " + e.getMessage());
-        }
-
-        try {
-            if (playwright != null) playwright.close();
-        } catch (Exception e) {
-            System.out.println("⚠️ Failed to close playwright: " + e.getMessage());
-        }
-
-        System.out.println("✅ Cleanup complete\n");
-    }
-
-    // Helper methods
-    private static int randomDelay(int min, int max) {
-        return ThreadLocalRandom.current().nextInt(min, max + 1);
-    }
-
-    private static void sleepRandom(int minMs, int maxMs) {
-        try {
-            Thread.sleep(randomDelay(minMs, maxMs));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
     }
 }

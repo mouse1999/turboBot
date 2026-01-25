@@ -204,7 +204,7 @@ public class OneWin implements BettingWindow, Runnable {
 //                .reordered(false)
 //                .initiator(true)
 //                .leagueName("NBA")
-//                .bookMakerUrl("https://1win.ng/betting/match/sport/ohio-state-buckeyes-vs-minnesota-golden-gophers-32316687")
+//                .bookMakerUrl("https://1xbet.ng/en/live/football/12821-france-ligue-1/690026914-paris-angers-sco")
 //                .build();
 //
 //

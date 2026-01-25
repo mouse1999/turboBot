@@ -159,7 +159,7 @@ public class OneXBet implements BettingWindow, Runnable {
             throw new RuntimeException("Playwright initialization failed", e);
         }
 
-//        run();
+        run();
     }
 
     // ========================================================================
@@ -197,6 +197,48 @@ public class OneXBet implements BettingWindow, Runnable {
             log.error("{} {} Error polling task: {}", EMOJI_ERROR, EMOJI_POLL, e.getMessage(), e);
             return null;
         }
+//
+//        ArbOutcome outcome1 = ArbOutcome.builder()
+//                .bookmakerId(1)
+//                .bookmakerName(BookMaker.MSPORT)
+//                .homeTeam("Putrajaya")
+//                .awayTeam("Perak")
+//                .marketType("Winner (incl. OT)")
+//                .outComeName("Ohio State Buckeyes")
+//                .odds(new BigDecimal(1.35))
+//                .previousOdds(new BigDecimal("2.10"))
+//                .stake(new BigDecimal("160"))
+//                .sport("Basketball")
+//                .progress("Not Started")
+//                .reordered(false)
+//                .initiator(true)
+//                .leagueName("NBA")
+//                .bookMakerUrl("https://1xbet.ng/en/live/football/12821-france-ligue-1/690026914-paris-angers-sco")
+//                .build();
+//
+//
+//        BetLeg betLeg = new BetLeg(
+//                outcome1.getBookmakerName(),                    // BookMaker.MSPORT
+//                outcome1.getBookmakerId(),                      // 1
+//                outcome1.getMarketType(),                       // "Point Handicap"
+//                outcome1.getOutComeName(),                      // "Home (-12.5)"
+//                outcome1.getBookMakerUrl(),                     // "https://www.msport.com/..."
+//                outcome1.getOdds().doubleValue(),               // 1.88
+//                outcome1.getOdds().doubleValue() * (1.874), // 1.874 (min)
+//                outcome1.getOdds().doubleValue() * (1.886), // 1.886 (max)
+//                outcome1.getStake().doubleValue(),              // 531.91
+//                outcome1.getLeagueName(),                       // "NBA"
+//                outcome1.getHomeTeam(),                         // "Test Lakers"
+//                outcome1.getAwayTeam(),                         // "Test Celtics"
+//                ""                            // "demo_arb_001"
+//        );
+//        Phaser phaser = new Phaser(1);
+//        return BetLegTask.builder()
+//                .betLeg(betLeg)
+//                .barrier(phaser)
+//                .bookmaker(BookMaker.MSPORT)
+//                .build();
+
     }
 
     // ========================================================================
@@ -1119,5 +1161,9 @@ public class OneXBet implements BettingWindow, Runnable {
         } catch (Exception e) {
             log.error("{} {} Error during shutdown: {}", EMOJI_ERROR, EMOJI_SHUTDOWN, e.getMessage(), e);
         }
+    }
+
+    public static void main(String[] args) {
+
     }
 }

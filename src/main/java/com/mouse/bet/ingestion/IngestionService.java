@@ -101,7 +101,7 @@ public class IngestionService {
     @Getter
     private int pollCount = 0;
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         log.info("{} {} Initializing IngestionService...", EMOJI_STARTUP, EMOJI_INFO);
 
