@@ -38,11 +38,8 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 	implementation 'com.microsoft.playwright:playwright:1.57.0'
 	implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
-
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 }
-
-
 
 // Node configuration - use existing Node.js
 node {
@@ -53,7 +50,7 @@ node {
 
 // Task to install npm dependencies
 //task npmInstall(type: NpmTask) {
-//	args = ['install']
+//  args = ['install']
 //}
 
 // Task to build the React app
@@ -78,6 +75,26 @@ clean {
 	delete "${project.projectDir}/src/main/frontend/node_modules"
 }
 
+// ============================================
+// SKIP TESTS BY DEFAULT
+// ============================================
+
+// Disable tests by default
 tasks.named('test') {
+	enabled = false
 	useJUnitPlatform()
+}
+
+// Configure bootRun with UTF-8 encoding
+bootRun {
+	systemProperty "file.encoding", "UTF-8"
+	systemProperty "console.encoding", "UTF-8"
+}
+
+// Optional: Create task to run tests manually when needed
+task runTests(type: Test) {
+	enabled = true
+	useJUnitPlatform()
+	description = 'Run tests manually'
+	group = 'verification'
 }

@@ -6,6 +6,7 @@ import com.microsoft.playwright.PlaywrightException;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.mouse.bet.enums.Sport;
+import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.orchestrator.model.BetLeg;
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,9 +70,48 @@ public class Bet9jaNavigationUtil {
             }
         }
     }
-    public static boolean navigateToGame(Page page, BetLeg betLeg) {
-        return false;
+    public static boolean navigateToGame(Page page, BettingTask task)  {
+        String home = task.homeTeam().trim();
+        String away = task.awayTeam().trim();
+        String fullMatch = home + " vs " + away;
 
+        log.info("{} Navigating to: {}", EMOJI_BET, fullMatch);
+
+        randomDelay(500, 1500);
+
+        if (!tryDirectNavigation(page, task)) {
+            log.info("Failed to navigate to game: {} " , fullMatch);
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean tryDirectNavigation(Page page, BettingTask task) {
+        log.info("🎯 Direct navigation to match using bookmaker URL");
+
+        try {
+            // Get the bookmaker URL from the task
+            String bookmakerUrl = task.bookmakerUrl();
+
+            if (bookmakerUrl == null || bookmakerUrl.isEmpty()) {
+                log.warn("⚠️ No bookmaker URL available in task");
+                return false;
+            }
+
+            log.info("📎 Navigating to: {}", bookmakerUrl);
+
+            // Navigate directly to the URL
+            page.navigate(bookmakerUrl, new Page.NavigateOptions()
+                    .setTimeout(5000)
+                    .setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
+
+            log.info("✅ Successfully navigated to match page...");
+            return true;
+
+        } catch (Exception e) {
+            log.error("❌ Direct navigation failed: {}", e.getMessage(), e);
+            return false;
+        }
     }
 
     public static void returnToSportPage(Page page, Sport configuredSport) {
@@ -160,7 +200,7 @@ public class Bet9jaNavigationUtil {
                 // Fallback strategy: Direct navigation to live URL
                 log.info("{} {} Using fallback: Direct navigation to live events", EMOJI_NAVIGATION, EMOJI_CLOCK);
 
-                String liveUrl = "https://www.bet9ja.com/liveCompetitions";
+                String liveUrl = "https://sports.bet9ja.com/liveCompetitions";
 
                 page.navigate(liveUrl, new Page.NavigateOptions()
                         .setTimeout(60000)

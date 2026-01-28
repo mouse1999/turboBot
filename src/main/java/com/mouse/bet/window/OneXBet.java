@@ -159,7 +159,7 @@ public class OneXBet implements BettingWindow, Runnable {
             throw new RuntimeException("Playwright initialization failed", e);
         }
 
-        run();
+//        run();
     }
 
     // ========================================================================

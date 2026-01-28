@@ -91,10 +91,10 @@ public class Bet9ja implements BettingWindow, Runnable {
     @Getter
     private final BlockingQueue<BetLegTask> taskQueue = new LinkedBlockingQueue<>();
 
-    @Value("${bet9ja.username:your-email@example.com}")
+    @Value("${bet9ja.username:Emeritus19}")
     private String bet9jaUsername;
 
-    @Value("${bet9ja.password:YourPassword123}")
+    @Value("${bet9ja.password:Edwardkufre123}")
     private String bet9jaPassword;
 
     @Value("${bet9ja.context.path:./playwright-context}")
@@ -124,7 +124,7 @@ public class Bet9ja implements BettingWindow, Runnable {
     @Value("${fetch.enabled.table-tennis:false}")
     private boolean fetchTableTennisEnabled;
 
-    @Value("${bet9ja.base.url:https://web.bet9ja.com}")
+    @Value("${bet9ja.base.url:https://sports.bet9ja.com}")
     private String baseUrl;
 
     /**
@@ -169,30 +169,74 @@ public class Bet9ja implements BettingWindow, Runnable {
      * @return BetLegTask object or null if timeout/interrupted
      */
     private BetLegTask pollTaskFromDispatcher() {
-        try {
-            log.debug("{} {} Polling for BetLegTask from queue...", EMOJI_POLL, EMOJI_SEARCH);
+//        try {
+//            log.debug("{} {} Polling for BetLegTask from queue...", EMOJI_POLL, EMOJI_SEARCH);
+//
+//            BetLegTask task = taskQueue.poll(pollIntervalMs, TimeUnit.MILLISECONDS);
+//
+//            if (task != null) {
+//                log.info("{} {} Received BetLegTask | ArbId: {} | Bookmaker: {} | Outcome: {} | Odds: {} | Stake: {}",
+//                        EMOJI_SUCCESS, EMOJI_POLL,
+//                        task.getArbId(), task.getBookmaker(), task.getOutcome(),
+//                        task.getExpectedOdds(), task.getStakeAmount());
+//
+//                log.info("{}", task.getArb().getOutcomeBreakdown());
+//            }
+//
+//            return task;
+//
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//            log.warn("{} {} Task polling interrupted", EMOJI_WARNING, EMOJI_POLL);
+//            return null;
+//        } catch (Exception e) {
+//            log.error("{} {} Error polling task: {}", EMOJI_ERROR, EMOJI_POLL, e.getMessage(), e);
+//            return null;
+//        }
+//
+        ArbOutcome outcome1 = ArbOutcome.builder()
+                .bookmakerId(1)
+                .bookmakerName(BookMaker.MSPORT)
+                .homeTeam("Putrajaya")
+                .awayTeam("Perak")
+                .marketType("Draw no bet")
+                .outComeName("1")
+                .odds(new BigDecimal(1.35))
+                .previousOdds(new BigDecimal("2.10"))
+                .stake(new BigDecimal("160"))
+                .sport("Basketball")
+                .progress("Not Started")
+                .reordered(false)
+                .initiator(true)
+                .leagueName("NBA")
+                .bookMakerUrl("https://sports.bet9ja.com/liveEvent/8634364")
+                .build();
 
-            BetLegTask task = taskQueue.poll(pollIntervalMs, TimeUnit.MILLISECONDS);
 
-            if (task != null) {
-                log.info("{} {} Received BetLegTask | ArbId: {} | Bookmaker: {} | Outcome: {} | Odds: {} | Stake: {}",
-                        EMOJI_SUCCESS, EMOJI_POLL,
-                        task.getArbId(), task.getBookmaker(), task.getOutcome(),
-                        task.getExpectedOdds(), task.getStakeAmount());
+        BetLeg betLeg = new BetLeg(
+                outcome1.getBookmakerName(),                    // BookMaker.MSPORT
+                outcome1.getBookmakerId(),                      // 1
+                outcome1.getMarketType(),                       // "Point Handicap"
+                outcome1.getOutComeName(),                      // "Home (-12.5)"
+                outcome1.getBookMakerUrl(),                     // "https://www.msport.com/..."
+                outcome1.getOdds().doubleValue(),               // 1.88
+                outcome1.getOdds().doubleValue() * (1.874), // 1.874 (min)
+                outcome1.getOdds().doubleValue() * (1.886), // 1.886 (max)
+                outcome1.getStake().doubleValue(),              // 531.91
+                outcome1.getLeagueName(),                       // "NBA"
+                outcome1.getHomeTeam(),                         // "Test Lakers"
+                outcome1.getAwayTeam(),
+                outcome1.getSubEventId(),
+                outcome1.getSport()
+                // "Test Celtics// "demo_arb_001"
+        );
+        Phaser phaser = new Phaser(1);
+        return BetLegTask.builder()
+                .betLeg(betLeg)
+                .barrier(phaser)
+                .bookmaker(BookMaker.MSPORT)
+                .build();
 
-                log.info("{}", task.getArb().getOutcomeBreakdown());
-            }
-
-            return task;
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.warn("{} {} Task polling interrupted", EMOJI_WARNING, EMOJI_POLL);
-            return null;
-        } catch (Exception e) {
-            log.error("{} {} Error polling task: {}", EMOJI_ERROR, EMOJI_POLL, e.getMessage(), e);
-            return null;
-        }
     }
 
     // ========================================================================
@@ -216,17 +260,17 @@ public class Bet9ja implements BettingWindow, Runnable {
             // ========================================
             // STEP 1: REGISTER INTENT WITH PARTNER
             // ========================================
-            boolean intentRegistered = syncManager.registerIntent(
-                    arbId,
-                    BOOKMAKER,
-                    task.getExpectedOdds()
-            );
-
-            if (!intentRegistered) {
-                log.warn("{} {} Arb cancelled during intent registration: {}",
-                        EMOJI_WARNING, EMOJI_SYNC, arbId);
-                return false;
-            }
+//            boolean intentRegistered = syncManager.registerIntent(
+//                    arbId,
+//                    BOOKMAKER,
+//                    task.getExpectedOdds()
+//            );
+//
+//            if (!intentRegistered) {
+//                log.warn("{} {} Arb cancelled during intent registration: {}",
+//                        EMOJI_WARNING, EMOJI_SYNC, arbId);
+//                return false;
+//            }
 
             log.info("{} {} Intent registered for arb: {}", EMOJI_SUCCESS, EMOJI_SYNC, arbId);
 
@@ -269,36 +313,36 @@ public class Bet9ja implements BettingWindow, Runnable {
             // ========================================
             // STEP 4: MARK DEPLOYMENT SUCCESS
             // ========================================
-            boolean markedDeployed = syncManager.markDeploymentSuccess(
-                    arbId,
-                    BOOKMAKER
-            );
-
-            if (!markedDeployed) {
-                log.warn("{} {} Arb cancelled after deployment: {}",
-                        EMOJI_WARNING, EMOJI_SYNC, arbId);
-                Bet9jaMarketUtil.clearBetSlip(page);
-                return false;
-            }
-
-            log.info("{} {} Deployment marked as successful", EMOJI_SUCCESS, EMOJI_SYNC);
-
-            // ========================================
-            // STEP 5: WAIT FOR PARTNER DEPLOYMENT
-            // ========================================
-            log.info("{} {} [3/4] Waiting for partner to deploy...", EMOJI_SYNC, EMOJI_CLOCK);
-
-            boolean partnerDeployed = syncManager.waitForPartnerDeploymentOrTimeout(
-                    arbId,
-                    BOOKMAKER,
-                    Duration.ofSeconds(deployTimeout)
-            );
-
-            if (!partnerDeployed) {
-                log.warn("{} {} Partner deployment failed or timeout", EMOJI_WARNING, EMOJI_SYNC);
-                Bet9jaMarketUtil.clearBetSlip(page);
-                return false;
-            }
+//            boolean markedDeployed = syncManager.markDeploymentSuccess(
+//                    arbId,
+//                    BOOKMAKER
+//            );
+//
+//            if (!markedDeployed) {
+//                log.warn("{} {} Arb cancelled after deployment: {}",
+//                        EMOJI_WARNING, EMOJI_SYNC, arbId);
+//                Bet9jaMarketUtil.clearBetSlip(page);
+//                return false;
+//            }
+//
+//            log.info("{} {} Deployment marked as successful", EMOJI_SUCCESS, EMOJI_SYNC);
+//
+//            // ========================================
+//            // STEP 5: WAIT FOR PARTNER DEPLOYMENT
+//            // ========================================
+//            log.info("{} {} [3/4] Waiting for partner to deploy...", EMOJI_SYNC, EMOJI_CLOCK);
+//
+//            boolean partnerDeployed = syncManager.waitForPartnerDeploymentOrTimeout(
+//                    arbId,
+//                    BOOKMAKER,
+//                    Duration.ofSeconds(deployTimeout)
+//            );
+//
+//            if (!partnerDeployed) {
+//                log.warn("{} {} Partner deployment failed or timeout", EMOJI_WARNING, EMOJI_SYNC);
+//                Bet9jaMarketUtil.clearBetSlip(page);
+//                return false;
+//            }
 
             log.info("{} {} Both windows DEPLOYED - ready for simultaneous placement!",
                     EMOJI_SUCCESS, EMOJI_ROCKET);
@@ -1117,7 +1161,4 @@ public class Bet9ja implements BettingWindow, Runnable {
         }
     }
 
-    public static void main(String[] args) {
-
-    }
 }

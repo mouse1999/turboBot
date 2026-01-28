@@ -28,12 +28,11 @@ public class Bet9jaLoginUtils {
             log.debug("{} {} Checking if user is already logged in...", EMOJI_SEARCH, EMOJI_LOGIN);
 
             // Look for login button - if visible, user is NOT logged in
-            Locator loginButton = page.getByRole(AriaRole.BUTTON,
-                    new Page.GetByRoleOptions().setName("LOG IN"));
+            Locator loginButton = findLoginButton(page);
 
             try {
                 boolean isVisible = loginButton.isVisible(
-                        new Locator.IsVisibleOptions().setTimeout(3000));
+                        new Locator.IsVisibleOptions().setTimeout(30000));
 
                 if (isVisible) {
                     log.info("{} {} User is NOT logged in - Login button is visible",
