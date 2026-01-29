@@ -367,22 +367,88 @@ public class Bet9jaMarketUtil {
      * Bet9ja has tabs: Popular Markets, Minutes, Halves, Player, Combo +, All
      */
     private static void ensureAllTabActive(Page page) {
-        try {
-            // Find the "All" tab in the sports-view__bar-nav
-            Locator allTab = page.locator("li.sports-view__bar-navitem:has-text('All')");
-
-            if (allTab.isVisible()) {
-                // Check if it's already active
-                String classes = allTab.getAttribute("class");
-                if (classes == null || !classes.contains("sports-view__bar-navitem--current")) {
-                    log.info("Switching to 'All' markets tab...");
-                    allTab.click(new Locator.ClickOptions().setTimeout(3000));
-                    randomHumanDelay(200, 400);
-                    log.info("Successfully switched to 'All' markets tab");
-                } else {
-                    log.debug("'All' markets tab is not active");
+        String jsEnsureAllTab = """
+        () => {
+            try {
+                // Find all navigation items
+                const navItems = document.querySelectorAll('li.sports-view__bar-navitem');
+                
+                if (navItems.length === 0) {
+                    return { success: false, error: 'No navigation items found' };
                 }
+                
+                // Find the "All" tab by exact text match
+                let allTab = null;
+                for (let i = 0; i < navItems.length; i++) {
+                    const item = navItems[i];
+                    const text = item.textContent.trim();
+                    
+                    if (text === 'All') {
+                        allTab = item;
+                        break;
+                    }
+                }
+                
+                if (!allTab) {
+                    return { success: false, error: 'All tab not found' };
+                }
+                
+                // Check if already active
+                const classes = allTab.className || '';
+                const isActive = classes.includes('sports-view__bar-navitem--current');
+                
+                if (isActive) {
+                    return { 
+                        success: true, 
+                        alreadyActive: true,
+                        message: 'All tab is already active' 
+                    };
+                }
+                
+                // Click the tab to activate it
+                allTab.click();
+                
+                return { 
+                    success: true, 
+                    alreadyActive: false,
+                    message: 'Successfully clicked All tab' 
+                };
+                
+            } catch (err) {
+                return { 
+                    success: false, 
+                    error: 'JavaScript error: ' + err.message 
+                };
             }
+        }
+        """;
+
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> result = (Map<String, Object>) page.evaluate(jsEnsureAllTab);
+
+            if (result == null) {
+                log.warn("Could not ensure 'All' tab active: null result");
+                return;
+            }
+
+            Boolean success = (Boolean) result.get("success");
+
+            if (Boolean.TRUE.equals(success)) {
+                Boolean alreadyActive = (Boolean) result.get("alreadyActive");
+                String message = (String) result.get("message");
+
+                if (Boolean.TRUE.equals(alreadyActive)) {
+                    log.debug("'All' markets tab is already active");
+                } else {
+                    log.info("Switched to 'All' markets tab");
+                    randomHumanDelay(200, 400);
+                }
+            } else {
+                String error = (String) result.get("error");
+                log.warn("Could not ensure 'All' tab active: {}", error);
+            }
+
         } catch (Exception e) {
             log.warn("Could not ensure 'All' tab active: {}", e.getMessage());
         }

@@ -1,0 +1,8 @@
+2026-01-28 13:41:55.004 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-28 13:41:55.004 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
+2026-01-28 13:52:15.246 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-28 13:52:15.246 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
+2026-01-28 14:16:29.047 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-28 14:16:29.198 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
+2026-01-28 18:22:19.598 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-28 18:22:19.824 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1

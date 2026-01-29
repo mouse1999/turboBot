@@ -462,7 +462,7 @@ public class Bet9jaLoginUtils {
             page.waitForLoadState(LoadState.DOMCONTENTLOADED);
 
             // Give Vue.js time to render
-            randomHumanDelay(30000, 60000);
+            randomHumanDelay(3000, 6000);
 
             log.info("✅ Page DOM ready");
 

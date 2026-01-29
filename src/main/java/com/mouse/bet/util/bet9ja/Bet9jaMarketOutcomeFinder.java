@@ -287,8 +287,7 @@ public class Bet9jaMarketOutcomeFinder {
                             
                             const text = textDiv.textContent.trim();
                             const oddsDiv = marketItemDiv.querySelector('div.market-odd');
-                            if (!oddsDiv) return;
-                            
+                            if (!oddsDiv) return;                            
                             const isLocked = oddsDiv.classList.contains('locked');
                             
                             let odds = 'N/A';

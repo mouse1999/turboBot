@@ -18,7 +18,7 @@ import com.mouse.bet.orchestrator.model.BetLegTask;
 import com.mouse.bet.profile.UserAgentProfile;
 import com.mouse.bet.service.ArbOutcomeService;
 import com.mouse.bet.util.bet9ja.Bet9jaLoginUtils;
-import com.mouse.bet.util.bet9ja.Bet9jaPlacement;
+import com.mouse.bet.util.bet9ja.Bet9jaBetPlacement;
 import com.mouse.bet.util.bet9ja.Bet9jaMarketUtil;
 import com.mouse.bet.util.bet9ja.Bet9jaNavigationUtil;
 import jakarta.annotation.PostConstruct;
@@ -209,7 +209,7 @@ public class Bet9ja implements BettingWindow, Runnable {
                 .reordered(false)
                 .initiator(true)
                 .leagueName("NBA")
-                .bookMakerUrl("https://sports.bet9ja.com/liveEvent/8634364")
+                .bookMakerUrl("https://sports.bet9ja.com/liveEvent/8641412")
                 .build();
 
 
@@ -428,7 +428,7 @@ public class Bet9ja implements BettingWindow, Runnable {
                 log.info("{} {} SIMULTANEOUS BETTING | ArbId: {} | Bookmaker: {}",
                         EMOJI_MONEY, EMOJI_BET, task.getArbId(), BOOKMAKER);
 
-                boolean betPlaced = Bet9jaPlacement.placeBet(
+                boolean betPlaced = Bet9jaBetPlacement.placeBet(
                         page, task.getBetLeg(), arbOutcomeService);
 
                 betId = "BET_" + System.currentTimeMillis();
