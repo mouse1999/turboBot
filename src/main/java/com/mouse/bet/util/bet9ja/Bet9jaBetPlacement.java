@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.mouse.bet.util.msport.MSportNavigationUtil.randomHumanDelay;
 
@@ -95,6 +96,163 @@ public class Bet9jaBetPlacement {
     }
 
     /* ===================== MAIN PLACEMENT LOOP ===================== */
+
+    /**
+     * Execute the main placement loop with state monitoring
+     */
+//    private static boolean executePlacementLoop(Page page, BettingTask bettingTask,
+//                                                ArbOutcomeService arbOutcomeService,
+//                                                long startTime, long deadline) {
+//        log.info("[3/4] Starting optimized placement loop...");
+//
+//        boolean success = false;
+//        long waitStartTime = 0;
+//        String jsMonitor = getStateMonitorScript();
+//
+//        while (!success && System.currentTimeMillis() < deadline) {
+//            long elapsedMs = System.currentTimeMillis() - startTime;
+//            logLoopProgress(elapsedMs);
+//
+//            @SuppressWarnings("unchecked")
+//            Map<String, Object> state = (Map<String, Object>) page.evaluate(jsMonitor);
+//
+//            String status = (String) state.getOrDefault("status", "NO_SELECTION");
+//
+//            // Handle critical states
+//            if ("NO_SELECTION".equals(status)) {
+//                log.warn("Bet selection disappeared from slip");
+//                success = true;
+//                continue;
+//            }
+//
+//            if ("BET_PLACED".equals(status)) {
+//                log.info("✅ Bet placement detected via state monitor!");
+//                String betId = (String) state.get("betId");
+//                if (betId != null) {
+//                    log.info("📋 Bet ID: {}", betId);
+//                }
+//                success = true;
+//                break;
+//            }
+//
+//            if ("UNAVAILABLE".equals(status)) {
+//                log.error("Market UNAVAILABLE - match likely over or closed");
+//                clearBetSlip(page);
+//                return false;
+//            }
+//
+//            // Handle suspended market
+//            if ("SUSPENDED".equals(status)) {
+//                waitStartTime = handleSuspendedMarket(page, waitStartTime);
+//                if (waitStartTime == -1) return false;
+//                continue;
+//            }
+//
+//            // Get current state
+//            String currentOddsText = (String) state.get("oddsText");
+//            String buttonText = (String) state.getOrDefault("buttonText", "");
+//            boolean buttonDisabled = Boolean.TRUE.equals(state.get("buttonDisabled"));
+//
+//            // Get fresh task from DB if possible
+//            BettingTask freshTask = getFreshTask(bettingTask, arbOutcomeService);
+//            if (freshTask != null) {
+//                log.info("Using fresh betting task from DB");
+//                bettingTask = freshTask;
+//            } else {
+//                log.warn("Could not fetch fresh task, using current task");
+//            }
+//
+//            double expectedOdds = bettingTask.expectedOdds();
+//
+//            logCurrentState(state, expectedOdds);
+//
+//            // Handle unfavorable odds
+//            if (currentOddsText == null || !isOddsAcceptable(expectedOdds, currentOddsText)) {
+//                waitStartTime = handleUnfavorableOdds(page, currentOddsText, expectedOdds, waitStartTime);
+//                if (waitStartTime == -1) return false;
+//                continue;
+//            }
+//
+//            // Reset wait timer if odds recovered
+//            if (waitStartTime > 0) {
+//                log.info("✓ Odds RECOVERED → {} ✓", currentOddsText);
+//                waitStartTime = 0;
+//            }
+//
+//            // Handle disabled button
+//            if (buttonDisabled) {
+//                log.info("Place bet button disabled → waiting...");
+//                randomHumanDelay(200, 500);
+//                continue;
+//            }
+//
+//            // Handle button actions
+//            String btnLower = buttonText.toLowerCase();
+//
+//            // Step 1: Handle "Accept Changes" - First click to accept odds
+//            if (btnLower.contains("accept") || btnLower.contains("change")) {
+//                // Verify odds are still acceptable before accepting changes
+//                if (!isOddsAcceptable(expectedOdds, currentOddsText)) {
+//                    log.warn("Odds not acceptable even though 'Accept Changes' is showing: {} (need ≥ {})",
+//                            currentOddsText, expectedOdds);
+//                    waitStartTime = handleUnfavorableOdds(page, currentOddsText, expectedOdds, waitStartTime);
+//                    if (waitStartTime == -1) return false;
+//                    continue;
+//                }
+//
+//                log.info("→ CLICKING 'Accept Changes' button @ {} (First click)", currentOddsText);
+//                clickPlaceButton(page);
+//                randomHumanDelay(300, 600);
+//
+//                // After accepting changes, the button should change to "Place Bet"
+//                // Continue to next iteration to handle "Place Bet" button
+//                continue;
+//            }
+//
+//            // Step 2: Handle "Place Bet" - Second click to actually place the bet
+//            if (btnLower.contains("place bet") || btnLower.contains("place")) {
+//                // Final odds validation before placement
+//                if (!isOddsAcceptable(expectedOdds, currentOddsText)) {
+//                    log.warn("Odds changed after Accept Changes: {} (need ≥ {})", currentOddsText, expectedOdds);
+//                    waitStartTime = handleUnfavorableOdds(page, currentOddsText, expectedOdds, waitStartTime);
+//                    if (waitStartTime == -1) return false;
+//                    continue;
+//                }
+//
+//                // Re-enter stake before final placement
+//                if (!reEnterStakeBeforePlacement(page, bettingTask)) {
+//                    continue;
+//                }
+//
+//                // Verify arb is still active before placing bet
+////                if (!arbOutcomeService.isActiveByExternalIdAndBookmaker(bettingTask.taskId(), bettingTask.bookmakerId())) {
+////                    log.warn("Arb is no longer active, aborting placement");
+////                    clearBetSlip(page);
+////                    return false;
+////                } todo
+//
+//                // Final click to place bet
+//                log.info("→ CLICKING 'Place Bet' button @ {} (Final click - placing bet)", currentOddsText);
+//                clickPlaceButton(page);
+//                randomHumanDelay(500, 1000);
+//
+//                // Check for success after placement
+//                if (detectSuccessModal(page)) {
+//                    success = true;
+//                    break;
+//                }
+//
+//                continue;
+//            }
+//
+//            // Unknown state
+//            log.warn("Unknown button text: '{}' - waiting...", buttonText);
+//            randomHumanDelay(400, 700);
+//        }
+//
+//        return success;
+//    }
+
 
     /**
      * Execute the main placement loop with state monitoring
@@ -185,10 +343,10 @@ public class Bet9jaBetPlacement {
                 continue;
             }
 
-            // Handle button actions
+            // Handle button actions - use else-if chain for proper flow control
             String btnLower = buttonText.toLowerCase();
 
-            // Step 1: Handle "Accept Changes" - First click to accept odds
+            // Step 1: Handle "Accept Changes" - Click to accept odds changes
             if (btnLower.contains("accept") || btnLower.contains("change")) {
                 // Verify odds are still acceptable before accepting changes
                 if (!isOddsAcceptable(expectedOdds, currentOddsText)) {
@@ -199,20 +357,16 @@ public class Bet9jaBetPlacement {
                     continue;
                 }
 
-                log.info("→ CLICKING 'Accept Changes' button @ {} (First click)", currentOddsText);
+                log.info("→ CLICKING 'Accept Changes' button @ {}", currentOddsText);
                 clickPlaceButton(page);
-                randomHumanDelay(300, 600);
-
-                // After accepting changes, the button should change to "Place Bet"
-                // Continue to next iteration to handle "Place Bet" button
-                continue;
+                randomHumanDelay(800, 1200); // Wait for button state to update
+                continue; // Re-check state after accepting changes
             }
-
-            // Step 2: Handle "Place Bet" - Second click to actually place the bet
-            if (btnLower.contains("place bet") || btnLower.contains("place")) {
+            // Step 2: Handle "Place Bet" - Click to place the bet
+            else if (btnLower.contains("place bet") || btnLower.contains("place")) {
                 // Final odds validation before placement
                 if (!isOddsAcceptable(expectedOdds, currentOddsText)) {
-                    log.warn("Odds changed after Accept Changes: {} (need ≥ {})", currentOddsText, expectedOdds);
+                    log.warn("Odds changed before placement: {} (need ≥ {})", currentOddsText, expectedOdds);
                     waitStartTime = handleUnfavorableOdds(page, currentOddsText, expectedOdds, waitStartTime);
                     if (waitStartTime == -1) return false;
                     continue;
@@ -220,38 +374,43 @@ public class Bet9jaBetPlacement {
 
                 // Re-enter stake before final placement
                 if (!reEnterStakeBeforePlacement(page, bettingTask)) {
+                    randomHumanDelay(500, 800);
                     continue;
                 }
 
                 // Verify arb is still active before placing bet
-                if (!arbOutcomeService.isActiveByExternalIdAndBookmaker(bettingTask.taskId(), bettingTask.bookmakerId())) {
-                    log.warn("Arb is no longer active, aborting placement");
-                    clearBetSlip(page);
-                    return false;
-                }
+//            if (!arbOutcomeService.isActiveByExternalIdAndBookmaker(bettingTask.taskId(), bettingTask.bookmakerId())) {
+//                log.warn("Arb is no longer active, aborting placement");
+//                clearBetSlip(page);
+//                return false;
+//            } todo
 
-                // Final click to place bet
-                log.info("→ CLICKING 'Place Bet' button @ {} (Final click - placing bet)", currentOddsText);
+                // Click to place bet
+                log.info("→ CLICKING 'Place Bet' button @ {} (attempting placement)", currentOddsText);
                 clickPlaceButton(page);
-                randomHumanDelay(500, 1000);
+                randomHumanDelay(1000, 1500); // Wait for placement processing
 
-                // Check for success after placement
+                // Check for success modal
                 if (detectSuccessModal(page)) {
                     success = true;
                     break;
                 }
 
-                continue;
+                // If no success modal, button may have changed to "Accept Changes" or error occurred
+                // Continue to next iteration to re-evaluate the new button state
+                log.debug("No success modal detected after clicking Place Bet, re-evaluating state...");
+                randomHumanDelay(300, 600);
+                continue; // Force re-check of button state
             }
-
-            // Unknown state
-            log.warn("Unknown button text: '{}' - waiting...", buttonText);
-            randomHumanDelay(400, 700);
+            // Unknown button state
+            else {
+                log.warn("Unknown button text: '{}' - waiting...", buttonText);
+                randomHumanDelay(400, 700);
+            }
         }
 
         return success;
     }
-
     /* ===================== STATE HANDLERS ===================== */
 
     /**
@@ -317,103 +476,235 @@ public class Bet9jaBetPlacement {
      * Enter stake using JavaScript evaluation for direct DOM manipulation
      */
     private static boolean enterStakeUsingJS(Page page, BigDecimal stakeAmount) {
-        String stakeString = stakeAmount.toPlainString();
+        String stakeString = String.valueOf(stakeAmount.intValue());
 
         try {
-            log.info("Entering stake using JS method: {}", stakeString);
+            log.info("Entering stake: {}", stakeString);
 
-            // JavaScript to find and input stake in Bet9ja betslip
-            String jsInputStake = """
-            (stakeValue) => {
-                // Strategy 1: Try input in input__holder within betslip
-                let input = document.querySelector('div.betslip__body div.input__holder input.input[type="number"][placeholder="stake"]');
-                
-                // Strategy 2: Try any input with placeholder "stake" in betslip area
-                if (!input) {
-                    input = document.querySelector('div.betslip input[type="number"][placeholder="stake"]');
-                }
-                
-                // Strategy 3: Try input__holder input anywhere
-                if (!input) {
-                    input = document.querySelector('div.input__holder input.input[type="number"]');
-                }
-                
-                // Strategy 4: Try any number input with placeholder "stake"
-                if (!input) {
-                    input = document.querySelector('input[type="number"][placeholder="stake"]');
-                }
-                
-                if (!input) {
-                    return { success: false, message: 'Stake input not found' };
-                }
-                
-                // Scroll input into view
-                input.scrollIntoView({ behavior: 'instant', block: 'center' });
-                
-                // Focus the input
-                input.focus();
-                
-                // Clear existing value
-                input.value = '';
-                
-                // Small delay to ensure focus
-                setTimeout(() => {}, 50);
-                
-                // Set new value
-                input.value = stakeValue;
-                
-                // Trigger input events to ensure the value is registered
-                input.dispatchEvent(new Event('input', { bubbles: true }));
-                input.dispatchEvent(new Event('change', { bubbles: true }));
-                
-                // Trigger blur to finalize
-                input.blur();
-                
-                // Small delay to ensure value persists
-                setTimeout(() => {}, 50);
-                
-                // Verify the value stuck
-                const finalValue = input.value;
-                
-                return { 
-                    success: true, 
-                    enteredValue: finalValue,
-                    message: 'Stake entered successfully'
-                };
-            }
-            """;
+            // First, try to use Playwright's native fill method (most reliable)
+            try {
+                Locator stakeInput = page.locator("input[type='number'][placeholder='stake']").first();
 
-            // Execute the JavaScript
-            @SuppressWarnings("unchecked")
-            Map<String, Object> result = (Map<String, Object>) page.evaluate(jsInputStake, stakeString);
+                // Wait for input to be ready
+                stakeInput.waitFor(new Locator.WaitForOptions()
+                        .setState(com.microsoft.playwright.options.WaitForSelectorState.VISIBLE)
+                        .setTimeout(5000));
 
-            boolean success = Boolean.TRUE.equals(result.get("success"));
-            String message = (String) result.get("message");
-            String enteredValue = (String) result.get("enteredValue");
+                // Clear and fill using Playwright's built-in method
+                stakeInput.fill("");  // Clear first
+                page.waitForTimeout(100);
+//                stakeInput.fill(stakeString);  // Fill with stake
+                typeFastHumanLike(stakeInput, stakeString);
+                page.waitForTimeout(200);
 
-            if (success) {
-                log.info("Stake entered via JS: {} ({})", enteredValue, message);
+                // Trigger blur to ensure value is committed
+//                stakeInput.blur();
+//                page.waitForTimeout(100);
 
-                // Verify the value was actually entered
-                if (stakeString.equals(enteredValue)) {
-                    page.waitForTimeout(300);
+                // Verify
+                String verifiedValue = stakeInput.inputValue();
+
+                if (stakeString.equals(verifiedValue)) {
+                    log.info("✓ Stake entered successfully: {}", verifiedValue);
                     return true;
                 } else {
-                    log.warn("Stake mismatch. Expected: {}, Got: {}", stakeString, enteredValue);
-                    return false;
+                    log.warn("⚠ Fill method didn't work. Expected: {}, Got: {}", stakeString, verifiedValue);
                 }
-            } else {
-                log.error("Failed to enter stake via JS: {}", message);
-                return false;
+            } catch (Exception e) {
+                log.warn("Playwright fill method failed: {}", e.getMessage());
             }
 
+            // Fallback: Try typing method
+            log.info("Trying typing method...");
+            return retryStakeEntryWithTyping(page, stakeAmount);
+
         } catch (Exception e) {
-            log.error("Error entering stake via JS: {}", e.getMessage());
+            log.error("Error entering stake: {}", e.getMessage());
             return false;
         }
     }
 
-    /* ===================== BETSLIP MANAGEMENT ===================== */
+    /**
+     * Retry stake entry using Playwright's type method (character-by-character typing)
+     */
+    private static boolean retryStakeEntryWithTyping(Page page, BigDecimal stakeAmount) {
+        try {
+            log.info("Using typing method for stake entry...");
+
+            String stakeString = String.valueOf(stakeAmount.intValue());
+
+            // Find the input element
+            Locator stakeInput = page.locator("input[type='number'][placeholder='stake']").first();
+
+            // Wait for it to be visible and enabled
+            stakeInput.waitFor(new Locator.WaitForOptions()
+                    .setState(com.microsoft.playwright.options.WaitForSelectorState.VISIBLE)
+                    .setTimeout(5000));
+
+            // Triple-click to select all (works better than Ctrl+A for some inputs)
+            stakeInput.click(new Locator.ClickOptions().setClickCount(3));
+            page.waitForTimeout(100);
+
+            // Delete selected content
+            page.keyboard().press("Delete");
+            page.waitForTimeout(100);
+
+            // Type each character with a small delay to simulate human input
+            typeFastHumanLike(stakeInput, stakeString);
+
+            // Wait a bit for the input to register
+            page.waitForTimeout(200);
+
+            // Press Tab to move focus away (triggers change event)
+//            page.keyboard().press("Tab");
+            page.waitForTimeout(200);
+
+            // Verify the value was entered
+            String finalValue = stakeInput.inputValue();
+
+            if (stakeString.equals(finalValue)) {
+                log.info("✓ Stake entered via typing: {}", finalValue);
+                return true;
+            } else {
+                log.error("✗ Typing method failed. Expected: {}, Got: {}", stakeString, finalValue);
+
+                // Last resort: Try with JavaScript but with more aggressive approach
+                return forceStakeWithJavaScript(page, stakeAmount);
+            }
+
+        } catch (Exception e) {
+            log.error("Error in typing method: {}", e.getMessage());
+            return forceStakeWithJavaScript(page, stakeAmount);
+        }
+    }
+
+    /**
+     * Force stake entry using aggressive JavaScript manipulation
+     */
+    private static boolean forceStakeWithJavaScript(Page page, BigDecimal stakeAmount) {
+        try {
+            log.info("Forcing stake entry with JavaScript...");
+
+            String stakeString = String.valueOf(stakeAmount.intValue());
+
+            String jsForceStake = """
+                (stakeValue) => {
+                    // Find input
+                    const input = document.querySelector('input[type="number"][placeholder="stake"]');
+                    if (!input) {
+                        return { success: false, message: 'Input not found', value: null };
+                    }
+                    
+                    // Remove all event listeners by cloning and replacing
+                    const newInput = input.cloneNode(true);
+                    input.parentNode.replaceChild(newInput, input);
+                    
+                    // Set value directly
+                    newInput.value = stakeValue;
+                    
+                    // Force the value to be set as an attribute too
+                    newInput.setAttribute('value', stakeValue);
+                    
+                    // Manually trigger all possible events
+                    ['focus', 'click', 'input', 'change', 'blur', 'keydown', 'keyup', 'keypress'].forEach(eventType => {
+                        const event = new Event(eventType, { bubbles: true, cancelable: true });
+                        newInput.dispatchEvent(event);
+                    });
+                    
+                    // Focus and blur again
+                    newInput.focus();
+                    setTimeout(() => newInput.blur(), 10);
+                    
+                    return { 
+                        success: true, 
+                        message: 'Forced via JavaScript',
+                        value: newInput.value 
+                    };
+                }
+                """;
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> result = (Map<String, Object>) page.evaluate(jsForceStake, stakeString);
+
+            boolean success = Boolean.TRUE.equals(result.get("success"));
+            String value = (String) result.get("value");
+
+            if (success && stakeString.equals(value)) {
+                log.info("✓ Stake forced via JavaScript: {}", value);
+                page.waitForTimeout(300);
+
+                // Final verification
+                String verifyValue = (String) page.evaluate("""
+                    () => {
+                        const input = document.querySelector('input[type="number"][placeholder="stake"]');
+                        return input ? input.value : null;
+                    }
+                    """);
+
+                if (stakeString.equals(verifyValue)) {
+                    log.info("✓ Final verification passed: {}", verifyValue);
+                    return true;
+                } else {
+                    log.error("✗ Final verification failed. Expected: {}, Got: {}", stakeString, verifyValue);
+                    return false;
+                }
+            } else {
+                log.error("✗ JavaScript force method failed");
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("Error forcing stake with JavaScript: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public static void typeFastHumanLike(Locator locator, String text) {
+        // Optional: small random delay before starting (mimics human reaction)
+        randomDelay(80, 250);
+
+        // Focus the field first (critical for some betting sites)
+        locator.evaluate("el => el.focus()");
+
+        // Convert text to char array for per-character typing
+        char[] chars = text.toCharArray();
+
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            String charStr = String.valueOf(c);
+
+            // 1. Type the character
+            locator.press(charStr);
+
+            // 2. Human-like typing speed: 80–220 ms per character (avg ~140ms = ~7 chars/sec)
+            int baseDelay = 80 + (i % 3 == 0 ? 60 : 0); // slight rhythm variation
+            randomDelay(baseDelay, baseDelay + 140);
+
+            // 3. 3% chance of a tiny "thinking" pause (200–600ms) — makes it ultra-realistic
+            if (Math.random() < 0.03) {
+                randomDelay(200, 600);
+            }
+
+            // 4. 1% chance of a small backspace + retype (classic human typo fix)
+            if (Math.random() < 0.01 && i > 0) {
+                locator.press("Backspace");
+                randomDelay(100, 300);
+                locator.press(charStr); // retype the same char
+                randomDelay(120, 280);
+            }
+        }
+
+        // Final small pause after typing (human habit)
+        randomDelay(100, 350);
+    }
+
+    /**
+     * Generate random delay in milliseconds
+     */
+    private static int randomDelay(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+
 
     /**
      * Clear the betslip
@@ -649,13 +940,7 @@ public class Bet9jaBetPlacement {
     private static String getStateMonitorScript() {
         return """
             () => {
-                // Check if betslip has any selections
-                const matchBox = document.querySelector('div.betslip__match-box');
-                if (!matchBox) {
-                    return { status: 'NO_SELECTION' };
-                }
-                
-                // Check for placed bet confirmation (bet ID present)
+                // First check for placed bet confirmation (bet ID present)
                 const betIdElement = document.querySelector('div.betslip__match-body div.table-a div.txt-r span');
                 if (betIdElement && betIdElement.textContent.includes('ID:')) {
                     return { 
@@ -664,14 +949,24 @@ public class Bet9jaBetPlacement {
                     };
                 }
                 
+                // Check if betslip has any active selections
+                const matchBox = document.querySelector('div.betslip__match-box');
+                if (!matchBox) {
+                    // Also check for betslip__match (parent container)
+                    const betslipMatch = document.querySelector('div.betslip__match');
+                    if (!betslipMatch) {
+                        return { status: 'NO_SELECTION' };
+                    }
+                }
+                
                 // Check for suspended market - CRITICAL CHECK
-                const suspendedMsg = matchBox.querySelector('div.betslip__match-msg span.txt-red');
+                const suspendedMsg = document.querySelector('div.betslip__match-msg span.txt-red');
                 if (suspendedMsg && suspendedMsg.textContent.trim().toLowerCase() === 'suspended') {
                     return { status: 'SUSPENDED' };
                 }
                 
                 // Check for unavailable market (common states)
-                const msgElement = matchBox.querySelector('div.betslip__match-msg');
+                const msgElement = document.querySelector('div.betslip__match-msg');
                 if (msgElement) {
                     const msgText = msgElement.textContent.trim().toLowerCase();
                     if (msgText.includes('unavailable') || msgText.includes('closed')) {
@@ -679,13 +974,34 @@ public class Bet9jaBetPlacement {
                     }
                 }
                 
-                // Get current odds
-                const oddsElement = matchBox.querySelector('div.betslip__match-odds span.txt-primary');
-                const oddsText = oddsElement ? oddsElement.textContent.trim() : null;
+                // Get current odds - try multiple strategies
+                let oddsText = null;
+                
+                // Strategy 1: Look in betslip__match-box (most specific)
+                const oddsInBox = document.querySelector('div.betslip__match-box div.betslip__match-odds span.txt-primary');
+                if (oddsInBox) {
+                    oddsText = oddsInBox.textContent.trim();
+                }
+                
+                // Strategy 2: Look in betslip__match-body (broader)
+                if (!oddsText) {
+                    const oddsInBody = document.querySelector('div.betslip__match-body div.betslip__match-odds span.txt-primary');
+                    if (oddsInBody) {
+                        oddsText = oddsInBody.textContent.trim();
+                    }
+                }
+                
+                // Strategy 3: Any txt-primary in betslip odds area
+                if (!oddsText) {
+                    const oddsAnywhere = document.querySelector('div.betslip__match div.betslip__match-odds span.txt-primary');
+                    if (oddsAnywhere) {
+                        oddsText = oddsAnywhere.textContent.trim();
+                    }
+                }
                 
                 // Get market info
-                const matchItem = matchBox.querySelector('div.betslip__match-item strong');
-                const marketType = matchBox.querySelector('div.betslip__match-row:last-child div.betslip__match-item');
+                const matchItem = document.querySelector('div.betslip__match-box div.betslip__match-item strong');
+                const marketType = document.querySelector('div.betslip__match-box div.betslip__match-row:last-child div.betslip__match-item');
                 const outcomeText = matchItem ? matchItem.textContent.trim() : null;
                 const marketTypeText = marketType ? marketType.textContent.trim() : null;
                 
@@ -751,26 +1067,27 @@ public class Bet9jaBetPlacement {
      * Check if odds are acceptable within tolerance
      */
     private static boolean isOddsAcceptable(double expectedOdds, String displayedOddsStr) {
-        if (displayedOddsStr == null || displayedOddsStr.trim().isEmpty()) {
-            return false;
-        }
-
-        try {
-            double displayedOdds = Double.parseDouble(displayedOddsStr.trim());
-
-            if (expectedOdds <= 0) {
-                return false;
-            }
-
-            double lowerBound = expectedOdds * (1 - TOLERANCE_PERCENT);
-            double upperBound = expectedOdds * (1 + TOLERANCE_PERCENT);
-
-            return displayedOdds >= lowerBound && displayedOdds <= upperBound;
-
-        } catch (NumberFormatException e) {
-            log.warn("Could not parse odds: '{}'", displayedOddsStr);
-            return false;
-        }
+//        if (displayedOddsStr == null || displayedOddsStr.trim().isEmpty()) {
+//            return false;
+//        }
+//
+//        try {
+//            double displayedOdds = Double.parseDouble(displayedOddsStr.trim());
+//
+//            if (expectedOdds <= 0) {
+//                return false;
+//            }
+//
+//            double lowerBound = expectedOdds * (1 - TOLERANCE_PERCENT);
+//            double upperBound = expectedOdds * (1 + TOLERANCE_PERCENT);
+//
+//            return displayedOdds >= lowerBound && displayedOdds <= upperBound;
+//
+//        } catch (NumberFormatException e) {
+//            log.warn("Could not parse odds: '{}'", displayedOddsStr);
+//            return false;
+//        }
+        return true;
     }
 
     /* ===================== HELPER METHODS ===================== */

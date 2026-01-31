@@ -199,17 +199,17 @@ public class Bet9ja implements BettingWindow, Runnable {
                 .bookmakerName(BookMaker.MSPORT)
                 .homeTeam("Putrajaya")
                 .awayTeam("Perak")
-                .marketType("Draw no bet")
-                .outComeName("1")
+                .marketType("Double Chance")
+                .outComeName("12")
                 .odds(new BigDecimal(1.35))
                 .previousOdds(new BigDecimal("2.10"))
-                .stake(new BigDecimal("160"))
+                .stake(new BigDecimal("100"))
                 .sport("Basketball")
                 .progress("Not Started")
                 .reordered(false)
                 .initiator(true)
                 .leagueName("NBA")
-                .bookMakerUrl("https://sports.bet9ja.com/liveEvent/8641412")
+                .bookMakerUrl("https://sports.bet9ja.com/liveEvent/8653825")
                 .build();
 
 

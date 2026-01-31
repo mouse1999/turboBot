@@ -1,0 +1,6 @@
+2026-01-29 12:16:36.220 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-29 12:16:36.601 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-29 12:17:43.584 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-29 12:17:43.586 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-29 12:18:42.826 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-29 12:18:43.149 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1

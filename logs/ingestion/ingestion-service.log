@@ -1,0 +1,3 @@
+2026-01-31 10:51:45.805 [main] INFO  c.m.bet.ingestion.IngestionService - ℹ️ 💾 Shutting down IngestionService...
+2026-01-31 10:51:47.050 [main] WARN  c.m.bet.ingestion.IngestionService - ⚠️ 🔄 Polling not running
+2026-01-31 10:51:47.051 [main] INFO  c.m.bet.ingestion.IngestionService - ✅ 💾 IngestionService shutdown complete. Total polls: 0

@@ -1,0 +1,1112 @@
+package com.mouse.bet.mapper;
+
+import com.mouse.bet.mapper.model.SimilarBookieMapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class Bet9jaMapper extends SimilarBookieMapper {
+    public Bet9jaMapper() {
+        super("Bet9ja");
+    }
+
+    @Override
+    public String buildKey(String marketId, String specifier) {
+        if (specifier == null || specifier.isEmpty()) {
+            return marketId;
+        }
+        return marketId + "-" + specifier;
+    }
+
+    @Override
+    public void initializeMarkets() {
+        // ───────────────────────────────────────────────
+        // BASKETBALL MARKETS
+        // ───────────────────────────────────────────────
+        // Note: Bet9ja uses market IDs like "LIVEB_12", "LIVEB_OUOT", etc.
+        // The outcome IDs are appended (e.g., "LIVEB_12_1", "LIVEB_OUOT@159.5_O")
+        // We store market names and outcome names for mapping
+
+        // MONEYLINE (2-Way - Including Overtime)
+        // Market ID: LIVEB_12
+        Map<String, String> moneyline = new HashMap<>();
+        moneyline.put("1", "Home");
+        moneyline.put("2", "Away");
+        addMarket("LIVEB_12", null, "Moneyline (incl. overtime)", moneyline);
+
+        // 3-WAY (Regular Time)
+        // Market ID: LIVEB_1X2N
+        Map<String, String> threeWay = new HashMap<>();
+        threeWay.put("1", "Home");
+        threeWay.put("X", "Draw");
+        threeWay.put("2", "Away");
+        addMarket("LIVEB_1X2N", null, "3-Way (Regular Time)", threeWay);
+
+        // DRAW NO BET (Including Overtime)
+        // Market ID: LIVEB_DNB
+        Map<String, String> drawNoBet = new HashMap<>();
+        drawNoBet.put("1", "Home");
+        drawNoBet.put("2", "Away");
+        addMarket("LIVEB_DNB", null, "Draw No Bet", drawNoBet);
+
+        // DRAW NO BET - 3RD PERIOD
+        // Market ID: LIVEB_DNB3PN
+        Map<String, String> drawNoBet3P = new HashMap<>();
+        drawNoBet3P.put("1", "Home");
+        drawNoBet3P.put("2", "Away");
+        addMarket("LIVEB_DNB3PN", null, "Draw No Bet - 3rd Period", drawNoBet3P);
+
+        // WILL THERE BE OVERTIME
+        // Market ID: LIVEB_OTN
+        Map<String, String> overtime = new HashMap<>();
+        overtime.put("Yes", "Yes");
+        overtime.put("No", "No");
+        addMarket("LIVEB_OTN", null, "Will There be Overtime", overtime);
+
+        // ODD/EVEN (Regular Time)
+        // Market ID: LIVEB_OEN
+        Map<String, String> oddEvenRegular = new HashMap<>();
+        oddEvenRegular.put("Odd", "Odd");
+        oddEvenRegular.put("Even", "Even");
+        addMarket("LIVEB_OEN", null, "Odd/Even (Regular Time)", oddEvenRegular);
+
+        // ODD/EVEN (Including Overtime)
+        // Market ID: LIVEB_OEOT
+        Map<String, String> oddEvenOT = new HashMap<>();
+        oddEvenOT.put("OD", "Odd");
+        oddEvenOT.put("EV", "Even");
+        addMarket("LIVEB_OEOT", null, "Odd/Even (incl. overtime)", oddEvenOT);
+
+        // ODD/EVEN - 3RD PERIOD
+        // Market ID: LIVEB_OEP3
+        Map<String, String> oddEven3P = new HashMap<>();
+        oddEven3P.put("OD", "Odd");
+        oddEven3P.put("EV", "Even");
+        addMarket("LIVEB_OEP3", null, "Odd/Even - 3rd Period", oddEven3P);
+
+        // Generate all Basketball markets
+        generateHandicapIncludingOvertime();
+        generateHandicap3rdPeriod();
+        generateTotalIncludingOvertime();
+        generateTotalRegularTime();
+        generateSecondHalfTotal();
+        generateAllPeriodMarkets();
+        generateTeamTotals();
+        generateAdditionalBasketballMarkets();
+
+        // ───────────────────────────────────────────────
+        // SOCCER/FOOTBALL MARKETS
+        // ───────────────────────────────────────────────
+        initializeSoccerMarkets();
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // BASKETBALL HANDICAP GENERATORS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateHandicapIncludingOvertime() {
+        // Handicap (Including Overtime)
+        // Market ID format: LIVEB_12HNDOTN02@{handicap}
+        // Outcome suffixes: _1H (Home), _2H (Away)
+
+        for (double hcp = -40.5; hcp <= 40.5; hcp += 0.5) {
+            if (hcp == 0) continue;
+
+            String line = formatDecimal(Math.abs(hcp));
+            String handicapValue = (hcp < 0 ? "-" : "") + line;
+            String marketId = "LIVEB_12HNDOTN02@" + handicapValue;
+
+            Map<String, String> map = new HashMap<>();
+            if (hcp < 0) {
+                map.put("1H", "Home -" + line);
+                map.put("2H", "Away +" + line);
+            } else {
+                map.put("1H", "Home +" + line);
+                map.put("2H", "Away -" + line);
+            }
+
+            addMarket(marketId, null, "Handicap (Including Overtime)", map);
+        }
+    }
+
+    private void generateHandicap3rdPeriod() {
+        // Handicap - 3rd Period
+        // Market ID format: LIVEB_12HND3P@{handicap}
+        // Outcome suffixes: _1H (Home), _2H (Away)
+
+        for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+            if (hcp == 0) continue;
+
+            String line = formatDecimal(Math.abs(hcp));
+            String handicapValue = (hcp < 0 ? "-" : "") + line;
+            String marketId = "LIVEB_12HND3P@" + handicapValue;
+
+            Map<String, String> map = new HashMap<>();
+            if (hcp < 0) {
+                map.put("1H", "Home -" + line);
+                map.put("2H", "Away +" + line);
+            } else {
+                map.put("1H", "Home +" + line);
+                map.put("2H", "Away -" + line);
+            }
+
+            addMarket(marketId, null, "Handicap - 3rd Period", map);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // BASKETBALL TOTALS GENERATORS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTotalIncludingOvertime() {
+        // Total (Including Overtime)
+        // Market ID format: LIVEB_OUOT@{total}
+        // Outcome suffixes: _O (Over), _U (Under)
+
+        for (double total = 110.5; total <= 280.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVEB_OUOT@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, "Total (Including Overtime)", map);
+        }
+    }
+
+    private void generateTotalRegularTime() {
+        // Total (Regular Time)
+        // Market ID format: LIVEB_OU@{total}
+        // Outcome suffixes: _O (Over), _U (Under)
+
+        for (double total = 110.5; total <= 280.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVEB_OU@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, "Total (Regular Time)", map);
+        }
+    }
+
+    private void generateSecondHalfTotal() {
+        // 2nd Half Total (Including OT)
+        // Market ID format: LIVEB_2TOU@{total}
+        // Outcome suffixes: _Over, _Under
+
+        for (double total = 30.5; total <= 140.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVEB_2TOU@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("Over", "Over " + line);
+            map.put("Under", "Under " + line);
+            addMarket(marketId, null, "2nd Half Total (incl. overtime)", map);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // ALL PERIOD/QUARTER MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateAllPeriodMarkets() {
+        // Generate for quarters 1-4
+        for (int quarter = 1; quarter <= 4; quarter++) {
+            generatePeriod3Way(quarter);
+            generatePeriodDrawNoBet(quarter);
+            generatePeriodHandicap(quarter);
+            generatePeriodTotal(quarter);
+            generatePeriodOddEven(quarter);
+            generatePeriodWinningMargin(quarter);
+            generatePeriodRaceToPoints(quarter);
+        }
+
+        // Generate half markets
+        generateFirstHalfMarkets();
+        generateSecondHalfMarkets();
+    }
+
+    private void generatePeriod3Way(int quarter) {
+        // Period 3-Way
+        // Market ID format: LIVEB_1X2P{quarter}
+        // Outcome suffixes: _1 (Home), _X (Draw), _2 (Away)
+
+        String marketName = getOrdinalName(quarter) + " Period - 3-Way";
+        String marketId = "LIVEB_1X2P" + quarter;
+
+        Map<String, String> map = new HashMap<>();
+        map.put("1", "Home");
+        map.put("X", "Draw");
+        map.put("2", "Away");
+        addMarket(marketId, null, marketName, map);
+    }
+
+    private void generatePeriodDrawNoBet(int quarter) {
+        // Period Draw No Bet
+        // Market ID format: LIVEB_DNBP{quarter}
+        // Outcome suffixes: _1 (Home), _2 (Away)
+
+        String marketName = getOrdinalName(quarter) + " Period - Draw No Bet";
+        String marketId = "LIVEB_DNBP" + quarter;
+
+        Map<String, String> map = new HashMap<>();
+        map.put("1", "Home");
+        map.put("2", "Away");
+        addMarket(marketId, null, marketName, map);
+    }
+
+    private void generatePeriodHandicap(int quarter) {
+        // Period Handicap
+        // Market ID format: LIVEB_12HNDP{quarter}@{handicap}
+        // Outcome suffixes: _1H (Home), _2H (Away)
+
+        String marketName = getOrdinalName(quarter) + " Period - Handicap";
+
+        for (double hcp = -15.5; hcp <= 15.5; hcp += 0.5) {
+            if (hcp == 0) continue;
+
+            String line = formatDecimal(Math.abs(hcp));
+            String handicapValue = (hcp < 0 ? "-" : "") + line;
+            String marketId = "LIVEB_12HNDP" + quarter + "@" + handicapValue;
+
+            Map<String, String> map = new HashMap<>();
+            if (hcp < 0) {
+                map.put("1H", "Home -" + line);
+                map.put("2H", "Away +" + line);
+            } else {
+                map.put("1H", "Home +" + line);
+                map.put("2H", "Away -" + line);
+            }
+
+            addMarket(marketId, null, marketName, map);
+        }
+    }
+
+    private void generatePeriodTotal(int quarter) {
+        // Period Total
+        // Market ID format: LIVEB_OUP{quarter}@{total}
+        // Outcome suffixes: _O (Over), _U (Under)
+
+        String marketName = getOrdinalName(quarter) + " Period - Total";
+
+        for (double total = 30.5; total <= 80.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVEB_OUP" + quarter + "@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, marketName, map);
+        }
+    }
+
+    private void generatePeriodOddEven(int quarter) {
+        // Period Odd/Even
+        // Market ID format: LIVEB_OEP{quarter}
+        // Outcome suffixes: _OD (Odd), _EV (Even)
+
+        String marketName = getOrdinalName(quarter) + " Period - Odd/Even";
+        String marketId = "LIVEB_OEP" + quarter;
+
+        Map<String, String> map = new HashMap<>();
+        map.put("OD", "Odd");
+        map.put("EV", "Even");
+        addMarket(marketId, null, marketName, map);
+    }
+
+    private void generatePeriodWinningMargin(int quarter) {
+        // Period Winning Margin
+        // Market ID format: LIVEB_WMP{quarter}
+        // Outcome suffixes vary by margin range
+
+        String marketName = getOrdinalName(quarter) + " Period - Winning Margin";
+        String marketId = "LIVEB_WMP" + quarter;
+
+        Map<String, String> map = new HashMap<>();
+        map.put("1H1-3", "Home by 1-3");
+        map.put("1H4-6", "Home by 4-6");
+        map.put("1H7-9", "Home by 7-9");
+        map.put("1H10+", "Home by 10+");
+        map.put("2H1-3", "Away by 1-3");
+        map.put("2H4-6", "Away by 4-6");
+        map.put("2H7-9", "Away by 7-9");
+        map.put("2H10+", "Away by 10+");
+        map.put("Draw", "Draw");
+        addMarket(marketId, null, marketName, map);
+    }
+
+    private void generatePeriodRaceToPoints(int quarter) {
+        // Period Race to Points
+        // Market ID format: LIVEB_RTP{quarter}@{points}
+        // Outcome suffixes: _1 (Home), _2 (Away), _None (None for 3-way)
+
+        int[] racePoints = {5, 10, 15, 20, 25, 30};
+
+        for (int points : racePoints) {
+            String marketName = getOrdinalName(quarter) + " Period - Race to " + points + " Points";
+            String marketId = "LIVEB_RTP" + quarter + "@" + points;
+
+            // 2-way version
+            Map<String, String> map2way = new HashMap<>();
+            map2way.put("1", "Home");
+            map2way.put("2", "Away");
+            addMarket(marketId, null, marketName, map2way);
+
+            // 3-way version (with None)
+            String marketId3way = marketId + "_3W";
+            Map<String, String> map3way = new HashMap<>();
+            map3way.put("1", "Home");
+            map3way.put("None", "None");
+            map3way.put("2", "Away");
+            addMarket(marketId3way, null, marketName + " (3-way)", map3way);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // HALF MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateFirstHalfMarkets() {
+        // 1st Half - 3-Way
+        // Market ID: LIVEB_1X21T
+        Map<String, String> map1X2 = new HashMap<>();
+        map1X2.put("1", "Home");
+        map1X2.put("X", "Draw");
+        map1X2.put("2", "Away");
+        addMarket("LIVEB_1X21T", null, "1st Half - 3-Way", map1X2);
+
+        // 1st Half - Draw No Bet
+        // Market ID: LIVEB_DNB1T
+        Map<String, String> mapDNB = new HashMap<>();
+        mapDNB.put("1", "Home");
+        mapDNB.put("2", "Away");
+        addMarket("LIVEB_DNB1T", null, "1st Half - Draw No Bet", mapDNB);
+
+        // 1st Half - Odd/Even
+        // Market ID: LIVEB_OE1T
+        Map<String, String> mapOE = new HashMap<>();
+        mapOE.put("OD", "Odd");
+        mapOE.put("EV", "Even");
+        addMarket("LIVEB_OE1T", null, "1st Half - Odd/Even", mapOE);
+
+        // 1st Half - Handicap
+        generateFirstHalfHandicap();
+
+        // 1st Half - Total
+        generateFirstHalfTotal();
+    }
+
+    private void generateFirstHalfHandicap() {
+        // 1st Half Handicap
+        // Market ID format: LIVEB_12HND1T@{handicap}
+        // Outcome suffixes: _1H (Home), _2H (Away)
+
+        for (double hcp = -20.5; hcp <= 20.5; hcp += 0.5) {
+            if (hcp == 0) continue;
+
+            String line = formatDecimal(Math.abs(hcp));
+            String handicapValue = (hcp < 0 ? "-" : "") + line;
+            String marketId = "LIVEB_12HND1T@" + handicapValue;
+
+            Map<String, String> map = new HashMap<>();
+            if (hcp < 0) {
+                map.put("1H", "Home -" + line);
+                map.put("2H", "Away +" + line);
+            } else {
+                map.put("1H", "Home +" + line);
+                map.put("2H", "Away -" + line);
+            }
+
+            addMarket(marketId, null, "1st Half - Handicap", map);
+        }
+    }
+
+    private void generateFirstHalfTotal() {
+        // 1st Half Total
+        // Market ID format: LIVEB_OU1T@{total}
+        // Outcome suffixes: _O (Over), _U (Under)
+
+        for (double total = 30.5; total <= 140.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVEB_OU1T@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, "1st Half - Total", map);
+        }
+    }
+
+    private void generateSecondHalfMarkets() {
+        // 2nd Half - 3-Way (incl. overtime)
+        // Market ID: LIVEB_1X22T
+        Map<String, String> map1X2 = new HashMap<>();
+        map1X2.put("1", "Home");
+        map1X2.put("X", "Draw");
+        map1X2.put("2", "Away");
+        addMarket("LIVEB_1X22T", null, "2nd Half - 3-Way (incl. overtime)", map1X2);
+
+        // 2nd Half - Draw No Bet (incl. overtime)
+        // Market ID: LIVEB_DNB2T
+        Map<String, String> mapDNB = new HashMap<>();
+        mapDNB.put("1", "Home");
+        mapDNB.put("2", "Away");
+        addMarket("LIVEB_DNB2T", null, "2nd Half - Draw No Bet (incl. overtime)", mapDNB);
+
+        // 2nd Half - Odd/Even (incl. overtime)
+        // Market ID: LIVEB_OE2T
+        Map<String, String> mapOE = new HashMap<>();
+        mapOE.put("OD", "Odd");
+        mapOE.put("EV", "Even");
+        addMarket("LIVEB_OE2T", null, "2nd Half - Odd/Even (incl. overtime)", mapOE);
+
+        // 2nd Half - Handicap
+        generateSecondHalfHandicap();
+    }
+
+    private void generateSecondHalfHandicap() {
+        // 2nd Half Handicap (incl. overtime)
+        // Market ID format: LIVEB_12HND2T@{handicap}
+        // Outcome suffixes: _1H (Home), _2H (Away)
+
+        for (double hcp = -20.5; hcp <= 20.5; hcp += 0.5) {
+            if (hcp == 0) continue;
+
+            String line = formatDecimal(Math.abs(hcp));
+            String handicapValue = (hcp < 0 ? "-" : "") + line;
+            String marketId = "LIVEB_12HND2T@" + handicapValue;
+
+            Map<String, String> map = new HashMap<>();
+            if (hcp < 0) {
+                map.put("1H", "Home -" + line);
+                map.put("2H", "Away +" + line);
+            } else {
+                map.put("1H", "Home +" + line);
+                map.put("2H", "Away -" + line);
+            }
+
+            addMarket(marketId, null, "2nd Half - Handicap (incl. overtime)", map);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TEAM TOTALS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTeamTotals() {
+        // Home Team Total (Including Overtime)
+        // Market ID format: LIVEB_HTOT@{total}
+        for (double total = 40.5; total <= 140.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVEB_HTOT@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, "Home Team Total (incl. overtime)", map);
+        }
+
+        // Away Team Total (Including Overtime)
+        // Market ID format: LIVEB_ATOT@{total}
+        for (double total = 40.5; total <= 140.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVEB_ATOT@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, "Away Team Total (incl. overtime)", map);
+        }
+
+        // Home Team Total (Regular Time)
+        // Market ID format: LIVEB_HT@{total}
+        for (double total = 40.5; total <= 140.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVEB_HT@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, "Home Team Total (Regular Time)", map);
+        }
+
+        // Away Team Total (Regular Time)
+        // Market ID format: LIVEB_AT@{total}
+        for (double total = 40.5; total <= 140.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVEB_AT@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, "Away Team Total (Regular Time)", map);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // ADDITIONAL BASKETBALL MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateAdditionalBasketballMarkets() {
+        // Winning Margin (Full Game)
+        generateWinningMargin();
+
+        // Race to Points (Full Game)
+        generateRaceToPoints();
+
+        // Highest Scoring Quarter
+        generateHighestScoringQuarter();
+
+        // Highest Scoring Half
+        generateHighestScoringHalf();
+
+        // Double Result
+        generateDoubleResult();
+    }
+
+    private void generateWinningMargin() {
+        // Winning Margin (incl. overtime)
+        // Market ID: LIVEB_WM
+        Map<String, String> map = new HashMap<>();
+        map.put("1H1-5", "Home by 1-5");
+        map.put("1H6-10", "Home by 6-10");
+        map.put("1H11-15", "Home by 11-15");
+        map.put("1H16-20", "Home by 16-20");
+        map.put("1H21+", "Home by 21+");
+        map.put("2H1-5", "Away by 1-5");
+        map.put("2H6-10", "Away by 6-10");
+        map.put("2H11-15", "Away by 11-15");
+        map.put("2H16-20", "Away by 16-20");
+        map.put("2H21+", "Away by 21+");
+        addMarket("LIVEB_WM", null, "Winning Margin (incl. overtime)", map);
+    }
+
+    private void generateRaceToPoints() {
+        // Full game race to points: 10, 20, 30, 40, 50
+        int[] racePoints = {10, 20, 30, 40, 50};
+
+        for (int points : racePoints) {
+            String marketId = "LIVEB_RT@" + points;
+
+            // 2-way version
+            Map<String, String> map2way = new HashMap<>();
+            map2way.put("1", "Home");
+            map2way.put("2", "Away");
+            addMarket(marketId, null, "Race to " + points + " Points (incl. overtime)", map2way);
+
+            // 3-way version
+            String marketId3way = marketId + "_3W";
+            Map<String, String> map3way = new HashMap<>();
+            map3way.put("1", "Home");
+            map3way.put("None", "None");
+            map3way.put("2", "Away");
+            addMarket(marketId3way, null, "Race to " + points + " Points (3-way)", map3way);
+        }
+    }
+
+    private void generateHighestScoringQuarter() {
+        // Highest Scoring Quarter
+        // Market ID: LIVEB_HSQ
+        Map<String, String> map = new HashMap<>();
+        map.put("Q1", "1st Quarter");
+        map.put("Q2", "2nd Quarter");
+        map.put("Q3", "3rd Quarter");
+        map.put("Q4", "4th Quarter");
+        map.put("Equal", "Equal");
+        addMarket("LIVEB_HSQ", null, "Highest Scoring Quarter", map);
+    }
+
+    private void generateHighestScoringHalf() {
+        // Highest Scoring Half
+        // Market ID: LIVEB_HSH
+        Map<String, String> map = new HashMap<>();
+        map.put("1H", "1st Half");
+        map.put("2H", "2nd Half");
+        map.put("Equal", "Equal");
+        addMarket("LIVEB_HSH", null, "Highest Scoring Half", map);
+    }
+
+    private void generateDoubleResult() {
+        // Double Result (HT/FT)
+        // Market ID: LIVEB_DR
+        Map<String, String> map = new HashMap<>();
+        map.put("1/1", "Home/Home");
+        map.put("1/X", "Home/Draw");
+        map.put("1/2", "Home/Away");
+        map.put("X/1", "Draw/Home");
+        map.put("X/X", "Draw/Draw");
+        map.put("X/2", "Draw/Away");
+        map.put("2/1", "Away/Home");
+        map.put("2/X", "Away/Draw");
+        map.put("2/2", "Away/Away");
+        addMarket("LIVEB_DR", null, "Double Result (HT/FT)", map);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // UTILITY METHODS
+    // ──────────────────────────────────────────────────────────────
+
+    private String formatDecimal(double value) {
+        return String.format("%.1f", value);
+    }
+
+    private String getOrdinalName(int number) {
+        String[] ordinals = {"", "1st", "2nd", "3rd", "4th"};
+        if (number >= 1 && number <= 4) {
+            return ordinals[number];
+        }
+        return number + "th";
+    }
+
+    private String getOrdinalSuffix(int number) {
+        if (number >= 11 && number <= 13) {
+            return "th";
+        }
+        int lastDigit = number % 10;
+        if (lastDigit == 1) return "st";
+        if (lastDigit == 2) return "nd";
+        if (lastDigit == 3) return "rd";
+        return "th";
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // SOCCER/FOOTBALL MARKETS
+    // ══════════════════════════════════════════════════════════════
+
+    private void initializeSoccerMarkets() {
+        // CORE SOCCER MARKETS
+        generateSoccerCoreMarkets();
+
+        // HALFTIME MARKETS
+        generateSoccerHalftimeMarkets();
+
+        // GOALS MARKETS
+        generateSoccerGoalsMarkets();
+
+        // HANDICAP & TOTALS
+        generateSoccerHandicapMarkets();
+        generateSoccerTotalMarkets();
+
+        // CORNER MARKETS
+        generateSoccerCornerMarkets();
+
+        // CARD/BOOKING MARKETS
+        generateSoccerCardMarkets();
+
+        // TIME INTERVAL MARKETS
+        generateSoccerTimeIntervalMarkets();
+
+        // PLAYER MARKETS
+        generateSoccerPlayerMarkets();
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SOCCER CORE MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateSoccerCoreMarkets() {
+        // 1X2 (Match Result)
+        Map<String, String> match1x2 = new HashMap<>();
+        match1x2.put("1", "Home");
+        match1x2.put("X", "Draw");
+        match1x2.put("2", "Away");
+        addMarket("LIVES_1X2", null, "1X2 - Match Result", match1x2);
+
+        // Double Chance
+        Map<String, String> dc = new HashMap<>();
+        dc.put("1X", "1X");
+        dc.put("12", "12");
+        dc.put("X2", "X2");
+        addMarket("LIVES_DC", null, "Double Chance", dc);
+
+        // Draw No Bet
+        Map<String, String> dnb = new HashMap<>();
+        dnb.put("1", "Home");
+        dnb.put("2", "Away");
+        addMarket("LIVES_DNB", null, "Draw No Bet", dnb);
+
+        // Both Teams to Score (GGNG)
+        Map<String, String> ggng = new HashMap<>();
+        ggng.put("Y", "Yes");
+        ggng.put("N", "No");
+        addMarket("LIVES_GGNG", null, "Both Teams to Score", ggng);
+
+        // Clean Sheet Home
+        Map<String, String> cleanHome = new HashMap<>();
+        cleanHome.put("Yes", "Yes");
+        cleanHome.put("No", "No");
+        addMarket("LIVES_CLEANHOME", null, "Clean Sheet Home", cleanHome);
+
+        // Clean Sheet Away
+        Map<String, String> cleanAway = new HashMap<>();
+        cleanAway.put("Yes", "Yes");
+        cleanAway.put("No", "No");
+        addMarket("LIVES_CLEANAWAY", null, "Clean Sheet Away", cleanAway);
+
+        // Which Team to Score
+        Map<String, String> teamScore = new HashMap<>();
+        teamScore.put("1", "Only Home");
+        teamScore.put("2", "Only Away");
+        teamScore.put("Both", "Both");
+        teamScore.put("Neither", "Neither");
+        addMarket("LIVES_12SCORE", null, "Which Team to Score", teamScore);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SOCCER HALFTIME MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateSoccerHalftimeMarkets() {
+        // 1X2 Halftime
+        Map<String, String> ht1x2 = new HashMap<>();
+        ht1x2.put("1", "Home");
+        ht1x2.put("X", "Draw");
+        ht1x2.put("2", "Away");
+        addMarket("LIVES_1X21T", null, "Halftime - 1X2", ht1x2);
+
+        // Halftime/Fulltime
+        Map<String, String> htft = new HashMap<>();
+        htft.put("Home/Home", "Home/Home");
+        htft.put("Home/Draw", "Home/Draw");
+        htft.put("Home/Away", "Home/Away");
+        htft.put("Draw/Home", "Draw/Home");
+        htft.put("Draw/Draw", "Draw/Draw");
+        htft.put("Draw/Away", "Draw/Away");
+        htft.put("Away/Home", "Away/Home");
+        htft.put("Away/Draw", "Away/Draw");
+        htft.put("Away/Away", "Away/Away");
+        addMarket("LIVES_HTFT", null, "Halftime/Fulltime", htft);
+
+        // Halftime Double Chance
+        Map<String, String> htdc = new HashMap<>();
+        htdc.put("1X", "1X");
+        htdc.put("12", "12");
+        htdc.put("X2", "X2");
+        addMarket("LIVES_DCHT", null, "Halftime - Double Chance", htdc);
+
+        // 1st Half Draw No Bet
+        Map<String, String> htDnb = new HashMap<>();
+        htDnb.put("Home", "Home");
+        htDnb.put("Away", "Away");
+        addMarket("LIVES_DNB1TN", null, "1st Half - Draw No Bet", htDnb);
+
+        // 1st Half Both Teams to Score
+        Map<String, String> htGgng = new HashMap<>();
+        htGgng.put("Y", "Yes");
+        htGgng.put("N", "No");
+        addMarket("LIVES_GGNG1T", null, "1st Half - Both Teams to Score", htGgng);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SOCCER GOALS MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateSoccerGoalsMarkets() {
+        // Total Goals (Exact)
+        for (int goals = 0; goals <= 6; goals++) {
+            Map<String, String> map = new HashMap<>();
+            String key = String.valueOf(goals);
+            if (goals == 6) {
+                map.put("6+", "6+");
+                addMarket("LIVES_EXACTGOALN", null, "Total Goals (Exact)", map);
+            } else {
+                map.put(key, key);
+                addMarket("LIVES_GOALS", null, "Total Goals", map);
+            }
+        }
+
+        // Total Goals Bands
+        Map<String, String> goalBands = new HashMap<>();
+        goalBands.put("0-1", "0-1");
+        goalBands.put("2-3", "2-3");
+        goalBands.put("4-6", "4-6");
+        goalBands.put("7+", "7+");
+        addMarket("LIVES_GOALSBAN", null, "Total Goals (Bands)", goalBands);
+
+        // Home Team Goals
+        Map<String, String> homeGoals = new HashMap<>();
+        homeGoals.put("0", "0");
+        homeGoals.put("1", "1");
+        homeGoals.put("2", "2");
+        homeGoals.put("3+", "3+");
+        addMarket("LIVES_GOALSHOME", null, "Home Team Goals", homeGoals);
+
+        // Away Team Goals
+        Map<String, String> awayGoals = new HashMap<>();
+        awayGoals.put("0", "0");
+        awayGoals.put("1", "1");
+        awayGoals.put("2", "2");
+        awayGoals.put("3+", "3+");
+        addMarket("LIVES_GOALSAWAY", null, "Away Team Goals", awayGoals);
+
+        // Halftime Total Goals
+        Map<String, String> htGoals = new HashMap<>();
+        for (int i = 0; i <= 5; i++) {
+            htGoals.put(String.valueOf(i), String.valueOf(i));
+        }
+        addMarket("LIVES_HTG", null, "Halftime - Total Goals", htGoals);
+
+        // Highest Scoring Half
+        Map<String, String> highHalf = new HashMap<>();
+        highHalf.put("1", "1st Half");
+        highHalf.put("E", "Equal");
+        highHalf.put("2", "2nd Half");
+        addMarket("LIVES_HIGHHALF", null, "Highest Scoring Half", highHalf);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SOCCER HANDICAP MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateSoccerHandicapMarkets() {
+        // Asian Handicap
+        double[] handicaps = {-2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5};
+
+        for (double hcp : handicaps) {
+            if (hcp == 0.0) continue;
+
+            String hcpStr = formatDecimal(Math.abs(hcp));
+            String marketId = "LIVES_12HNDN@" + (hcp < 0 ? "-" : "") + hcpStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("1H", "Home");
+            map.put("2H", "Away");
+            addMarket(marketId, null, "Asian Handicap", map);
+        }
+
+        // 3-Way Handicap
+        for (double hcp : new double[]{-2.0, -1.0, 1.0, 2.0}) {
+            String hcpStr = formatDecimal(Math.abs(hcp));
+            String marketId = "LIVES_1X2HNDHN1@" + (hcp < 0 ? "-" : "") + hcpStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("1H", "Home");
+            map.put("XH", "Draw");
+            map.put("2H", "Away");
+            addMarket(marketId, null, "3-Way Handicap", map);
+        }
+
+        // Halftime Handicap
+        for (double hcp : new double[]{-1.0, 1.0}) {
+            String hcpStr = formatDecimal(Math.abs(hcp));
+            String marketId = "LIVES_1X2HTN@" + (hcp < 0 ? "-" : "") + hcpStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("Home", "Home");
+            map.put("HandicapTie", "Draw");
+            map.put("Away", "Away");
+            addMarket(marketId, null, "Halftime - Handicap", map);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SOCCER TOTAL MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateSoccerTotalMarkets() {
+        // Over/Under Full Time
+        double[] totals = {0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5};
+
+        for (double total : totals) {
+            String totalStr = formatDecimal(total);
+            String marketId = "LIVES_OU@" + totalStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over");
+            map.put("U", "Under");
+            addMarket(marketId, null, "Total Goals", map);
+        }
+
+        // Over/Under 1st Half
+        for (double total : new double[]{0.5, 1.5, 2.5}) {
+            String totalStr = formatDecimal(total);
+            String marketId = "LIVES_OU1T@" + totalStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over");
+            map.put("U", "Under");
+            addMarket(marketId, null, "1st Half - Total", map);
+        }
+
+        // Over/Under 2nd Half
+        for (double total : new double[]{0.5, 1.5, 2.5}) {
+            String totalStr = formatDecimal(total);
+            String marketId = "LIVES_OU2T@" + totalStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over");
+            map.put("U", "Under");
+            addMarket(marketId, null, "2nd Half - Total", map);
+        }
+
+        // Home Team Total
+        for (double total : new double[]{0.5, 1.5, 2.5}) {
+            String totalStr = formatDecimal(total);
+            String marketId = "LIVES_OUHOME@" + totalStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over");
+            map.put("U", "Under");
+            addMarket(marketId, null, "Home Team Total", map);
+        }
+
+        // Away Team Total
+        for (double total : new double[]{0.5, 1.5, 2.5}) {
+            String totalStr = formatDecimal(total);
+            String marketId = "LIVES_OUAWAY@" + totalStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over");
+            map.put("U", "Under");
+            addMarket(marketId, null, "Away Team Total", map);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SOCCER CORNER MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateSoccerCornerMarkets() {
+        // Total Corners
+        double[] cornerTotals = {6.5, 7.5, 8.5, 9.5, 10.5};
+
+        for (double total : cornerTotals) {
+            String totalStr = formatDecimal(total);
+            String marketId = "LIVES_OUCORNER@" + totalStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("Over", "Over");
+            map.put("Under", "Under");
+            addMarket(marketId, null, "Total Corners", map);
+        }
+
+        // Corner Bands
+        Map<String, String> cornerBands = new HashMap<>();
+        cornerBands.put("0-8", "0-8");
+        cornerBands.put("9-11", "9-11");
+        cornerBands.put("12+", "12+");
+        addMarket("LIVES_CORNER", null, "Corner Bands", cornerBands);
+
+        // Odd/Even Corners
+        Map<String, String> oeCorner = new HashMap<>();
+        oeCorner.put("Odd", "Odd");
+        oeCorner.put("Even", "Even");
+        addMarket("LIVES_OECORNERS", null, "Odd/Even Corners", oeCorner);
+
+        // Home Team Corners Total
+        for (double total : new double[]{5.5}) {
+            String totalStr = formatDecimal(total);
+            String marketId = "LIVES_CORNEROUH@" + totalStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("HOver", "Over");
+            map.put("HUnder", "Under");
+            addMarket(marketId, null, "Home Corners Total", map);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SOCCER CARD/BOOKING MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateSoccerCardMarkets() {
+        // Total Cards
+        double[] cardTotals = {1.5, 2.5, 3.5, 4.5};
+
+        for (double total : cardTotals) {
+            String totalStr = formatDecimal(total);
+            String marketId = "LIVES_TOTACARDSS@" + totalStr;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over");
+            map.put("U", "Under");
+            addMarket(marketId, null, "Total Cards", map);
+        }
+
+        // Card Bands
+        Map<String, String> cardBands = new HashMap<>();
+        cardBands.put("0-2", "0-2");
+        cardBands.put("3-5", "3-5");
+        cardBands.put("6+", "6+");
+        addMarket("LIVES_TOTCARDB", null, "Total Cards (Bands)", cardBands);
+
+        // Odd/Even Cards Home
+        Map<String, String> oeCardH = new HashMap<>();
+        oeCardH.put("Odd", "Odd");
+        oeCardH.put("Even", "Even");
+        addMarket("LIVES_OECARDH", null, "Odd/Even Cards Home", oeCardH);
+
+        // Odd/Even Cards Away
+        Map<String, String> oeCardA = new HashMap<>();
+        oeCardA.put("Odd", "Odd");
+        oeCardA.put("Even", "Even");
+        addMarket("LIVES_OECARDA", null, "Odd/Even Cards Away", oeCardA);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SOCCER TIME INTERVAL MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateSoccerTimeIntervalMarkets() {
+        // Next Goal
+        Map<String, String> nextGoal = new HashMap<>();
+        nextGoal.put("1", "Home");
+        nextGoal.put("X", "No Goal");
+        nextGoal.put("2", "Away");
+        addMarket("LIVES_NEXTGOAL", null, "Next Goal", nextGoal);
+
+        // X Minutes 1X2 Markets
+        int[] intervals = {10, 15, 20, 25, 30, 35, 40, 50, 55, 60, 65, 70, 75};
+
+        for (int mins : intervals) {
+            String marketId = "LIVES_" + mins + "MIN1X2";
+
+            Map<String, String> map = new HashMap<>();
+            map.put("1", "Home");
+            map.put("X", "Draw");
+            map.put("2", "Away");
+            addMarket(marketId, null, mins + " Minutes - 1X2", map);
+        }
+
+        // X Minutes O/U Markets
+        for (int mins : intervals) {
+            String marketId = "LIVES_" + mins + "MINOU";
+
+            for (double total : new double[]{0.5, 1.5}) {
+                String totalStr = formatDecimal(total);
+                String marketIdWithTotal = marketId + "@" + totalStr;
+
+                Map<String, String> map = new HashMap<>();
+                map.put("O", "Over");
+                map.put("U", "Under");
+                addMarket(marketIdWithTotal, null, mins + " Minutes - Over/Under", map);
+            }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SOCCER PLAYER MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateSoccerPlayerMarkets() {
+        // Note: Player markets use dynamic player IDs
+        // Format: LIVES_[MARKET]@[PLAYER_ID]:[PLAYER_NAME]
+        // These are handled dynamically, so we just document the structure
+
+        // Examples (not exhaustive):
+        // - LIVES_AG1@[ID]:[NAME] - Anytime Goalscorer
+        // - LIVES_NG@[ID]:[NAME]#1 - Next Goalscorer
+        // - LIVES_AASSIST@[ID]:[NAME] - Assist
+        // - LIVES_TOTSHOTOU@[ID]:[NAME]#[VALUE] - Total Shots Over/Under
+        // - LIVES_TOTSHOTTARGETOU@[ID]:[NAME]#[VALUE] - Shots on Target Over/Under
+        // - LIVES_TOTATSHOT@[ID]:[NAME]#[VALUE] - At Least X Shots
+        // - LIVES_TOTATSHOTTARGET@[ID]:[NAME]#[VALUE] - At Least X Shots on Target
+        // - LIVES_PS2@[ID]:[NAME] - Player Sent Off
+        // - LIVES_PS3@[ID]:[NAME] - Player Booked
+        // - LIVES_ANYREDCARDS@[ID]:[NAME] - Any Red Cards
+
+        // These markets are generated dynamically based on available players
+        // The mapper will handle them when encountered in the odds data
+    }
+}

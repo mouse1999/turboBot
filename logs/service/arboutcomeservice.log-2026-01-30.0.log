@@ -1,0 +1,585 @@
+2026-01-30 09:54:47.135 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 09:54:47.218 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:18.844 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:18.919 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:21.886 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:21.904 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:22.590 [main] WARN  c.m.bet.service.ArbOutcomeService - ⚠️ ✔️ Cannot check active status: null parameters | ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:32.527 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:32.529 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:35.357 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:35.359 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:35.908 [main] WARN  c.m.bet.service.ArbOutcomeService - ⚠️ ✔️ Cannot check active status: null parameters | ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:48.121 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:48.122 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:51.039 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:51.041 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:04:51.623 [main] WARN  c.m.bet.service.ArbOutcomeService - ⚠️ ✔️ Cannot check active status: null parameters | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:38.087 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:38.154 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:41.713 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:41.714 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:41.994 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:41.995 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:42.470 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:42.475 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:42.779 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:42.781 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:43.140 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:43.141 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:43.498 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:43.500 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:43.897 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:43.899 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:44.384 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:44.386 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:44.881 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:44.882 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:45.344 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:45.345 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:45.726 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:45.727 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:46.157 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:46.158 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:46.712 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:46.714 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:47.078 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:47.079 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:47.405 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:47.407 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:47.896 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:47.897 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:48.389 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:48.390 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:48.863 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:48.864 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:49.183 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:49.188 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:49.512 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:49.513 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:49.760 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:49.762 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:50.264 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:50.266 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:50.659 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:50.660 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:50.999 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:51.000 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:51.436 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:51.438 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:51.859 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:51.860 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:52.340 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:52.341 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:52.712 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:52.713 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:53.030 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:53.031 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:53.515 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:53.517 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:53.909 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:53.911 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:54.282 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:54.287 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:54.726 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:54.728 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:55.114 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:55.115 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:55.351 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:55.353 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:55.691 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:55.696 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:55.976 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:55.977 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:56.222 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:56.224 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:56.443 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:56.445 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:56.666 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:56.667 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:57.008 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:57.009 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:57.391 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:57.392 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:57.775 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:57.776 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:58.071 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:58.073 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:58.557 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:58.558 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:58.948 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:58.949 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:59.303 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:59.305 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:59.716 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:59.717 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:59.982 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:12:59.985 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:00.215 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:00.217 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:00.625 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:00.626 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:01.083 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:01.084 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:01.414 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:01.415 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:01.867 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:01.869 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:02.226 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:02.227 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:02.529 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:02.531 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:02.932 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:02.934 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:03.323 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:03.325 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:03.575 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:03.576 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:03.998 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:03.999 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:04.435 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:04.438 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:04.812 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:04.813 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:08.677 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:08.678 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:09.040 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:09.045 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:09.474 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:09.476 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:09.911 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:09.912 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:10.381 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:10.382 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:10.614 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:10.615 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:10.943 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:10.944 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:11.215 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:11.216 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:11.582 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:11.583 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:12.051 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 10:13:12.051 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:15.017 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:15.099 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:18.505 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:18.507 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:18.829 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:18.831 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:19.138 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:19.139 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:19.575 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:19.577 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:20.016 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:20.018 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:20.448 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:20.450 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:20.873 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:20.874 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:21.353 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:21.354 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:21.617 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:21.618 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:22.067 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:22.068 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:22.352 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:22.353 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:22.754 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:22.755 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:23.042 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:23.046 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:23.280 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:23.281 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:23.588 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:23.589 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:24.071 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:24.072 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:24.301 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:24.303 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:24.580 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:24.582 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:24.930 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:24.932 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:25.314 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:25.341 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:25.748 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:25.751 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:26.098 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:26.100 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:26.418 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:26.486 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:26.721 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:26.722 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:27.028 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:27.030 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:27.303 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:27.304 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:28.334 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:28.336 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:30.369 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:30.370 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:32.963 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:32.965 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:35.381 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:35.383 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:37.285 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:37.286 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:38.811 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:38.817 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:40.123 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:40.124 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:40.474 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:40.476 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:41.188 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:41.190 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:41.650 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:41.651 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:42.107 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:42.108 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:42.504 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:42.505 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:42.724 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:42.726 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:42.951 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:42.953 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:43.594 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:43.676 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:45.468 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:45.470 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:47.009 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:47.023 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:49.836 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:32:49.837 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:46:44.903 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:46:44.986 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:02.961 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:02.967 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:03.820 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:03.822 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:04.196 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:04.197 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:04.581 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:04.582 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:05.081 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:05.082 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:05.567 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:05.571 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:06.039 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:06.040 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:06.278 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:06.279 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:06.682 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:06.683 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:06.895 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:06.896 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:07.274 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:07.275 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:07.540 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:07.542 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:07.882 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:07.883 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:08.228 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:08.229 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:08.732 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:08.733 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:09.083 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:09.084 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:09.472 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:09.477 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:09.830 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:09.831 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:10.073 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:10.075 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:10.516 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:10.517 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:10.962 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:10.963 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:11.315 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:11.316 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:11.650 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:11.651 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:11.917 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:11.918 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:12.273 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:12.274 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:12.496 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:12.498 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:12.911 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:12.912 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:13.418 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:13.422 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:13.804 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:13.806 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:14.297 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:14.297 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:14.721 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:14.726 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:15.085 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:15.089 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:15.546 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:15.547 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:15.818 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:15.822 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:16.264 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:16.265 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:16.661 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:16.662 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:17.050 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:17.051 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:17.450 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:17.451 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:17.866 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:17.867 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:18.279 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:18.280 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:18.740 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:18.742 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:19.179 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:19.181 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:19.413 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:19.414 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:19.750 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:19.751 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:20.060 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:20.062 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:20.463 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:20.464 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:20.791 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:20.793 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:21.147 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:21.148 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:21.542 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:21.544 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:21.879 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:21.880 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:22.383 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:22.385 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:24.288 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:25.202 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:26.014 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:26.016 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:27.463 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:27.465 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:27.867 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:27.868 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:28.327 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:28.328 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:28.779 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:28.782 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:29.103 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:29.107 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:29.382 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:29.383 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:29.780 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:29.782 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:30.215 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:30.216 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:30.502 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:30.515 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:30.745 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:30.748 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:31.027 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:31.028 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:31.486 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:31.487 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:31.964 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:31.965 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:32.202 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:32.202 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:32.728 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:32.731 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:33.065 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:33.066 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:42.218 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:42.219 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:45.411 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:47:45.412 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:49:00.517 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:49:00.519 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:49:13.110 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:49:13.112 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 11:49:16.122 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 11:49:16.125 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:03:34.418 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:03:34.657 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:03:58.146 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:03:58.149 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:11:41.376 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:11:41.665 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:18:19.771 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:18:20.252 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:18:25.977 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:18:25.979 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:26.524 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:27.012 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:33.757 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:33.759 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:34.528 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:34.529 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:34.983 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:34.984 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:35.750 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:35.753 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:36.243 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:36.246 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:36.597 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:36.598 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:36.825 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:36.828 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:37.147 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:37.148 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:37.593 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:37.594 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:37.897 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:37.897 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:38.166 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:38.210 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:38.594 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:38.596 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:38.829 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:38.830 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:39.194 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:39.195 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:39.509 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:39.510 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:39.983 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:39.984 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:40.300 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:40.303 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:40.525 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:40.527 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:40.845 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:40.846 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:41.227 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:41.228 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:41.562 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:41.563 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:41.909 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:41.910 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:42.137 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:42.138 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:42.381 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:42.384 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:42.751 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:42.754 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:42.995 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:43.078 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:43.582 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:43.584 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:43.909 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:43.910 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:44.212 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:44.213 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:44.688 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:44.689 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:45.073 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:45.074 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:45.438 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:45.439 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:45.793 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:45.794 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:46.238 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:46.240 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:46.516 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:46.517 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:46.849 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:46.850 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:47.284 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:47.286 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:47.713 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:47.714 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:48.017 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:48.018 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:48.517 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:48.517 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:48.944 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:48.945 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:49.334 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:49.335 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:49.764 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:49.766 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:50.101 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:50.101 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:50.360 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:50.361 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:50.812 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:50.813 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:51.301 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:51.302 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:51.659 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:51.660 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:52.258 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:52.259 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:52.749 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:52.751 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:53.065 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:53.068 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:53.533 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:53.535 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:53.969 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:53.970 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:54.310 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:54.313 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:54.559 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:54.561 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:55.070 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:55.073 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:55.329 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:55.330 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:55.814 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:55.815 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:56.122 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:56.124 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:56.616 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:56.617 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:57.028 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:57.030 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:57.514 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:57.515 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:57.957 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:57.959 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:58.249 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:58.250 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:58.644 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:58.645 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:59.119 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:59.120 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:59.416 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:59.418 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:59.782 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:59.784 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:59.997 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:40:59.999 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:00.240 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:00.241 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:00.853 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:00.862 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:01.089 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:01.091 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:01.524 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:01.525 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:01.750 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:01.751 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:02.180 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:02.181 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:02.550 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:02.551 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:02.775 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:02.776 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:03.216 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:03.217 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:03.535 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:03.547 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:03.954 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:03.958 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:16.907 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:16.908 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:20.394 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:41:20.396 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:42:39.637 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:42:39.637 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:42:53.470 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:42:53.471 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-30 12:42:56.190 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-30 12:42:56.191 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1

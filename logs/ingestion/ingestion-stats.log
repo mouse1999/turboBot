@@ -1,0 +1,3 @@
+2026-01-31 10:51:45.805 - ℹ️ 💾 Shutting down IngestionService...
+2026-01-31 10:51:47.050 - ⚠️ 🔄 Polling not running
+2026-01-31 10:51:47.051 - ✅ 💾 IngestionService shutdown complete. Total polls: 0

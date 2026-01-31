@@ -1,2 +1,12 @@
-2026-01-29 12:08:38.583 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
-2026-01-29 12:09:09.415 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
+2026-01-31 00:10:41.882 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-31 00:10:42.299 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
+2026-01-31 09:37:33.485 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-31 09:37:33.486 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
+2026-01-31 10:43:15.573 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-31 10:43:15.621 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
+2026-01-31 11:28:30.101 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-31 11:28:30.301 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
+2026-01-31 12:05:52.108 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-31 12:05:52.108 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
+2026-01-31 12:13:46.936 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
+2026-01-31 12:13:46.937 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
