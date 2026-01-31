@@ -1250,3 +1250,211 @@ Football. Rwanda. Division 2
     "masked": false,
     "timestamp": 1769349572
 }
+========================================================================
+
+
+{
+    "filtered": 13,
+    "items": [
+        {
+            "id": "16193962012061996968:14:6;22277:::-2252784973330138474;22278:::-2252784974526415481;",
+            "event_id": "16193962012061996968",
+            "value": 3.73,
+            "roi": 127.13929961089494,
+            "created": "2026-01-31 17:57:48",
+            "f": "1",
+            "groups_ids": [
+                6
+            ],
+            "odds": [
+                {
+                    "sub_event_id": "16193959100379413142",
+                    "type_id": 22277,
+                    "value": 2.05,
+                    "prev": 2.3,
+                    "index": "",
+                    "bank": "",
+                    "updated": "2026-01-31 17:57:23",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "mid": "302",
+                        "oid": "5",
+                        "spec": "quarternr=2"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959099183136135",
+                    "type_id": 22278,
+                    "value": 2.1,
+                    "prev": 1.7,
+                    "index": "",
+                    "bank": "",
+                    "updated": "2026-01-31 17:57:45",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "mid": "302",
+                        "oid": "4",
+                        "spec": "quarternr=2"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "16193959104518032599:347:18;22263:2.5::-2252784972919382014;22264:2.5::-2252784975325879833;",
+            "event_id": "16193959104518032599",
+            "value": 3.33,
+            "roi": 113.50505836575876,
+            "created": "2026-01-31 17:57:43",
+            "f": "1",
+            "groups_ids": [
+                18
+            ],
+            "odds": [
+                {
+                    "sub_event_id": "16193959100790169602",
+                    "type_id": 22263,
+                    "value": 3.1,
+                    "prev": 3,
+                    "index": "2.5",
+                    "bank": "",
+                    "updated": "2026-01-31 17:56:45",
+                    "rules_ids": null,
+                    "initiator": false,
+                    "crumbs": {
+                        "id2": "LIVES_TOTACRNR@2.5_O"
+                    }
+                },
+                {
+                    "sub_event_id": "16193959098383671783",
+                    "type_id": 22264,
+                    "value": 1.55,
+                    "prev": 1.52,
+                    "index": "2.5",
+                    "bank": "",
+                    "updated": "2026-01-31 17:57:35",
+                    "rules_ids": null,
+                    "initiator": true,
+                    "crumbs": {
+                        "mid": "168",
+                        "oid": "13",
+                        "spec": "total=2.5"
+                    }
+                }
+            ]
+        }
+    ],
+    "events": [
+        {
+            "sport_id": 5,
+            "id": "16193962012061996968",
+            "league": "Italy. Seria B",
+            "team_1": "Ferrara",
+            "team_2": "ASD LUISS Roma",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 12,
+            "sub_events": [
+                {
+                    "bookmaker_id": 43,
+                    "id": "16193959100379413142",
+                    "sport": "Basketball",
+                    "league": "Italy. Serie B",
+                    "team_1": "Ferrara Basket 2018",
+                    "team_2": "Luiss Roma",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_62529286",
+                    "reordered": true,
+                    "progress": "Q2, 11:55, 15:24",
+                    "crumbs": {
+                        "country": "Italy",
+                        "country_id": "sr:category:107",
+                        "event_id": "62529286",
+                        "league": "Serie B",
+                        "league_id": "sr:tournament:30574",
+                        "path": "/ng/sport/basketball/live/sr:category:107/sr:tournament:30574/sr:match:62529286",
+                        "sport": "basketball",
+                        "team1": "Luiss_Roma",
+                        "team2": "Ferrara_Basket_2018"
+                    }
+                },
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959099183136135",
+                    "sport": "Basketball",
+                    "league": "Italy Serie B",
+                    "team_1": "Ferrara Basket 2018",
+                    "team_2": "Luiss Roma",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_62529286",
+                    "reordered": true,
+                    "progress": "15:24",
+                    "crumbs": {
+                        "event_id": "62529286",
+                        "league": "Italy_Serie_B",
+                        "sport": "Basketball",
+                        "team1": "Luiss_Roma",
+                        "team2": "Ferrara_Basket_2018"
+                    }
+                }
+            ]
+        },
+        {
+            "sport_id": 1,
+            "id": "16193959104518032599",
+            "league": "England. Premier League",
+            "team_1": "Chelsea",
+            "team_2": "West Ham Utd",
+            "start": "2030-01-01 00:01",
+            "live": true,
+            "break": false,
+            "filtered": 1,
+            "sub_events": [
+                {
+                    "bookmaker_id": 33,
+                    "id": "16193959100790169602",
+                    "sport": "Soccer",
+                    "league": "England - England Premier League",
+                    "team_1": "Chelsea",
+                    "team_2": "West Ham",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_8645648",
+                    "reordered": false,
+                    "progress": "29'; 0-1",
+                    "crumbs": {
+                        "country": "england",
+                        "event_id": "8645648",
+                        "league": "england-england-premier-league",
+                        "path": "/mobile/liveEventDetail/Soccer/England/England - England Premier League/Chelsea-West Ham/8645648",
+                        "sport": "soccer",
+                        "team1": "chelsea",
+                        "team2": "west-ham"
+                    }
+                },
+                {
+                    "bookmaker_id": 80,
+                    "id": "16193959098383671783",
+                    "sport": "Soccer",
+                    "league": "England Premier League",
+                    "team_1": "Chelsea",
+                    "team_2": "West Ham",
+                    "start": "2030-01-01 00:01",
+                    "original_id": "live_61300981",
+                    "reordered": false,
+                    "progress": "27'26\", 0:1",
+                    "crumbs": {
+                        "event_id": "61300981",
+                        "league": "England_Premier_League",
+                        "sport": "Soccer",
+                        "team1": "Chelsea",
+                        "team2": "West_Ham"
+                    }
+                }
+            ]
+        }
+    ],
+    "masked": false,
+    "timestamp": 1769882302
+}

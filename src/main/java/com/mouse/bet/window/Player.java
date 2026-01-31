@@ -121,8 +121,8 @@ public class Player {
             runningTasks.add(bookMakerFuture(bet9ja, BookMaker.BET9JA));
             log.info("{} window submitted to executor", BookMaker.BET9JA);
 
-            runningTasks.add(bookMakerFuture(oneWinWindow, BookMaker._1WIN));
-            log.info("{} window submitted to executor", BookMaker._1WIN);
+//            runningTasks.add(bookMakerFuture(oneWinWindow, BookMaker._1WIN));
+//            log.info("{} window submitted to executor", BookMaker._1WIN);
 
 
             log.info("{} {} Both windows started successfully", EMOJI_SUCCESS, EMOJI_WINDOW);
@@ -185,13 +185,13 @@ public class Player {
                     }
 
                     // Check if Sporty window is up and running
-                    oneWinRunning = oneWinWindow.isWindowUpAndRunning();
-                    if (!oneWinRunning) {
-                        log.error("{} {} {} window is NOT running!",
-                                EMOJI_ERROR, EMOJI_WARNING, BookMaker._1WIN);
-                    } else {
-                        log.debug("✅ {} window is running", BookMaker._1WIN);
-                    }
+//                    oneWinRunning = oneWinWindow.isWindowUpAndRunning();
+//                    if (!oneWinRunning) {
+//                        log.error("{} {} {} window is NOT running!",
+//                                EMOJI_ERROR, EMOJI_WARNING, BookMaker._1WIN);
+//                    } else {
+//                        log.debug("✅ {} window is running", BookMaker._1WIN);
+//                    }
 
                     bet9jaRunning = bet9ja.isWindowUpAndRunning();
                     if (!bet9jaRunning) {

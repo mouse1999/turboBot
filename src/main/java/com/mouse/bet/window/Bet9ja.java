@@ -155,7 +155,7 @@ public class Bet9ja implements BettingWindow, Runnable {
             throw new RuntimeException("Playwright initialization failed", e);
         }
 
-        run();
+//        run();
     }
 
     // ========================================================================
@@ -169,73 +169,73 @@ public class Bet9ja implements BettingWindow, Runnable {
      * @return BetLegTask object or null if timeout/interrupted
      */
     private BetLegTask pollTaskFromDispatcher() {
-//        try {
-//            log.debug("{} {} Polling for BetLegTask from queue...", EMOJI_POLL, EMOJI_SEARCH);
-//
-//            BetLegTask task = taskQueue.poll(pollIntervalMs, TimeUnit.MILLISECONDS);
-//
-//            if (task != null) {
-//                log.info("{} {} Received BetLegTask | ArbId: {} | Bookmaker: {} | Outcome: {} | Odds: {} | Stake: {}",
-//                        EMOJI_SUCCESS, EMOJI_POLL,
-//                        task.getArbId(), task.getBookmaker(), task.getOutcome(),
-//                        task.getExpectedOdds(), task.getStakeAmount());
-//
-//                log.info("{}", task.getArb().getOutcomeBreakdown());
-//            }
-//
-//            return task;
-//
-//        } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt();
-//            log.warn("{} {} Task polling interrupted", EMOJI_WARNING, EMOJI_POLL);
-//            return null;
-//        } catch (Exception e) {
-//            log.error("{} {} Error polling task: {}", EMOJI_ERROR, EMOJI_POLL, e.getMessage(), e);
-//            return null;
-//        }
-//
-        ArbOutcome outcome1 = ArbOutcome.builder()
-                .bookmakerId(1)
-                .bookmakerName(BookMaker.MSPORT)
-                .homeTeam("Putrajaya")
-                .awayTeam("Perak")
-                .marketType("Double Chance")
-                .outComeName("12")
-                .odds(new BigDecimal(1.35))
-                .previousOdds(new BigDecimal("2.10"))
-                .stake(new BigDecimal("100"))
-                .sport("Basketball")
-                .progress("Not Started")
-                .reordered(false)
-                .initiator(true)
-                .leagueName("NBA")
-                .bookMakerUrl("https://sports.bet9ja.com/liveEvent/8653825")
-                .build();
+        try {
+            log.debug("{} {} Polling for BetLegTask from queue...", EMOJI_POLL, EMOJI_SEARCH);
 
+            BetLegTask task = taskQueue.poll(pollIntervalMs, TimeUnit.MILLISECONDS);
 
-        BetLeg betLeg = new BetLeg(
-                outcome1.getBookmakerName(),                    // BookMaker.MSPORT
-                outcome1.getBookmakerId(),                      // 1
-                outcome1.getMarketType(),                       // "Point Handicap"
-                outcome1.getOutComeName(),                      // "Home (-12.5)"
-                outcome1.getBookMakerUrl(),                     // "https://www.msport.com/..."
-                outcome1.getOdds().doubleValue(),               // 1.88
-                outcome1.getOdds().doubleValue() * (1.874), // 1.874 (min)
-                outcome1.getOdds().doubleValue() * (1.886), // 1.886 (max)
-                outcome1.getStake().doubleValue(),              // 531.91
-                outcome1.getLeagueName(),                       // "NBA"
-                outcome1.getHomeTeam(),                         // "Test Lakers"
-                outcome1.getAwayTeam(),
-                outcome1.getSubEventId(),
-                outcome1.getSport()
-                // "Test Celtics// "demo_arb_001"
-        );
-        Phaser phaser = new Phaser(1);
-        return BetLegTask.builder()
-                .betLeg(betLeg)
-                .barrier(phaser)
-                .bookmaker(BookMaker.MSPORT)
-                .build();
+            if (task != null) {
+                log.info("{} {} Received BetLegTask | ArbId: {} | Bookmaker: {} | Outcome: {} | Odds: {} | Stake: {}",
+                        EMOJI_SUCCESS, EMOJI_POLL,
+                        task.getArbId(), task.getBookmaker(), task.getOutcome(),
+                        task.getExpectedOdds(), task.getStakeAmount());
+
+                log.info("{}", task.getArb().getOutcomeBreakdown());
+            }
+
+            return task;
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("{} {} Task polling interrupted", EMOJI_WARNING, EMOJI_POLL);
+            return null;
+        } catch (Exception e) {
+            log.error("{} {} Error polling task: {}", EMOJI_ERROR, EMOJI_POLL, e.getMessage(), e);
+            return null;
+        }
+//
+//        ArbOutcome outcome1 = ArbOutcome.builder()
+//                .bookmakerId(1)
+//                .bookmakerName(BookMaker.MSPORT)
+//                .homeTeam("Putrajaya")
+//                .awayTeam("Perak")
+//                .marketType("Double Chance")
+//                .outComeName("12")
+//                .odds(new BigDecimal(1.35))
+//                .previousOdds(new BigDecimal("2.10"))
+//                .stake(new BigDecimal("100"))
+//                .sport("Basketball")
+//                .progress("Not Started")
+//                .reordered(false)
+//                .initiator(true)
+//                .leagueName("NBA")
+//                .bookMakerUrl("https://sports.bet9ja.com/liveEvent/8653825")
+//                .build();
+//
+//
+//        BetLeg betLeg = new BetLeg(
+//                outcome1.getBookmakerName(),                    // BookMaker.MSPORT
+//                outcome1.getBookmakerId(),                      // 1
+//                outcome1.getMarketType(),                       // "Point Handicap"
+//                outcome1.getOutComeName(),                      // "Home (-12.5)"
+//                outcome1.getBookMakerUrl(),                     // "https://www.msport.com/..."
+//                outcome1.getOdds().doubleValue(),               // 1.88
+//                outcome1.getOdds().doubleValue() * (1.874), // 1.874 (min)
+//                outcome1.getOdds().doubleValue() * (1.886), // 1.886 (max)
+//                outcome1.getStake().doubleValue(),              // 531.91
+//                outcome1.getLeagueName(),                       // "NBA"
+//                outcome1.getHomeTeam(),                         // "Test Lakers"
+//                outcome1.getAwayTeam(),
+//                outcome1.getSubEventId(),
+//                outcome1.getSport()
+//                // "Test Celtics// "demo_arb_001"
+//        );
+//        Phaser phaser = new Phaser(1);
+//        return BetLegTask.builder()
+//                .betLeg(betLeg)
+//                .barrier(phaser)
+//                .bookmaker(BookMaker.MSPORT)
+//                .build();
 
     }
 

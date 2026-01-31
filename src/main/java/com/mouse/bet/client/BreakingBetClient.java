@@ -105,7 +105,7 @@ public class BreakingBetClient {
     @Value("${breaking-bet.token.capture.max-wait:30}")
     private int tokenCaptureMaxWaitSeconds;
 
-//    @PostConstruct
+    @PostConstruct
     public void init() {
         log.info("{} {} Initializing BreakingBetClient – manual login expected", EMOJI_INIT, EMOJI_INFO);
         try {

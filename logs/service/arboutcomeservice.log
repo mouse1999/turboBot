@@ -478,3 +478,5 @@
 2026-01-31 12:16:12.972 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
 2026-01-31 12:16:16.132 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
 2026-01-31 12:16:16.134 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1
+2026-01-31 20:31:33.419 [main] DEBUG c.m.bet.service.ArbOutcomeService - 🔍 ℹ️ Finding ArbOutcome | ExternalId: null | BookmakerId: 1
+2026-01-31 20:31:33.511 [main] DEBUG c.m.bet.service.ArbOutcomeService - ❌ 🔍 No ArbOutcome found for ExternalId: null | BookmakerId: 1

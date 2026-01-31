@@ -1,3 +1,1557 @@
 2026-01-31 10:51:45.805 - ℹ️ 💾 Shutting down IngestionService...
 2026-01-31 10:51:47.050 - ⚠️ 🔄 Polling not running
 2026-01-31 10:51:47.051 - ✅ 💾 IngestionService shutdown complete. Total polls: 0
+2026-01-31 20:28:43.987 - 🚀 ℹ️ Initializing IngestionService...
+2026-01-31 20:28:43.998 - ✅ ⚡ Thread pool created with 4 threads
+2026-01-31 20:28:43.999 - ✅ 🔄 Polling scheduler initialized
+2026-01-31 20:35:20.205 - 🚀 ℹ️ Initializing IngestionService...
+2026-01-31 20:35:20.206 - ✅ ⚡ Thread pool created with 4 threads
+2026-01-31 20:35:20.207 - ✅ 🔄 Polling scheduler initialized
+2026-01-31 20:38:16.145 - 🚀 ℹ️ Application ready - starting polling...
+2026-01-31 20:38:16.146 - 🚀 🔄 ℹ️ Starting live arbs polling every 2 seconds...
+2026-01-31 20:38:16.147 - ✅ 🔄 Polling started successfully
+2026-01-31 20:38:16.147 - 🔄 📥 [Poll #1] Starting live arbs fetch...
+2026-01-31 20:38:16.149 - 📥 Fetching live arbs from API...
+2026-01-31 20:38:18.147 - 🔄 📥 [Poll #2] Starting live arbs fetch...
+2026-01-31 20:38:18.147 - ⚠️ 🔄 [Poll #2] Previous ingestion still running, skipping
+2026-01-31 20:38:20.161 - 🔄 📥 [Poll #3] Starting live arbs fetch...
+2026-01-31 20:38:20.161 - ⚠️ 🔄 [Poll #3] Previous ingestion still running, skipping
+2026-01-31 20:38:22.154 - 🔄 📥 [Poll #4] Starting live arbs fetch...
+2026-01-31 20:38:22.154 - ⚠️ 🔄 [Poll #4] Previous ingestion still running, skipping
+2026-01-31 20:38:24.156 - 🔄 📥 [Poll #5] Starting live arbs fetch...
+2026-01-31 20:38:24.156 - ⚠️ 🔄 [Poll #5] Previous ingestion still running, skipping
+2026-01-31 20:38:26.157 - 🔄 📥 [Poll #6] Starting live arbs fetch...
+2026-01-31 20:38:26.157 - ⚠️ 🔄 [Poll #6] Previous ingestion still running, skipping
+2026-01-31 20:38:28.150 - 🔄 📥 [Poll #7] Starting live arbs fetch...
+2026-01-31 20:38:28.150 - ⚠️ 🔄 [Poll #7] Previous ingestion still running, skipping
+2026-01-31 20:38:30.150 - 🔄 📥 [Poll #8] Starting live arbs fetch...
+2026-01-31 20:38:30.150 - ⚠️ 🔄 [Poll #8] Previous ingestion still running, skipping
+2026-01-31 20:38:32.156 - 🔄 📥 [Poll #9] Starting live arbs fetch...
+2026-01-31 20:38:32.156 - ⚠️ 🔄 [Poll #9] Previous ingestion still running, skipping
+2026-01-31 20:38:34.241 - 🔄 📥 [Poll #10] Starting live arbs fetch...
+2026-01-31 20:38:34.241 - ⚠️ 🔄 [Poll #10] Previous ingestion still running, skipping
+2026-01-31 20:38:36.155 - 🔄 📥 [Poll #11] Starting live arbs fetch...
+2026-01-31 20:38:36.155 - ⚠️ 🔄 [Poll #11] Previous ingestion still running, skipping
+2026-01-31 20:38:38.149 - 🔄 📥 [Poll #12] Starting live arbs fetch...
+2026-01-31 20:38:38.149 - ⚠️ 🔄 [Poll #12] Previous ingestion still running, skipping
+2026-01-31 20:38:40.161 - 🔄 📥 [Poll #13] Starting live arbs fetch...
+2026-01-31 20:38:40.161 - ⚠️ 🔄 [Poll #13] Previous ingestion still running, skipping
+2026-01-31 20:38:42.154 - 🔄 📥 [Poll #14] Starting live arbs fetch...
+2026-01-31 20:38:42.154 - ⚠️ 🔄 [Poll #14] Previous ingestion still running, skipping
+2026-01-31 20:38:44.155 - 🔄 📥 [Poll #15] Starting live arbs fetch...
+2026-01-31 20:38:44.155 - ⚠️ 🔄 [Poll #15] Previous ingestion still running, skipping
+2026-01-31 20:38:46.147 - 🔄 📥 [Poll #16] Starting live arbs fetch...
+2026-01-31 20:38:46.147 - ⚠️ 🔄 [Poll #16] Previous ingestion still running, skipping
+2026-01-31 20:38:48.147 - 🔄 📥 [Poll #17] Starting live arbs fetch...
+2026-01-31 20:38:48.147 - ⚠️ 🔄 [Poll #17] Previous ingestion still running, skipping
+2026-01-31 20:38:50.160 - 🔄 📥 [Poll #18] Starting live arbs fetch...
+2026-01-31 20:38:50.161 - ⚠️ 🔄 [Poll #18] Previous ingestion still running, skipping
+2026-01-31 20:38:52.154 - 🔄 📥 [Poll #19] Starting live arbs fetch...
+2026-01-31 20:38:52.154 - ⚠️ 🔄 [Poll #19] Previous ingestion still running, skipping
+2026-01-31 20:38:54.163 - 🔄 📥 [Poll #20] Starting live arbs fetch...
+2026-01-31 20:38:54.164 - ⚠️ 🔄 [Poll #20] Previous ingestion still running, skipping
+2026-01-31 20:38:56.152 - 🔄 📥 [Poll #21] Starting live arbs fetch...
+2026-01-31 20:38:56.153 - ⚠️ 🔄 [Poll #21] Previous ingestion still running, skipping
+2026-01-31 20:38:58.149 - 🔄 📥 [Poll #22] Starting live arbs fetch...
+2026-01-31 20:38:58.150 - ⚠️ 🔄 [Poll #22] Previous ingestion still running, skipping
+2026-01-31 20:39:00.161 - 🔄 📥 [Poll #23] Starting live arbs fetch...
+2026-01-31 20:39:00.161 - ⚠️ 🔄 [Poll #23] Previous ingestion still running, skipping
+2026-01-31 20:39:02.153 - 🔄 📥 [Poll #24] Starting live arbs fetch...
+2026-01-31 20:39:02.153 - ⚠️ 🔄 [Poll #24] Previous ingestion still running, skipping
+2026-01-31 20:39:04.147 - 🔄 📥 [Poll #25] Starting live arbs fetch...
+2026-01-31 20:39:04.147 - ⚠️ 🔄 [Poll #25] Previous ingestion still running, skipping
+2026-01-31 20:39:06.147 - 🔄 📥 [Poll #26] Starting live arbs fetch...
+2026-01-31 20:39:06.147 - ⚠️ 🔄 [Poll #26] Previous ingestion still running, skipping
+2026-01-31 20:39:08.147 - 🔄 📥 [Poll #27] Starting live arbs fetch...
+2026-01-31 20:39:08.149 - ⚠️ 🔄 [Poll #27] Previous ingestion still running, skipping
+2026-01-31 20:39:10.150 - 🔄 📥 [Poll #28] Starting live arbs fetch...
+2026-01-31 20:39:10.150 - ⚠️ 🔄 [Poll #28] Previous ingestion still running, skipping
+2026-01-31 20:39:12.148 - 🔄 📥 [Poll #29] Starting live arbs fetch...
+2026-01-31 20:39:12.148 - ⚠️ 🔄 [Poll #29] Previous ingestion still running, skipping
+2026-01-31 20:39:14.148 - 🔄 📥 [Poll #30] Starting live arbs fetch...
+2026-01-31 20:39:14.149 - ⚠️ 🔄 [Poll #30] Previous ingestion still running, skipping
+2026-01-31 20:39:16.148 - 🔄 📥 [Poll #31] Starting live arbs fetch...
+2026-01-31 20:39:16.148 - ⚠️ 🔄 [Poll #31] Previous ingestion still running, skipping
+2026-01-31 20:39:18.147 - 🔄 📥 [Poll #32] Starting live arbs fetch...
+2026-01-31 20:39:18.148 - ⚠️ 🔄 [Poll #32] Previous ingestion still running, skipping
+2026-01-31 20:39:20.147 - 🔄 📥 [Poll #33] Starting live arbs fetch...
+2026-01-31 20:39:20.147 - ⚠️ 🔄 [Poll #33] Previous ingestion still running, skipping
+2026-01-31 20:39:22.149 - 🔄 📥 [Poll #34] Starting live arbs fetch...
+2026-01-31 20:39:22.149 - ⚠️ 🔄 [Poll #34] Previous ingestion still running, skipping
+2026-01-31 20:39:24.149 - 🔄 📥 [Poll #35] Starting live arbs fetch...
+2026-01-31 20:39:24.149 - ⚠️ 🔄 [Poll #35] Previous ingestion still running, skipping
+2026-01-31 20:39:26.147 - 🔄 📥 [Poll #36] Starting live arbs fetch...
+2026-01-31 20:39:26.147 - ⚠️ 🔄 [Poll #36] Previous ingestion still running, skipping
+2026-01-31 20:39:28.147 - 🔄 📥 [Poll #37] Starting live arbs fetch...
+2026-01-31 20:39:28.147 - ⚠️ 🔄 [Poll #37] Previous ingestion still running, skipping
+2026-01-31 20:39:30.148 - 🔄 📥 [Poll #38] Starting live arbs fetch...
+2026-01-31 20:39:30.148 - ⚠️ 🔄 [Poll #38] Previous ingestion still running, skipping
+2026-01-31 20:39:30.734 - ❌ 📥 Failed to fetch live arbs: timeout
+java.net.SocketTimeoutException: timeout
+	at okhttp3.internal.http2.Http2Stream$StreamTimeout.newTimeoutException(Http2Stream.kt:675)
+	at okhttp3.internal.http2.Http2Stream$StreamTimeout.exitAndThrowIfTimedOut(Http2Stream.kt:684)
+	at okhttp3.internal.http2.Http2Stream.takeHeaders(Http2Stream.kt:143)
+	at okhttp3.internal.http2.Http2ExchangeCodec.readResponseHeaders(Http2ExchangeCodec.kt:97)
+	at okhttp3.internal.connection.Exchange.readResponseHeaders(Exchange.kt:110)
+	at okhttp3.internal.http.CallServerInterceptor.intercept(CallServerInterceptor.kt:93)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at okhttp3.internal.connection.ConnectInterceptor.intercept(ConnectInterceptor.kt:34)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at okhttp3.internal.cache.CacheInterceptor.intercept(CacheInterceptor.kt:95)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at okhttp3.internal.http.BridgeInterceptor.intercept(BridgeInterceptor.kt:83)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at okhttp3.internal.http.RetryAndFollowUpInterceptor.intercept(RetryAndFollowUpInterceptor.kt:76)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at com.mouse.bet.client.BreakingBetClient.lambda$rebuildOkHttpClient$1(BreakingBetClient.java:326)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at com.mouse.bet.interceptor.SimpleHttpLoggingInterceptor.intercept(SimpleHttpLoggingInterceptor.java:27)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at okhttp3.internal.connection.RealCall.getResponseWithInterceptorChain$okhttp(RealCall.kt:201)
+	at okhttp3.internal.connection.RealCall.execute(RealCall.kt:154)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:357)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:39:32.150 - 🔄 📥 [Poll #39] Starting live arbs fetch...
+2026-01-31 20:39:32.151 - 📥 Fetching live arbs from API...
+2026-01-31 20:39:34.161 - 🔄 📥 [Poll #40] Starting live arbs fetch...
+2026-01-31 20:39:34.161 - ⚠️ 🔄 [Poll #40] Previous ingestion still running, skipping
+2026-01-31 20:39:36.147 - 🔄 📥 [Poll #41] Starting live arbs fetch...
+2026-01-31 20:39:36.147 - ⚠️ 🔄 [Poll #41] Previous ingestion still running, skipping
+2026-01-31 20:39:38.160 - 🔄 📥 [Poll #42] Starting live arbs fetch...
+2026-01-31 20:39:38.160 - ⚠️ 🔄 [Poll #42] Previous ingestion still running, skipping
+2026-01-31 20:39:40.151 - 🔄 📥 [Poll #43] Starting live arbs fetch...
+2026-01-31 20:39:40.152 - ⚠️ 🔄 [Poll #43] Previous ingestion still running, skipping
+2026-01-31 20:39:42.158 - 🔄 📥 [Poll #44] Starting live arbs fetch...
+2026-01-31 20:39:42.158 - ⚠️ 🔄 [Poll #44] Previous ingestion still running, skipping
+2026-01-31 20:39:44.157 - 🔄 📥 [Poll #45] Starting live arbs fetch...
+2026-01-31 20:39:44.157 - ⚠️ 🔄 [Poll #45] Previous ingestion still running, skipping
+2026-01-31 20:39:46.148 - 🔄 📥 [Poll #46] Starting live arbs fetch...
+2026-01-31 20:39:46.148 - ⚠️ 🔄 [Poll #46] Previous ingestion still running, skipping
+2026-01-31 20:39:48.159 - 🔄 📥 [Poll #47] Starting live arbs fetch...
+2026-01-31 20:39:48.159 - ⚠️ 🔄 [Poll #47] Previous ingestion still running, skipping
+2026-01-31 20:39:50.427 - 🔄 📥 [Poll #48] Starting live arbs fetch...
+2026-01-31 20:39:50.428 - ⚠️ 🔄 [Poll #48] Previous ingestion still running, skipping
+2026-01-31 20:39:52.156 - 🔄 📥 [Poll #49] Starting live arbs fetch...
+2026-01-31 20:39:52.156 - ⚠️ 🔄 [Poll #49] Previous ingestion still running, skipping
+2026-01-31 20:39:54.147 - 🔄 📥 [Poll #50] Starting live arbs fetch...
+2026-01-31 20:39:54.147 - ⚠️ 🔄 [Poll #50] Previous ingestion still running, skipping
+2026-01-31 20:39:56.155 - 🔄 📥 [Poll #51] Starting live arbs fetch...
+2026-01-31 20:39:56.156 - ⚠️ 🔄 [Poll #51] Previous ingestion still running, skipping
+2026-01-31 20:39:58.152 - 🔄 📥 [Poll #52] Starting live arbs fetch...
+2026-01-31 20:39:58.153 - ⚠️ 🔄 [Poll #52] Previous ingestion still running, skipping
+2026-01-31 20:40:00.151 - 🔄 📥 [Poll #53] Starting live arbs fetch...
+2026-01-31 20:40:00.151 - ⚠️ 🔄 [Poll #53] Previous ingestion still running, skipping
+2026-01-31 20:40:02.155 - 🔄 📥 [Poll #54] Starting live arbs fetch...
+2026-01-31 20:40:02.155 - ⚠️ 🔄 [Poll #54] Previous ingestion still running, skipping
+2026-01-31 20:40:02.700 - ❌ 📥 Failed to fetch live arbs: Read timed out
+java.net.SocketTimeoutException: Read timed out
+	at java.base/sun.nio.ch.NioSocketImpl.timedRead(NioSocketImpl.java:288)
+	at java.base/sun.nio.ch.NioSocketImpl.implRead(NioSocketImpl.java:314)
+	at java.base/sun.nio.ch.NioSocketImpl.read(NioSocketImpl.java:355)
+	at java.base/sun.nio.ch.NioSocketImpl$1.read(NioSocketImpl.java:808)
+	at java.base/java.net.Socket$SocketInputStream.read(Socket.java:966)
+	at java.base/sun.security.ssl.SSLSocketInputRecord.read(SSLSocketInputRecord.java:484)
+	at java.base/sun.security.ssl.SSLSocketInputRecord.readHeader(SSLSocketInputRecord.java:478)
+	at java.base/sun.security.ssl.SSLSocketInputRecord.decode(SSLSocketInputRecord.java:160)
+	at java.base/sun.security.ssl.SSLTransport.decode(SSLTransport.java:111)
+	at java.base/sun.security.ssl.SSLSocketImpl.decode(SSLSocketImpl.java:1510)
+	at java.base/sun.security.ssl.SSLSocketImpl.readHandshakeRecord(SSLSocketImpl.java:1425)
+	at java.base/sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:455)
+	at java.base/sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:426)
+	at okhttp3.internal.connection.RealConnection.connectTls(RealConnection.kt:379)
+	at okhttp3.internal.connection.RealConnection.establishProtocol(RealConnection.kt:337)
+	at okhttp3.internal.connection.RealConnection.connect(RealConnection.kt:209)
+	at okhttp3.internal.connection.ExchangeFinder.findConnection(ExchangeFinder.kt:226)
+	at okhttp3.internal.connection.ExchangeFinder.findHealthyConnection(ExchangeFinder.kt:106)
+	at okhttp3.internal.connection.ExchangeFinder.find(ExchangeFinder.kt:74)
+	at okhttp3.internal.connection.RealCall.initExchange$okhttp(RealCall.kt:255)
+	at okhttp3.internal.connection.ConnectInterceptor.intercept(ConnectInterceptor.kt:32)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at okhttp3.internal.cache.CacheInterceptor.intercept(CacheInterceptor.kt:95)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at okhttp3.internal.http.BridgeInterceptor.intercept(BridgeInterceptor.kt:83)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at okhttp3.internal.http.RetryAndFollowUpInterceptor.intercept(RetryAndFollowUpInterceptor.kt:76)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at com.mouse.bet.client.BreakingBetClient.lambda$rebuildOkHttpClient$1(BreakingBetClient.java:326)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at com.mouse.bet.interceptor.SimpleHttpLoggingInterceptor.intercept(SimpleHttpLoggingInterceptor.java:27)
+	at okhttp3.internal.http.RealInterceptorChain.proceed(RealInterceptorChain.kt:109)
+	at okhttp3.internal.connection.RealCall.getResponseWithInterceptorChain$okhttp(RealCall.kt:201)
+	at okhttp3.internal.connection.RealCall.execute(RealCall.kt:154)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:357)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:04.161 - 🔄 📥 [Poll #55] Starting live arbs fetch...
+2026-01-31 20:40:04.162 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:06.154 - 🔄 📥 [Poll #56] Starting live arbs fetch...
+2026-01-31 20:40:06.155 - ⚠️ 🔄 [Poll #56] Previous ingestion still running, skipping
+2026-01-31 20:40:08.159 - 🔄 📥 [Poll #57] Starting live arbs fetch...
+2026-01-31 20:40:08.159 - ⚠️ 🔄 [Poll #57] Previous ingestion still running, skipping
+2026-01-31 20:40:10.005 - ✅ 📥 API returned 7 events
+2026-01-31 20:40:10.005 - 🔄 ⚡ ℹ️ Processing 7 events...
+2026-01-31 20:40:10.157 - 🔄 📥 [Poll #58] Starting live arbs fetch...
+2026-01-31 20:40:10.157 - ⚠️ 🔄 [Poll #58] Previous ingestion still running, skipping
+2026-01-31 20:40:11.057 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101745015652)...
+2026-01-31 20:40:11.057 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959100116257589)...
+2026-01-31 20:40:11.057 - ℹ️ 🔄 Sub-event 16193959101745015652 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:11.057 - ℹ️ 🔄 Sub-event 16193959100116257589 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:11.057 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959097722618642)...
+2026-01-31 20:40:11.057 - ℹ️ 🔄 Sub-event 16193959097722618642 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:11.211 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:11.211 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:11.211 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:11.211 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:11.211 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:11.211 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:11.211 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:11.211 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:11.211 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:11.262 - ✅ 🎯 Market resolved: marketType='1st Half - Over/Under', selectedId='13', outcome='Under 96.5'
+2026-01-31 20:40:11.262 - ✅ 🎯 Market resolved: marketType='2nd quarter - handicap', selectedId='1715', outcome='Away (+6.5)'
+2026-01-31 20:40:11.262 - ⚠️ 🎯 Market outcome returned null for bookmaker: SportyBet
+2026-01-31 20:40:11.416 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Germany/Pro A/Phoenix_Hagen_vs_Tigers_Tubingen/sr:match:61743466
+2026-01-31 20:40:11.416 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Italy/Serie A/Pallacanestro_Cantu_vs_Reyer_Venezia/sr:match:62570980
+2026-01-31 20:40:11.416 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/France/LNB Elite/SIG_Strasbourg_vs_Le_Mans_Sarthe_Basket/sr:match:62280628
+2026-01-31 20:40:11.658 - ✅ Built outcome - bookMaker: SportyBet, outcome: '', odds: 2.2, url: ✓
+2026-01-31 20:40:11.658 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away (+6.5)', odds: 2.35, url: ✓
+2026-01-31 20:40:11.688 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959097773015447)...
+2026-01-31 20:40:11.689 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100513929658)...
+2026-01-31 20:40:11.658 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Under 96.5', odds: 2.05, url: ✓
+2026-01-31 20:40:11.689 - ℹ️ 🔄 Sub-event 16193959097773015447 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:11.689 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099629807164)...
+2026-01-31 20:40:11.689 - ℹ️ 🔄 Sub-event 16193959099629807164 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:11.689 - ℹ️ 🔄 Sub-event 16193959100513929658 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:11.689 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU@178.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:11.689 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:11.689 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:11.689 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU1T@96.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:11.689 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: MSport (source: SportyBet)
+2026-01-31 20:40:11.689 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:11.690 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:11.690 - ⚠️ 🔄 Failed to convert event 16193959218491989932: No mapping for Bet9ja
+2026-01-31 20:40:11.690 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:11.690 - ✅ 🎯 Market resolved: marketType='2nd quarter - Handicap', selectedId='1715', outcome='Away (+6.5)'
+2026-01-31 20:40:11.690 - ⚠️ 🔄 Failed to convert event 16193959109934978808: No mapping for Bet9ja
+2026-01-31 20:40:11.690 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959098061971954)...
+2026-01-31 20:40:11.690 - ℹ️ 🔄 Sub-event 16193959098061971954 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:11.691 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099403590792)...
+2026-01-31 20:40:11.691 - ℹ️ 🔄 Sub-event 16193959099403590792 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:11.691 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:11.691 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:11.691 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:11.691 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:11.691 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:11.691 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:11.691 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:11.691 - ✅ 🎯 Market resolved: marketType='1st Half - 1X2', selectedId='1', outcome='Home'
+2026-01-31 20:40:11.691 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Italy/Serie A2/Juvi_Cremona_1952_vs_Libertas_Livorno/sr:match:62533002
+2026-01-31 20:40:11.691 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Home', odds: 2.05, url: ✓
+2026-01-31 20:40:11.691 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099884881833)...
+2026-01-31 20:40:11.691 - ℹ️ 🔄 Sub-event 16193959099884881833 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:11.692 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:11.692 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:11.692 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:11.692 - ⚠️ 🔄 Failed to convert event 16193959110289398860: No mapping for Bet9ja
+2026-01-31 20:40:11.692 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101171376498)...
+2026-01-31 20:40:11.692 - ℹ️ 🔄 Sub-event 16193959101171376498 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:11.692 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:11.692 - 🍪 ℹ️ Using key='oid' = '1714' → selectedId='1714' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:11.692 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:11.692 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:11.745 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Italy_Serie_A/Pallacanestro_Cantu_vs_Reyer_Venezia/sr:match:62570980
+2026-01-31 20:40:11.745 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Germany_BBL/Hamburg_Towers_vs_Niners_Chemnitz/sr:match:62670851
+2026-01-31 20:40:11.745 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Spain_Segunda_FEB/CB_Penas_Huesca_vs_Albacete_Basket/sr:match:62655657
+2026-01-31 20:40:11.745 - ✅ Built outcome - bookMaker: MSport, outcome: 'Away (+6.5)', odds: 2.05, url: ✓
+2026-01-31 20:40:11.746 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.45, url: ✓
+2026-01-31 20:40:11.748 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.25, url: ✓
+2026-01-31 20:40:11.749 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100906880755)...
+2026-01-31 20:40:11.749 - ℹ️ 🔄 Sub-event 16193959100906880755 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:11.749 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@9.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:11.750 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:11.750 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:11.750 - ⚠️ 🔄 Failed to convert event 16193959115112873489: No mapping for Bet9ja
+2026-01-31 20:40:11.750 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099947607406)...
+2026-01-31 20:40:11.750 - ℹ️ 🔄 Sub-event 16193959099947607406 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:11.752 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:11.753 - 🍪 ℹ️ Using key='oid' = '1714' → selectedId='1714' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:11.760 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:11.761 - ✅ 🎯 Market resolved: marketType='1st quarter - Handicap', selectedId='1714', outcome='Home (-7.5)'
+2026-01-31 20:40:11.761 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/International_BNXT_League/BC_Oostende_vs_LWD_Basket/sr:match:61287239
+2026-01-31 20:40:11.761 - ✅ Built outcome - bookMaker: MSport, outcome: 'Home (-7.5)', odds: 2.1, url: ✓
+2026-01-31 20:40:11.761 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959101831207809)...
+2026-01-31 20:40:11.761 - ℹ️ 🔄 Sub-event 16193959101831207809 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:11.762 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1P@-7.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:11.762 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:11.762 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:11.762 - ⚠️ 🔄 Failed to convert event 16193959106950731974: No mapping for Bet9ja
+2026-01-31 20:40:11.762 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098778478633)...
+2026-01-31 20:40:11.762 - ℹ️ 🔄 Sub-event 16193959098778478633 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:11.763 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:11.765 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:11.765 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:11.765 - ⚠️ 🔄 Failed to convert event 16193959370562938210: No mapping for Bet9ja
+2026-01-31 20:40:11.849 - ✅ 🔄 🎯 Converted event 16193959110322951797 to arb: SportyBet (2.35) vs MSport (2.05) | 9.49% profit | marketType='2nd quarter - Handicap' | outcome='Away (+6.5)'
+2026-01-31 20:40:11.850 - ✅ ⚡ 🔄 Successfully converted 1 events to arbitrages
+2026-01-31 20:40:11.850 - 🔄 ℹ️ Transforming 1 parsed items to entities...
+2026-01-31 20:40:11.851 - 💾 ℹ️ Saving 1 opportunities to database...
+2026-01-31 20:40:11.851 - 💾 ℹ️ Processing 1 opportunities for database save...
+2026-01-31 20:40:12.168 - 🔄 📥 [Poll #59] Starting live arbs fetch...
+2026-01-31 20:40:12.169 - ⚠️ 🔄 [Poll #59] Previous ingestion still running, skipping
+2026-01-31 20:40:14.156 - 🔄 📥 [Poll #60] Starting live arbs fetch...
+2026-01-31 20:40:14.156 - ⚠️ 🔄 [Poll #60] Previous ingestion still running, skipping
+2026-01-31 20:40:16.160 - 🔄 📥 [Poll #61] Starting live arbs fetch...
+2026-01-31 20:40:16.160 - ⚠️ 🔄 [Poll #61] Previous ingestion still running, skipping
+2026-01-31 20:40:18.149 - 🔄 📥 [Poll #62] Starting live arbs fetch...
+2026-01-31 20:40:18.149 - ⚠️ 🔄 [Poll #62] Previous ingestion still running, skipping
+2026-01-31 20:40:19.078 - ✅ 💾 Database save completed: 1 new, 0 updated, 0 skipped
+2026-01-31 20:40:19.078 - ✅ 📥 Live arbs ingestion completed: 1 opportunities saved in 14916ms
+2026-01-31 20:40:20.147 - 🔄 📥 [Poll #63] Starting live arbs fetch...
+2026-01-31 20:40:20.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:22.147 - 🔄 📥 [Poll #64] Starting live arbs fetch...
+2026-01-31 20:40:22.147 - ⚠️ 🔄 [Poll #64] Previous ingestion still running, skipping
+2026-01-31 20:40:23.284 - ✅ 📥 API returned 8 events
+2026-01-31 20:40:23.284 - 🔄 ⚡ ℹ️ Processing 8 events...
+2026-01-31 20:40:23.284 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959100568071002)...
+2026-01-31 20:40:23.284 - ℹ️ 🔄 Sub-event 16193959100568071002 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:23.284 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959100116257589)...
+2026-01-31 20:40:23.284 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101745015652)...
+2026-01-31 20:40:23.285 - ℹ️ 🔄 Sub-event 16193959101745015652 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:23.285 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:23.285 - ℹ️ 🔄 Sub-event 16193959100116257589 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:23.285 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:23.285 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:23.285 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:23.285 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:23.285 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Italy_Serie_A2/Juvi_Cremona_1952_vs_Libertas_Livorno/sr:match:62533002
+2026-01-31 20:40:23.285 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:23.285 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:23.285 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.1, url: ✓
+2026-01-31 20:40:23.285 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:23.285 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:23.285 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:23.285 - ⚠️ 🎯 Market outcome returned null for bookmaker: SportyBet
+2026-01-31 20:40:23.285 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Germany/Pro A/Phoenix_Hagen_vs_Tigers_Tubingen/sr:match:61743466
+2026-01-31 20:40:23.285 - ✅ 🎯 Market resolved: marketType='1st Half - Over/Under', selectedId='13', outcome='Under 96.5'
+2026-01-31 20:40:23.286 - ✅ Built outcome - bookMaker: SportyBet, outcome: '', odds: 2.2, url: ✓
+2026-01-31 20:40:23.286 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959097773015447)...
+2026-01-31 20:40:23.286 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/France/LNB Elite/SIG_Strasbourg_vs_Le_Mans_Sarthe_Basket/sr:match:62280628
+2026-01-31 20:40:23.286 - ℹ️ 🔄 Sub-event 16193959097773015447 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:23.286 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU@178.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:23.286 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:23.286 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:23.286 - ⚠️ 🔄 Failed to convert event 16193959218491989932: No mapping for Bet9ja
+2026-01-31 20:40:23.286 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099403590792)...
+2026-01-31 20:40:23.286 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Under 96.5', odds: 2.05, url: ✓
+2026-01-31 20:40:23.286 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099884881833)...
+2026-01-31 20:40:23.286 - ℹ️ 🔄 Sub-event 16193959099403590792 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:23.287 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099629807164)...
+2026-01-31 20:40:23.287 - ℹ️ 🔄 Sub-event 16193959099884881833 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:23.287 - ℹ️ 🔄 Sub-event 16193959099629807164 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:23.287 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:23.287 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU1T@96.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:23.287 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:23.287 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:23.287 - ⚠️ 🔄 Failed to convert event 16193959109934978808: No mapping for Bet9ja
+2026-01-31 20:40:23.287 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:23.288 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:23.287 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:23.288 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:23.287 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101500598982)...
+2026-01-31 20:40:23.288 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:23.288 - ℹ️ 🔄 Sub-event 16193959101500598982 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:23.288 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:23.288 - ⚠️ 🔄 Failed to convert event 16193959110289398860: No mapping for Bet9ja
+2026-01-31 20:40:23.288 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:23.288 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Spain_Segunda_FEB/CB_Penas_Huesca_vs_Albacete_Basket/sr:match:62655657
+2026-01-31 20:40:23.289 - 🍪 ℹ️ Using key='oid' = '5' → selectedId='5' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:23.289 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:23.289 - ✅ 🎯 Market resolved: marketType='Winner (incl. overtime)', selectedId='5', outcome='Away'
+2026-01-31 20:40:23.289 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Spain/Primera FEB/Club_Ourense_Baloncesto_Sad_vs_Baloncesto_Fuenlabrada/sr:match:62656497
+2026-01-31 20:40:23.289 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.45, url: ✓
+2026-01-31 20:40:23.289 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098778478633)...
+2026-01-31 20:40:23.289 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101171376498)...
+2026-01-31 20:40:23.289 - ℹ️ 🔄 Sub-event 16193959098778478633 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:23.289 - ℹ️ 🔄 Sub-event 16193959101171376498 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:23.289 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:23.289 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:23.289 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:23.289 - 🍪 ℹ️ Using key='oid' = '1714' → selectedId='1714' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:23.289 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:23.289 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:23.289 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:23.289 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away', odds: 1.37, url: ✓
+2026-01-31 20:40:23.289 - ⚠️ 🔄 Failed to convert event 16193959370562938210: No mapping for Bet9ja
+2026-01-31 20:40:23.289 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Germany_BBL/Hamburg_Towers_vs_Niners_Chemnitz/sr:match:62670851
+2026-01-31 20:40:23.289 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100791067780)...
+2026-01-31 20:40:23.289 - ℹ️ 🔄 Sub-event 16193959100791067780 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:23.290 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099947607406)...
+2026-01-31 20:40:23.290 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.25, url: ✓
+2026-01-31 20:40:23.290 - 🍪 ℹ️ Using key='id2' = 'LIVEB_DNB_1' → selectedId='1' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:23.290 - ℹ️ 🔄 Sub-event 16193959099947607406 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:23.290 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:23.290 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100906880755)...
+2026-01-31 20:40:23.290 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:23.290 - ℹ️ 🔄 Sub-event 16193959100906880755 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:23.290 - ⚠️ 🔄 Failed to convert event 16193959209646215341: No mapping for Bet9ja
+2026-01-31 20:40:23.290 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:23.290 - 🍪 ℹ️ Using key='oid' = '1714' → selectedId='1714' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:23.290 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@9.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:23.290 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:23.290 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099946198914)...
+2026-01-31 20:40:23.290 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:23.290 - ✅ 🎯 Market resolved: marketType='1st quarter - Handicap', selectedId='1714', outcome='Home (-7.5)'
+2026-01-31 20:40:23.290 - ℹ️ 🔄 Sub-event 16193959099946198914 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:23.290 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:23.290 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/International_BNXT_League/BC_Oostende_vs_LWD_Basket/sr:match:61287239
+2026-01-31 20:40:23.290 - ⚠️ 🔄 Failed to convert event 16193959115112873489: No mapping for Bet9ja
+2026-01-31 20:40:23.290 - ✅ Built outcome - bookMaker: MSport, outcome: 'Home (-7.5)', odds: 2.1, url: ✓
+2026-01-31 20:40:23.290 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959101831207809)...
+2026-01-31 20:40:23.290 - ℹ️ 🔄 Sub-event 16193959101831207809 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:23.291 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1P@-7.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:23.291 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:23.291 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:23.291 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:23.291 - ⚠️ 🔄 Failed to convert event 16193959106950731974: No mapping for Bet9ja
+2026-01-31 20:40:23.291 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:23.291 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:23.291 - ✅ 🎯 Market resolved: marketType='Over/Under', selectedId='13', outcome='Under 5.5'
+2026-01-31 20:40:23.291 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/football/live/Netherlands/Eredivisie/PEC_Zwolle_vs_SC_Telstar/sr:match:61320045
+2026-01-31 20:40:23.291 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Under 5.5', odds: 1.35, url: ✓
+2026-01-31 20:40:23.291 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099349595423)...
+2026-01-31 20:40:23.291 - ℹ️ 🔄 Sub-event 16193959099349595423 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:23.291 - 🍪 ℹ️ Using key='id2' = 'LIVES_OU@5.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:23.292 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:23.292 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:23.292 - ⚠️ 🔄 Failed to convert event 16193959102741743886: No mapping for Bet9ja
+2026-01-31 20:40:23.292 - ✅ ⚡ 🔄 Successfully converted 0 events to arbitrages
+2026-01-31 20:40:23.292 - 🔄 ℹ️ Transforming 0 parsed items to entities...
+2026-01-31 20:40:23.292 - 💾 ℹ️ Saving 0 opportunities to database...
+2026-01-31 20:40:23.292 - 💾 ℹ️ Processing 0 opportunities for database save...
+2026-01-31 20:40:23.292 - ℹ️ 💾 No opportunities to save
+2026-01-31 20:40:23.292 - ✅ 📥 Live arbs ingestion completed: 0 opportunities saved in 3145ms
+2026-01-31 20:40:24.147 - 🔄 📥 [Poll #65] Starting live arbs fetch...
+2026-01-31 20:40:24.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:26.158 - 🔄 📥 [Poll #66] Starting live arbs fetch...
+2026-01-31 20:40:26.158 - ⚠️ 🔄 [Poll #66] Previous ingestion still running, skipping
+2026-01-31 20:40:27.974 - ✅ 📥 API returned 11 events
+2026-01-31 20:40:27.975 - 🔄 ⚡ ℹ️ Processing 11 events...
+2026-01-31 20:40:27.976 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959100568071002)...
+2026-01-31 20:40:27.976 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959100116257589)...
+2026-01-31 20:40:27.976 - ℹ️ 🔄 Sub-event 16193959100568071002 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:27.976 - ℹ️ 🔄 Sub-event 16193959100116257589 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:27.976 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101745015652)...
+2026-01-31 20:40:27.977 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:27.977 - ℹ️ 🔄 Sub-event 16193959101745015652 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:27.977 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:27.977 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:27.978 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:27.977 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:27.978 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:27.978 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:27.978 - ⚠️ 🎯 Market outcome returned null for bookmaker: SportyBet
+2026-01-31 20:40:27.979 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Germany/Pro A/Phoenix_Hagen_vs_Tigers_Tubingen/sr:match:61743466
+2026-01-31 20:40:27.978 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:27.980 - ✅ Built outcome - bookMaker: SportyBet, outcome: '', odds: 2.2, url: ✓
+2026-01-31 20:40:27.980 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Italy_Serie_A2/Juvi_Cremona_1952_vs_Libertas_Livorno/sr:match:62533002
+2026-01-31 20:40:27.980 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959097773015447)...
+2026-01-31 20:40:27.980 - ℹ️ 🔄 Sub-event 16193959097773015447 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.980 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.1, url: ✓
+2026-01-31 20:40:27.980 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099884881833)...
+2026-01-31 20:40:27.981 - ℹ️ 🔄 Sub-event 16193959099884881833 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.978 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:27.981 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:27.981 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.981 - ✅ 🎯 Market resolved: marketType='1st quarter - handicap', selectedId='1715', outcome='Away (+5.5)'
+2026-01-31 20:40:27.981 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.981 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.981 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/France/LNB Elite/SIG_Strasbourg_vs_Le_Mans_Sarthe_Basket/sr:match:62280628
+2026-01-31 20:40:27.981 - ⚠️ 🔄 Failed to convert event 16193959110289398860: No mapping for Bet9ja
+2026-01-31 20:40:27.981 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU@178.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.982 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away (+5.5)', odds: 2.3, url: ✓
+2026-01-31 20:40:27.982 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.982 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101311469173)...
+2026-01-31 20:40:27.982 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099629807164)...
+2026-01-31 20:40:27.982 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.982 - ℹ️ 🔄 Sub-event 16193959101311469173 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:27.982 - ℹ️ 🔄 Sub-event 16193959099629807164 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.982 - ⚠️ 🔄 Failed to convert event 16193959218491989932: No mapping for Bet9ja
+2026-01-31 20:40:27.982 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:27.982 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1P@-5.5_1H' → selectedId='1H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.982 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:27.982 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.982 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:27.983 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.983 - ✅ 🎯 Market resolved: marketType='3rd quarter - Handicap', selectedId='1715', outcome='Away (-6.5)'
+2026-01-31 20:40:27.983 - ⚠️ 🔄 Failed to convert event 16193959109934978808: No mapping for Bet9ja
+2026-01-31 20:40:27.983 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099403590792)...
+2026-01-31 20:40:27.983 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/International_BNXT_League/Donar_Groningen_vs_Kortrijk_Spurs_/sr:match:61287233
+2026-01-31 20:40:27.983 - ℹ️ 🔄 Sub-event 16193959099403590792 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:27.983 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101500598982)...
+2026-01-31 20:40:27.983 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:27.983 - ℹ️ 🔄 Sub-event 16193959101500598982 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:27.983 - ✅ Built outcome - bookMaker: MSport, outcome: 'Away (-6.5)', odds: 2.15, url: ✓
+2026-01-31 20:40:27.983 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:27.983 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099334210973)...
+2026-01-31 20:40:27.983 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:27.983 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:27.983 - ℹ️ 🔄 Sub-event 16193959099334210973 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.984 - 🍪 ℹ️ Using key='oid' = '5' → selectedId='5' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:27.984 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:27.984 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:27.984 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND3P@6.5_1H' → selectedId='1H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.984 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Spain_Segunda_FEB/CB_Penas_Huesca_vs_Albacete_Basket/sr:match:62655657
+2026-01-31 20:40:27.984 - ✅ 🎯 Market resolved: marketType='Winner (incl. overtime)', selectedId='5', outcome='Away'
+2026-01-31 20:40:27.984 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.984 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.984 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Spain/Primera FEB/Club_Ourense_Baloncesto_Sad_vs_Baloncesto_Fuenlabrada/sr:match:62656497
+2026-01-31 20:40:27.984 - ⚠️ 🔄 Failed to convert event 16193959106961217733: No mapping for Bet9ja
+2026-01-31 20:40:27.984 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.45, url: ✓
+2026-01-31 20:40:27.984 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098778478633)...
+2026-01-31 20:40:27.984 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101171376498)...
+2026-01-31 20:40:27.984 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away', odds: 1.37, url: ✓
+2026-01-31 20:40:27.985 - ℹ️ 🔄 Sub-event 16193959098778478633 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.985 - ℹ️ 🔄 Sub-event 16193959101171376498 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:27.985 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100791067780)...
+2026-01-31 20:40:27.985 - ℹ️ 🔄 Sub-event 16193959100791067780 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.985 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:27.985 - 🍪 ℹ️ Using key='id2' = 'LIVEB_DNB_1' → selectedId='1' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.985 - 🍪 ℹ️ Using key='oid' = '1714' → selectedId='1714' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:27.985 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.985 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:27.985 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.985 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.985 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:27.985 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.985 - ⚠️ 🔄 Failed to convert event 16193959209646215341: No mapping for Bet9ja
+2026-01-31 20:40:27.985 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.986 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Germany_BBL/Hamburg_Towers_vs_Niners_Chemnitz/sr:match:62670851
+2026-01-31 20:40:27.986 - ⚠️ 🔄 Failed to convert event 16193959370562938210: No mapping for Bet9ja
+2026-01-31 20:40:27.986 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959098259173767)...
+2026-01-31 20:40:27.986 - ℹ️ 🔄 Sub-event 16193959098259173767 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:27.986 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099947607406)...
+2026-01-31 20:40:27.986 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.25, url: ✓
+2026-01-31 20:40:27.986 - ℹ️ 🔄 Sub-event 16193959099947607406 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:27.986 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100906880755)...
+2026-01-31 20:40:27.986 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:27.986 - ℹ️ 🔄 Sub-event 16193959100906880755 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.986 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:27.986 - 🍪 ℹ️ Using key='oid' = '12' → selectedId='12' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:27.986 - 🍪 ℹ️ Using key='oid' = '1714' → selectedId='1714' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:27.986 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:27.986 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@9.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.987 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:27.987 - ✅ 🎯 Market resolved: marketType='Over/Under (incl. overtime)', selectedId='12', outcome='Over 166.5'
+2026-01-31 20:40:27.987 - ✅ 🎯 Market resolved: marketType='1st quarter - Handicap', selectedId='1714', outcome='Home (-7.5)'
+2026-01-31 20:40:27.987 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/International_BNXT_League/BC_Oostende_vs_LWD_Basket/sr:match:61287239
+2026-01-31 20:40:27.987 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.988 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.988 - ✅ Built outcome - bookMaker: MSport, outcome: 'Home (-7.5)', odds: 2.1, url: ✓
+2026-01-31 20:40:27.988 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959101831207809)...
+2026-01-31 20:40:27.987 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Spain/Liga ACB/Bilbao_Basket_vs_Club_Joventut_Badalona/sr:match:63049143
+2026-01-31 20:40:27.988 - ℹ️ 🔄 Sub-event 16193959101831207809 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.989 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1P@-7.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.989 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Over 166.5', odds: 1.95, url: ✓
+2026-01-31 20:40:27.989 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.988 - ⚠️ 🔄 Failed to convert event 16193959115112873489: No mapping for Bet9ja
+2026-01-31 20:40:27.989 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.989 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098423655991)...
+2026-01-31 20:40:27.989 - ℹ️ 🔄 Sub-event 16193959098423655991 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.989 - ⚠️ 🔄 Failed to convert event 16193959106950731974: No mapping for Bet9ja
+2026-01-31 20:40:27.990 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099625581944)...
+2026-01-31 20:40:27.990 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099946198914)...
+2026-01-31 20:40:27.990 - ℹ️ 🔄 Sub-event 16193959099625581944 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:27.990 - ℹ️ 🔄 Sub-event 16193959099946198914 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:27.990 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OUOT@166.5_U' → selectedId='U' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.990 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:27.990 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:27.990 - 🍪 ℹ️ Using key='oid' = '12' → selectedId='12' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:27.990 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.990 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:27.990 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:27.990 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.990 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:27.990 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:27.990 - ✅ 🎯 Market resolved: marketType='Over/Under', selectedId='13', outcome='Under 5.5'
+2026-01-31 20:40:27.990 - ⚠️ 🔄 Failed to convert event 16193959189060561517: No mapping for Bet9ja
+2026-01-31 20:40:27.991 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Italy_Serie_B/Aurora_Desio_vs_Orlandina_Basket/sr:match:62528574
+2026-01-31 20:40:27.991 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/football/live/Netherlands/Eredivisie/PEC_Zwolle_vs_SC_Telstar/sr:match:61320045
+2026-01-31 20:40:27.991 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 1.95, url: ✓
+2026-01-31 20:40:27.991 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Under 5.5', odds: 1.35, url: ✓
+2026-01-31 20:40:27.991 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099592350199)...
+2026-01-31 20:40:27.991 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099349595423)...
+2026-01-31 20:40:27.991 - ℹ️ 🔄 Sub-event 16193959099592350199 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.991 - ℹ️ 🔄 Sub-event 16193959099349595423 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:27.991 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU1T@89.5_U' → selectedId='U' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.991 - 🍪 ℹ️ Using key='id2' = 'LIVES_OU@5.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:27.991 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.991 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:27.991 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.991 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:27.991 - ⚠️ 🔄 Failed to convert event 16193959112787916714: No mapping for Bet9ja
+2026-01-31 20:40:27.991 - ⚠️ 🔄 Failed to convert event 16193959102741743886: No mapping for Bet9ja
+2026-01-31 20:40:27.992 - ✅ ⚡ 🔄 Successfully converted 0 events to arbitrages
+2026-01-31 20:40:27.992 - 🔄 ℹ️ Transforming 0 parsed items to entities...
+2026-01-31 20:40:27.992 - 💾 ℹ️ Saving 0 opportunities to database...
+2026-01-31 20:40:27.992 - 💾 ℹ️ Processing 0 opportunities for database save...
+2026-01-31 20:40:27.992 - ℹ️ 💾 No opportunities to save
+2026-01-31 20:40:27.992 - ✅ 📥 Live arbs ingestion completed: 0 opportunities saved in 3845ms
+2026-01-31 20:40:28.157 - 🔄 📥 [Poll #67] Starting live arbs fetch...
+2026-01-31 20:40:28.157 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:29.282 - ✅ 📥 API returned 11 events
+2026-01-31 20:40:29.282 - 🔄 ⚡ ℹ️ Processing 11 events...
+2026-01-31 20:40:29.283 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959100116257589)...
+2026-01-31 20:40:29.283 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101745015652)...
+2026-01-31 20:40:29.283 - ℹ️ 🔄 Sub-event 16193959100116257589 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:29.283 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099454381721)...
+2026-01-31 20:40:29.283 - ℹ️ 🔄 Sub-event 16193959101745015652 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:29.283 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:29.283 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:29.283 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:29.283 - ✅ 🎯 Market resolved: marketType='1st quarter - handicap', selectedId='1715', outcome='Away (+5.5)'
+2026-01-31 20:40:29.284 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/France/LNB Elite/SIG_Strasbourg_vs_Le_Mans_Sarthe_Basket/sr:match:62280628
+2026-01-31 20:40:29.284 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:29.284 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away (+5.5)', odds: 2.3, url: ✓
+2026-01-31 20:40:29.284 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:29.284 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099629807164)...
+2026-01-31 20:40:29.284 - ℹ️ 🔄 Sub-event 16193959099629807164 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.284 - ℹ️ 🔄 Sub-event 16193959099454381721 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:29.284 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1P@-5.5_1H' → selectedId='1H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.284 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.284 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.284 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:29.284 - 🍪 ℹ️ Using key='oid' = '5' → selectedId='5' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:29.284 - ⚠️ 🔄 Failed to convert event 16193959109934978808: No mapping for Bet9ja
+2026-01-31 20:40:29.284 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:29.284 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:29.284 - ✅ 🎯 Market resolved: marketType='Winner (incl. overtime)', selectedId='5', outcome='Away'
+2026-01-31 20:40:29.284 - ⚠️ 🎯 Market outcome returned null for bookmaker: SportyBet
+2026-01-31 20:40:29.284 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099610680541)...
+2026-01-31 20:40:29.285 - ℹ️ 🔄 Sub-event 16193959099610680541 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:29.284 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Spain_Primera_FEB/Club_Ourense_Baloncesto_Sad_vs_Baloncesto_Fuenlabrada/sr:match:62656497
+2026-01-31 20:40:29.285 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:29.285 - ✅ Built outcome - bookMaker: MSport, outcome: 'Away', odds: 1.45, url: ✓
+2026-01-31 20:40:29.285 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:29.284 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Germany/Pro A/Phoenix_Hagen_vs_Tigers_Tubingen/sr:match:61743466
+2026-01-31 20:40:29.285 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100791067780)...
+2026-01-31 20:40:29.285 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:29.285 - ✅ Built outcome - bookMaker: SportyBet, outcome: '', odds: 2.2, url: ✓
+2026-01-31 20:40:29.285 - ✅ 🎯 Market resolved: marketType='3rd quarter - handicap', selectedId='1715', outcome='Away (-6.5)'
+2026-01-31 20:40:29.285 - ℹ️ 🔄 Sub-event 16193959100791067780 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.285 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959097773015447)...
+2026-01-31 20:40:29.285 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/International/BNXT League/Donar_Groningen_vs_Kortrijk_Spurs_/sr:match:61287233
+2026-01-31 20:40:29.285 - ℹ️ 🔄 Sub-event 16193959097773015447 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.285 - 🍪 ℹ️ Using key='id2' = 'LIVEB_DNB_1' → selectedId='1' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.286 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.286 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU@178.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.286 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.286 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.286 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away (-6.5)', odds: 2.15, url: ✓
+2026-01-31 20:40:29.286 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.286 - ⚠️ 🔄 Failed to convert event 16193959209646215341: No mapping for Bet9ja
+2026-01-31 20:40:29.286 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099334210973)...
+2026-01-31 20:40:29.286 - ⚠️ 🔄 Failed to convert event 16193959218491989932: No mapping for Bet9ja
+2026-01-31 20:40:29.286 - ℹ️ 🔄 Sub-event 16193959099334210973 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.286 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959100568071002)...
+2026-01-31 20:40:29.286 - ℹ️ 🔄 Sub-event 16193959100568071002 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:29.286 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND3P@6.5_1H' → selectedId='1H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.286 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099403590792)...
+2026-01-31 20:40:29.286 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.286 - ℹ️ 🔄 Sub-event 16193959099403590792 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:29.286 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:29.286 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.286 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:29.286 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:29.286 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:29.286 - ⚠️ 🔄 Failed to convert event 16193959106961217733: No mapping for Bet9ja
+2026-01-31 20:40:29.286 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:29.286 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:29.286 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:29.286 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:29.286 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099049759139)...
+2026-01-31 20:40:29.286 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Italy_Serie_A2/Juvi_Cremona_1952_vs_Libertas_Livorno/sr:match:62533002
+2026-01-31 20:40:29.286 - ℹ️ 🔄 Sub-event 16193959099049759139 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:29.286 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Spain_Segunda_FEB/CB_Penas_Huesca_vs_Albacete_Basket/sr:match:62655657
+2026-01-31 20:40:29.287 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:29.287 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.05, url: ✓
+2026-01-31 20:40:29.287 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:29.287 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.45, url: ✓
+2026-01-31 20:40:29.287 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099884881833)...
+2026-01-31 20:40:29.287 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:29.287 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098778478633)...
+2026-01-31 20:40:29.287 - ℹ️ 🔄 Sub-event 16193959099884881833 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.287 - ✅ 🎯 Market resolved: marketType='3rd quarter - handicap', selectedId='1715', outcome='Away (+2.5)'
+2026-01-31 20:40:29.287 - ℹ️ 🔄 Sub-event 16193959098778478633 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.287 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Spain/Liga Femenina/CB_Estudiantes_vs_Ibaeta_Basket/sr:match:62120066
+2026-01-31 20:40:29.287 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.287 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.287 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away (+2.5)', odds: 1.85, url: ✓
+2026-01-31 20:40:29.287 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.287 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098492889968)...
+2026-01-31 20:40:29.287 - ⚠️ 🔄 Failed to convert event 16193959110289398860: No mapping for Bet9ja
+2026-01-31 20:40:29.287 - ℹ️ 🔄 Sub-event 16193959098492889968 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.287 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.287 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.287 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND3P@-2.5_1H' → selectedId='1H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.288 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.288 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.288 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.288 - ⚠️ 🔄 Failed to convert event 16193959370562938210: No mapping for Bet9ja
+2026-01-31 20:40:29.288 - ⚠️ 🔄 Failed to convert event 16193959115192546993: No mapping for Bet9ja
+2026-01-31 20:40:29.288 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959098259173767)...
+2026-01-31 20:40:29.288 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099625581944)...
+2026-01-31 20:40:29.287 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101171376498)...
+2026-01-31 20:40:29.288 - ℹ️ 🔄 Sub-event 16193959101171376498 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:29.288 - ℹ️ 🔄 Sub-event 16193959098259173767 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:29.288 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:29.289 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:29.289 - 🍪 ℹ️ Using key='oid' = '12' → selectedId='12' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:29.289 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:29.289 - ✅ 🎯 Market resolved: marketType='Over/Under (incl. overtime)', selectedId='12', outcome='Over 166.5'
+2026-01-31 20:40:29.289 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Spain/Liga ACB/Bilbao_Basket_vs_Club_Joventut_Badalona/sr:match:63049143
+2026-01-31 20:40:29.288 - ℹ️ 🔄 Sub-event 16193959099625581944 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:29.289 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:29.289 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Over 166.5', odds: 1.95, url: ✓
+2026-01-31 20:40:29.289 - 🍪 ℹ️ Using key='oid' = '12' → selectedId='12' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:29.289 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098423655991)...
+2026-01-31 20:40:29.289 - ℹ️ 🔄 Sub-event 16193959098423655991 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.289 - 🍪 ℹ️ Using key='oid' = '1714' → selectedId='1714' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:29.289 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:29.290 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:29.290 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:29.290 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OUOT@166.5_U' → selectedId='U' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.290 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:29.290 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.290 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Germany_BBL/Hamburg_Towers_vs_Niners_Chemnitz/sr:match:62670851
+2026-01-31 20:40:29.290 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Italy_Serie_B/Aurora_Desio_vs_Orlandina_Basket/sr:match:62528574
+2026-01-31 20:40:29.290 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.290 - ⚠️ 🔄 Failed to convert event 16193959189060561517: No mapping for Bet9ja
+2026-01-31 20:40:29.290 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.25, url: ✓
+2026-01-31 20:40:29.290 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 1.95, url: ✓
+2026-01-31 20:40:29.290 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100906880755)...
+2026-01-31 20:40:29.290 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099592350199)...
+2026-01-31 20:40:29.290 - ℹ️ 🔄 Sub-event 16193959100906880755 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.290 - ℹ️ 🔄 Sub-event 16193959099592350199 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.290 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099946198914)...
+2026-01-31 20:40:29.290 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@9.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.290 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU1T@89.5_U' → selectedId='U' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.290 - ℹ️ 🔄 Sub-event 16193959099946198914 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:29.290 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.290 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.290 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.290 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.290 - ⚠️ 🔄 Failed to convert event 16193959115112873489: No mapping for Bet9ja
+2026-01-31 20:40:29.290 - ⚠️ 🔄 Failed to convert event 16193959112787916714: No mapping for Bet9ja
+2026-01-31 20:40:29.290 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:29.290 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:29.290 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:29.290 - ✅ 🎯 Market resolved: marketType='Over/Under', selectedId='13', outcome='Under 5.5'
+2026-01-31 20:40:29.290 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/football/live/Netherlands/Eredivisie/PEC_Zwolle_vs_SC_Telstar/sr:match:61320045
+2026-01-31 20:40:29.291 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Under 5.5', odds: 1.35, url: ✓
+2026-01-31 20:40:29.291 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099349595423)...
+2026-01-31 20:40:29.291 - ℹ️ 🔄 Sub-event 16193959099349595423 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:29.291 - 🍪 ℹ️ Using key='id2' = 'LIVES_OU@5.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:29.291 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:29.291 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:29.291 - ⚠️ 🔄 Failed to convert event 16193959102741743886: No mapping for Bet9ja
+2026-01-31 20:40:29.291 - ✅ ⚡ 🔄 Successfully converted 0 events to arbitrages
+2026-01-31 20:40:29.291 - 🔄 ℹ️ Transforming 0 parsed items to entities...
+2026-01-31 20:40:29.291 - 💾 ℹ️ Saving 0 opportunities to database...
+2026-01-31 20:40:29.291 - 💾 ℹ️ Processing 0 opportunities for database save...
+2026-01-31 20:40:29.291 - ℹ️ 💾 No opportunities to save
+2026-01-31 20:40:29.291 - ✅ 📥 Live arbs ingestion completed: 0 opportunities saved in 1134ms
+2026-01-31 20:40:30.147 - 🔄 📥 [Poll #68] Starting live arbs fetch...
+2026-01-31 20:40:30.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:30.645 - ✅ 📥 API returned 11 events
+2026-01-31 20:40:30.646 - 🔄 ⚡ ℹ️ Processing 11 events...
+2026-01-31 20:40:30.647 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959100116257589)...
+2026-01-31 20:40:30.647 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101745015652)...
+2026-01-31 20:40:30.647 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099454381721)...
+2026-01-31 20:40:30.647 - ℹ️ 🔄 Sub-event 16193959100116257589 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:30.647 - ℹ️ 🔄 Sub-event 16193959101745015652 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:30.647 - ℹ️ 🔄 Sub-event 16193959099454381721 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:30.647 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:30.647 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:30.647 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:30.647 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:30.647 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:30.647 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:30.647 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:30.647 - 🍪 ℹ️ Using key='oid' = '5' → selectedId='5' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:30.647 - ⚠️ 🎯 Market outcome returned null for bookmaker: SportyBet
+2026-01-31 20:40:30.647 - ✅ 🎯 Market resolved: marketType='1st quarter - handicap', selectedId='1715', outcome='Away (+5.5)'
+2026-01-31 20:40:30.647 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:30.647 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Germany/Pro A/Phoenix_Hagen_vs_Tigers_Tubingen/sr:match:61743466
+2026-01-31 20:40:30.647 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/France/LNB Elite/SIG_Strasbourg_vs_Le_Mans_Sarthe_Basket/sr:match:62280628
+2026-01-31 20:40:30.648 - ✅ 🎯 Market resolved: marketType='Winner (incl. overtime)', selectedId='5', outcome='Away'
+2026-01-31 20:40:30.648 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Spain_Primera_FEB/Club_Ourense_Baloncesto_Sad_vs_Baloncesto_Fuenlabrada/sr:match:62656497
+2026-01-31 20:40:30.648 - ✅ Built outcome - bookMaker: SportyBet, outcome: '', odds: 2.2, url: ✓
+2026-01-31 20:40:30.648 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away (+5.5)', odds: 2.3, url: ✓
+2026-01-31 20:40:30.648 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959097773015447)...
+2026-01-31 20:40:30.648 - ✅ Built outcome - bookMaker: MSport, outcome: 'Away', odds: 1.45, url: ✓
+2026-01-31 20:40:30.648 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099629807164)...
+2026-01-31 20:40:30.648 - ℹ️ 🔄 Sub-event 16193959097773015447 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.648 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100791067780)...
+2026-01-31 20:40:30.648 - ℹ️ 🔄 Sub-event 16193959099629807164 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.648 - ℹ️ 🔄 Sub-event 16193959100791067780 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.648 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU@178.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.648 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1P@-5.5_1H' → selectedId='1H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.648 - 🍪 ℹ️ Using key='id2' = 'LIVEB_DNB_1' → selectedId='1' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.648 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.648 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.648 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.648 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.648 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.648 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.648 - ⚠️ 🔄 Failed to convert event 16193959218491989932: No mapping for Bet9ja
+2026-01-31 20:40:30.648 - ⚠️ 🔄 Failed to convert event 16193959109934978808: No mapping for Bet9ja
+2026-01-31 20:40:30.648 - ⚠️ 🔄 Failed to convert event 16193959209646215341: No mapping for Bet9ja
+2026-01-31 20:40:30.648 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099610680541)...
+2026-01-31 20:40:30.648 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099403590792)...
+2026-01-31 20:40:30.648 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959100568071002)...
+2026-01-31 20:40:30.648 - ℹ️ 🔄 Sub-event 16193959099403590792 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:30.648 - ℹ️ 🔄 Sub-event 16193959100568071002 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:30.649 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:30.649 - ✅ 🍪 Saved crumbs from MSport using key='oid' (2 entries)
+2026-01-31 20:40:30.649 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:30.649 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:30.649 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:30.648 - ℹ️ 🔄 Sub-event 16193959099610680541 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:30.649 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Spain_Segunda_FEB/CB_Penas_Huesca_vs_Albacete_Basket/sr:match:62655657
+2026-01-31 20:40:30.649 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:30.649 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:30.649 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:30.649 - ✅ 🎯 Market resolved: marketType='3rd quarter - handicap', selectedId='1715', outcome='Away (-6.5)'
+2026-01-31 20:40:30.649 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/International/BNXT League/Donar_Groningen_vs_Kortrijk_Spurs_/sr:match:61287233
+2026-01-31 20:40:30.649 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away (-6.5)', odds: 2.15, url: ✓
+2026-01-31 20:40:30.649 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099334210973)...
+2026-01-31 20:40:30.650 - ℹ️ 🔄 Sub-event 16193959099334210973 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.649 - 🍪 ℹ️ Using key='oid' = '1' → selectedId='1' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:30.650 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND3P@6.5_1H' → selectedId='1H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.650 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:30.650 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:30.650 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Italy_Serie_A2/Juvi_Cremona_1952_vs_Libertas_Livorno/sr:match:62533002
+2026-01-31 20:40:30.650 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.649 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.45, url: ✓
+2026-01-31 20:40:30.650 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.05, url: ✓
+2026-01-31 20:40:30.650 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098778478633)...
+2026-01-31 20:40:30.650 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099884881833)...
+2026-01-31 20:40:30.651 - ℹ️ 🔄 Sub-event 16193959099884881833 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.651 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.651 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.651 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.651 - ⚠️ 🔄 Failed to convert event 16193959110289398860: No mapping for Bet9ja
+2026-01-31 20:40:30.650 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.651 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099049759139)...
+2026-01-31 20:40:30.651 - ⚠️ 🔄 Failed to convert event 16193959106961217733: No mapping for Bet9ja
+2026-01-31 20:40:30.652 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959101171376498)...
+2026-01-31 20:40:30.652 - ℹ️ 🔄 Sub-event 16193959101171376498 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:30.650 - ℹ️ 🔄 Sub-event 16193959098778478633 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.652 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:30.652 - 🍪 ℹ️ Using key='oid' = '1714' → selectedId='1714' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:30.652 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:30.652 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:30.652 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Germany_BBL/Hamburg_Towers_vs_Niners_Chemnitz/sr:match:62670851
+2026-01-31 20:40:30.652 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@1.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.652 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.652 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.653 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 2.25, url: ✓
+2026-01-31 20:40:30.653 - ℹ️ 🔄 Sub-event 16193959099049759139 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:30.653 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959100906880755)...
+2026-01-31 20:40:30.653 - ℹ️ 🔄 Sub-event 16193959100906880755 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.653 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:30.653 - 🍪 ℹ️ Using key='oid' = '1715' → selectedId='1715' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:30.653 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND1TN2@9.5_2H' → selectedId='2H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.653 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.653 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.653 - ⚠️ 🔄 Failed to convert event 16193959115112873489: No mapping for Bet9ja
+2026-01-31 20:40:30.653 - ⚠️ 🔄 Failed to convert event 16193959370562938210: No mapping for Bet9ja
+2026-01-31 20:40:30.653 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959098259173767)...
+2026-01-31 20:40:30.653 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:30.653 - ℹ️ 🔄 Sub-event 16193959098259173767 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:30.653 - ✅ 🎯 Market resolved: marketType='3rd quarter - handicap', selectedId='1715', outcome='Away (+2.5)'
+2026-01-31 20:40:30.653 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099625581944)...
+2026-01-31 20:40:30.653 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Spain/Liga Femenina/CB_Estudiantes_vs_Ibaeta_Basket/sr:match:62120066
+2026-01-31 20:40:30.653 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:30.653 - ℹ️ 🔄 Sub-event 16193959099625581944 bookmaker: MSport (ID: 80)
+2026-01-31 20:40:30.653 - 🍪 ℹ️ Using key='oid' = '12' → selectedId='12' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:30.653 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:30.653 - ✅ 🎯 Market resolved: marketType='Over/Under (incl. overtime)', selectedId='12', outcome='Over 166.5'
+2026-01-31 20:40:30.653 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Away (+2.5)', odds: 1.85, url: ✓
+2026-01-31 20:40:30.653 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/basketball/live/Spain/Liga ACB/Bilbao_Basket_vs_Club_Joventut_Badalona/sr:match:63049143
+2026-01-31 20:40:30.653 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098492889968)...
+2026-01-31 20:40:30.654 - ℹ️ 🔄 Sub-event 16193959098492889968 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.654 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Over 166.5', odds: 1.95, url: ✓
+2026-01-31 20:40:30.653 - ✅ 🍪 Saved crumbs from MSport using key='oid' (3 entries)
+2026-01-31 20:40:30.654 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959098423655991)...
+2026-01-31 20:40:30.654 - 🍪 ℹ️ Using key='id2' = 'LIVEB_12HND3P@-2.5_1H' → selectedId='1H' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.654 - ℹ️ 🔄 Sub-event 16193959098423655991 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.654 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.654 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.654 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OUOT@166.5_U' → selectedId='U' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.654 - ⚠️ 🔄 Failed to convert event 16193959115192546993: No mapping for Bet9ja
+2026-01-31 20:40:30.654 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.654 - 🍪 ℹ️ Using key='oid' = '12' → selectedId='12' for bookmaker: MSport (source: MSport)
+2026-01-31 20:40:30.655 - 🎯 🍪 Getting market outcome for bookmaker: MSport
+2026-01-31 20:40:30.655 - 🔄 ℹ️ Processing sub-event 1/2 (ID: 16193959099946198914)...
+2026-01-31 20:40:30.655 - ⚠️ 🎯 Market outcome returned null for bookmaker: MSport
+2026-01-31 20:40:30.655 - 📎 Built URL for MSport: https://www.msport.com/ng/web/sports/Basketball/live/Italy_Serie_B/Aurora_Desio_vs_Orlandina_Basket/sr:match:62528574
+2026-01-31 20:40:30.655 - ✅ Built outcome - bookMaker: MSport, outcome: '', odds: 1.95, url: ✓
+2026-01-31 20:40:30.655 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099592350199)...
+2026-01-31 20:40:30.655 - ℹ️ 🔄 Sub-event 16193959099592350199 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.655 - 🍪 ℹ️ Using key='id2' = 'LIVEB_OU1T@89.5_U' → selectedId='U' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.655 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.656 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.656 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.656 - ℹ️ 🔄 Sub-event 16193959099946198914 bookmaker: SportyBet (ID: 43)
+2026-01-31 20:40:30.656 - ⚠️ 🔄 Failed to convert event 16193959112787916714: No mapping for Bet9ja
+2026-01-31 20:40:30.656 - ⚠️ 🔄 Failed to convert event 16193959189060561517: No mapping for Bet9ja
+2026-01-31 20:40:30.656 - ✅ 🍪 Saved crumbs from SportyBet using key='oid' (3 entries)
+2026-01-31 20:40:30.656 - 🍪 ℹ️ Using key='oid' = '13' → selectedId='13' for bookmaker: SportyBet (source: SportyBet)
+2026-01-31 20:40:30.656 - 🎯 🍪 Getting market outcome for bookmaker: SportyBet
+2026-01-31 20:40:30.656 - ✅ 🎯 Market resolved: marketType='Over/Under', selectedId='13', outcome='Under 5.5'
+2026-01-31 20:40:30.656 - 📎 Built URL for SportyBet: https://www.sportybet.com/ng/sport/football/live/Netherlands/Eredivisie/PEC_Zwolle_vs_SC_Telstar/sr:match:61320045
+2026-01-31 20:40:30.656 - ✅ Built outcome - bookMaker: SportyBet, outcome: 'Under 5.5', odds: 1.35, url: ✓
+2026-01-31 20:40:30.656 - 🔄 ℹ️ Processing sub-event 2/2 (ID: 16193959099349595423)...
+2026-01-31 20:40:30.656 - ℹ️ 🔄 Sub-event 16193959099349595423 bookmaker: Bet9ja (ID: 33)
+2026-01-31 20:40:30.656 - 🍪 ℹ️ Using key='id2' = 'LIVES_OU@5.5_O' → selectedId='O' for bookmaker: Bet9ja (source: own crumbs (post-underscore))
+2026-01-31 20:40:30.657 - 🎯 🍪 Getting market outcome for bookmaker: Bet9ja
+2026-01-31 20:40:30.657 - No market outcome mapping for bookmaker: Bet9ja
+2026-01-31 20:40:30.657 - ⚠️ 🔄 Failed to convert event 16193959102741743886: No mapping for Bet9ja
+2026-01-31 20:40:30.657 - ✅ ⚡ 🔄 Successfully converted 0 events to arbitrages
+2026-01-31 20:40:30.657 - 🔄 ℹ️ Transforming 0 parsed items to entities...
+2026-01-31 20:40:30.657 - 💾 ℹ️ Saving 0 opportunities to database...
+2026-01-31 20:40:30.657 - 💾 ℹ️ Processing 0 opportunities for database save...
+2026-01-31 20:40:30.657 - ℹ️ 💾 No opportunities to save
+2026-01-31 20:40:30.657 - ✅ 📥 Live arbs ingestion completed: 0 opportunities saved in 510ms
+2026-01-31 20:40:32.157 - 🔄 📥 [Poll #69] Starting live arbs fetch...
+2026-01-31 20:40:32.157 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:33.728 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:34.152 - 🔄 📥 [Poll #70] Starting live arbs fetch...
+2026-01-31 20:40:34.152 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:36.169 - 🔄 📥 [Poll #71] Starting live arbs fetch...
+2026-01-31 20:40:36.169 - ⚠️ 🔄 [Poll #71] Previous ingestion still running, skipping
+2026-01-31 20:40:37.516 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:38.148 - 🔄 📥 [Poll #72] Starting live arbs fetch...
+2026-01-31 20:40:38.148 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:39.420 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:40.159 - 🔄 📥 [Poll #73] Starting live arbs fetch...
+2026-01-31 20:40:40.159 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:42.150 - 🔄 📥 [Poll #74] Starting live arbs fetch...
+2026-01-31 20:40:42.150 - ⚠️ 🔄 [Poll #74] Previous ingestion still running, skipping
+2026-01-31 20:40:42.379 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:44.159 - 🔄 📥 [Poll #75] Starting live arbs fetch...
+2026-01-31 20:40:44.159 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:45.313 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:46.154 - 🔄 📥 [Poll #76] Starting live arbs fetch...
+2026-01-31 20:40:46.155 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:48.161 - 🔄 📥 [Poll #77] Starting live arbs fetch...
+2026-01-31 20:40:48.161 - ⚠️ 🔄 [Poll #77] Previous ingestion still running, skipping
+2026-01-31 20:40:48.948 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:50.147 - 🔄 📥 [Poll #78] Starting live arbs fetch...
+2026-01-31 20:40:50.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:51.379 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:52.148 - 🔄 📥 [Poll #79] Starting live arbs fetch...
+2026-01-31 20:40:52.149 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:52.788 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:54.148 - 🔄 📥 [Poll #80] Starting live arbs fetch...
+2026-01-31 20:40:54.149 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:54.778 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:40:56.161 - 🔄 📥 [Poll #81] Starting live arbs fetch...
+2026-01-31 20:40:56.200 - 📥 Fetching live arbs from API...
+2026-01-31 20:40:58.147 - 🔄 📥 [Poll #82] Starting live arbs fetch...
+2026-01-31 20:40:58.147 - ⚠️ 🔄 [Poll #82] Previous ingestion still running, skipping
+2026-01-31 20:40:58.411 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:00.147 - 🔄 📥 [Poll #83] Starting live arbs fetch...
+2026-01-31 20:41:00.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:02.147 - 🔄 📥 [Poll #84] Starting live arbs fetch...
+2026-01-31 20:41:02.147 - ⚠️ 🔄 [Poll #84] Previous ingestion still running, skipping
+2026-01-31 20:41:02.517 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:04.150 - 🔄 📥 [Poll #85] Starting live arbs fetch...
+2026-01-31 20:41:04.150 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:05.980 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:06.159 - 🔄 📥 [Poll #86] Starting live arbs fetch...
+2026-01-31 20:41:06.160 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:06.701 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:08.157 - 🔄 📥 [Poll #87] Starting live arbs fetch...
+2026-01-31 20:41:08.157 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:09.601 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:10.153 - 🔄 📥 [Poll #88] Starting live arbs fetch...
+2026-01-31 20:41:10.153 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:11.560 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:12.150 - 🔄 📥 [Poll #89] Starting live arbs fetch...
+2026-01-31 20:41:12.150 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:12.851 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:14.150 - 🔄 📥 [Poll #90] Starting live arbs fetch...
+2026-01-31 20:41:14.150 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:14.377 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:16.156 - 🔄 📥 [Poll #91] Starting live arbs fetch...
+2026-01-31 20:41:16.156 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:17.098 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:18.164 - 🔄 📥 [Poll #92] Starting live arbs fetch...
+2026-01-31 20:41:18.164 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:19.378 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:20.250 - 🔄 📥 [Poll #93] Starting live arbs fetch...
+2026-01-31 20:41:20.251 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:20.954 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:22.241 - 🔄 📥 [Poll #94] Starting live arbs fetch...
+2026-01-31 20:41:22.242 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:22.537 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:24.149 - 🔄 📥 [Poll #95] Starting live arbs fetch...
+2026-01-31 20:41:24.151 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:24.422 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:26.148 - 🔄 📥 [Poll #96] Starting live arbs fetch...
+2026-01-31 20:41:26.148 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:28.158 - 🔄 📥 [Poll #97] Starting live arbs fetch...
+2026-01-31 20:41:28.158 - ⚠️ 🔄 [Poll #97] Previous ingestion still running, skipping
+2026-01-31 20:41:28.252 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:30.148 - 🔄 📥 [Poll #98] Starting live arbs fetch...
+2026-01-31 20:41:30.148 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:30.824 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:32.152 - 🔄 📥 [Poll #99] Starting live arbs fetch...
+2026-01-31 20:41:32.152 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:32.864 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:34.151 - 🔄 📥 [Poll #100] Starting live arbs fetch...
+2026-01-31 20:41:34.151 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:36.150 - 🔄 📥 [Poll #101] Starting live arbs fetch...
+2026-01-31 20:41:36.150 - ⚠️ 🔄 [Poll #101] Previous ingestion still running, skipping
+2026-01-31 20:41:36.256 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:38.147 - 🔄 📥 [Poll #102] Starting live arbs fetch...
+2026-01-31 20:41:38.148 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:39.121 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:40.154 - 🔄 📥 [Poll #103] Starting live arbs fetch...
+2026-01-31 20:41:40.154 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:41.378 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:42.152 - 🔄 📥 [Poll #104] Starting live arbs fetch...
+2026-01-31 20:41:42.153 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:42.980 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:44.157 - 🔄 📥 [Poll #105] Starting live arbs fetch...
+2026-01-31 20:41:44.158 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:44.527 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:46.155 - 🔄 📥 [Poll #106] Starting live arbs fetch...
+2026-01-31 20:41:46.155 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:46.409 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:48.154 - 🔄 📥 [Poll #107] Starting live arbs fetch...
+2026-01-31 20:41:48.154 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:48.409 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:50.158 - 🔄 📥 [Poll #108] Starting live arbs fetch...
+2026-01-31 20:41:50.158 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:50.682 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:52.147 - 🔄 📥 [Poll #109] Starting live arbs fetch...
+2026-01-31 20:41:52.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:52.349 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:54.148 - 🔄 📥 [Poll #110] Starting live arbs fetch...
+2026-01-31 20:41:54.148 - 📥 Fetching live arbs from API...
+2026-01-31 20:41:56.148 - 🔄 📥 [Poll #111] Starting live arbs fetch...
+2026-01-31 20:41:56.148 - ⚠️ 🔄 [Poll #111] Previous ingestion still running, skipping
+2026-01-31 20:41:56.184 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:41:58.156 - 🔄 📥 [Poll #112] Starting live arbs fetch...
+2026-01-31 20:41:58.156 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:00.157 - 🔄 📥 [Poll #113] Starting live arbs fetch...
+2026-01-31 20:42:00.157 - ⚠️ 🔄 [Poll #113] Previous ingestion still running, skipping
+2026-01-31 20:42:01.344 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:02.147 - 🔄 📥 [Poll #114] Starting live arbs fetch...
+2026-01-31 20:42:02.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:04.147 - 🔄 📥 [Poll #115] Starting live arbs fetch...
+2026-01-31 20:42:04.147 - ⚠️ 🔄 [Poll #115] Previous ingestion still running, skipping
+2026-01-31 20:42:04.851 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:06.147 - 🔄 📥 [Poll #116] Starting live arbs fetch...
+2026-01-31 20:42:06.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:07.481 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:08.147 - 🔄 📥 [Poll #117] Starting live arbs fetch...
+2026-01-31 20:42:08.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:09.441 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:10.148 - 🔄 📥 [Poll #118] Starting live arbs fetch...
+2026-01-31 20:42:10.149 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:11.074 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:12.147 - 🔄 📥 [Poll #119] Starting live arbs fetch...
+2026-01-31 20:42:12.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:12.684 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:14.147 - 🔄 📥 [Poll #120] Starting live arbs fetch...
+2026-01-31 20:42:14.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:14.352 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:16.147 - 🔄 📥 [Poll #121] Starting live arbs fetch...
+2026-01-31 20:42:16.147 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:16.395 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:18.210 - 🔄 📥 [Poll #122] Starting live arbs fetch...
+2026-01-31 20:42:18.211 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:19.619 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:20.268 - 🔄 📥 [Poll #123] Starting live arbs fetch...
+2026-01-31 20:42:20.268 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:21.361 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:22.153 - 🔄 📥 [Poll #124] Starting live arbs fetch...
+2026-01-31 20:42:22.154 - 📥 Fetching live arbs from API...
+2026-01-31 20:42:22.376 - ❌ 📥 Failed to fetch live arbs: API error 401: {"code":401,"message":"Token is expired"}
+java.io.IOException: API error 401: {"code":401,"message":"Token is expired"}
+	at com.mouse.bet.client.BreakingBetClient.handleResponse(BreakingBetClient.java:390)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbs(BreakingBetClient.java:358)
+	at com.mouse.bet.client.BreakingBetClient.fetchLiveArbsAsObject(BreakingBetClient.java:363)
+	at com.mouse.bet.ingestion.IngestionService.executeIngestion(IngestionService.java:241)
+	at com.mouse.bet.ingestion.IngestionService.lambda$pollLiveArbs$2(IngestionService.java:190)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-01-31 20:42:24.146 - 🔄 📥 [Poll #125] Starting live arbs fetch...
+2026-01-31 20:42:24.147 - 📥 Fetching live arbs from API...

@@ -287,65 +287,104 @@ public class ArbPollingService {
      * Apply filters to determine if arb should be processed
      */
     private boolean passesFilters(ArbitrageOpportunity arb) {
-        // Filter 1: Check profit percentage
-        if (arb.getProfitPercentage().doubleValue() < minProfitPercentage) {
-            log.debug("{} Filtered (low profit) | ArbId: {} | Profit: {}% | MinRequired: {}%",
-                    EMOJI_FILTERED, arb.getId(), arb.getProfitPercentage(), minProfitPercentage);
+        // Filter 1: Minimum profit percentage
+        if (arb.getProfitPercentage() == null || arb.getProfitPercentage().doubleValue() < minProfitPercentage) {
+            log.debug("{} Filtered (low or missing profit) | ArbId: {} | Profit: {}% | MinRequired: {}%",
+                    EMOJI_FILTERED, arb.getExternalId(), arb.getProfitPercentage(), minProfitPercentage);
             return false;
         }
 
-        if (arb.getCreatedAt().isBefore(LocalDateTime.now().minusSeconds(freshnessSeconds))){
-            log.info("it not within the time frame");
+        // Filter 2: Freshness (not too old)
+        if (arb.getCreatedAt() == null || arb.getCreatedAt().isBefore(LocalDateTime.now().minusSeconds(freshnessSeconds))) {
+            log.info("{} Filtered (stale) | ArbId: {} | Created: {} | Max age seconds: {}",
+                    EMOJI_FILTERED, arb.getExternalId(), arb.getCreatedAt(), freshnessSeconds);
             return false;
-
         }
 
-        // Filter : Check sport is enabled
+        // Filter 3: Sport must be enabled
         if (!isSportEnabled(arb)) {
             Sport sport = parseSport(arb);
             log.debug("{} Filtered (sport disabled) | ArbId: {} | Sport: {} | EnabledSports: {}",
-                    EMOJI_FILTERED, arb.getId(), sport != null ? sport : arb.getSport(), getEnabledSports());
+                    EMOJI_FILTERED, arb.getExternalId(), sport != null ? sport : arb.getSport(), getEnabledSports());
             return false;
         }
 
-        // Filter 3: Check bookmakers (if filtering is enabled)
+        // Filter 4: Bookmakers (if restricted list is active)
         if (!allowedBookmakers.isEmpty()) {
             Set<BookMaker> arbBookmakers = getBookmakers(arb);
 
-            // Check if ALL outcomes are from allowed bookmakers
-            boolean allAllowed = arbBookmakers.stream()
-                    .allMatch(allowedBookmakers::contains);
+            boolean allAllowed = arbBookmakers.stream().allMatch(allowedBookmakers::contains);
 
             if (!allAllowed) {
-                log.debug("{} Filtered (bookmaker mismatch) | ArbId: {} | ArbBookmakers: {} | AllowedBookmakers: {}",
-                        EMOJI_FILTERED, arb.getId(), arbBookmakers, allowedBookmakers);
+                log.debug("{} Filtered (bookmaker mismatch) | ArbId: {} | ArbBookmakers: {} | Allowed: {}",
+                        EMOJI_FILTERED, arb.getExternalId(), arbBookmakers, allowedBookmakers);
                 return false;
             }
         }
 
-        // Filter 4: Check if arb has valid outcomes
-        if (arb.getOutcomes() == null || arb.getOutcomes().isEmpty()) {
-            log.warn("{} Filtered (no outcomes) | ArbId: {}", EMOJI_FILTERED, arb.getId());
+        // Filter 5: Must have exactly 2 outcomes
+        if (arb.getOutcomes() == null || arb.getOutcomes().size() != 2) {
+            log.warn("{} Filtered (invalid outcome count) | ArbId: {} | Count: {}",
+                    EMOJI_FILTERED, arb.getExternalId(), arb.getOutcomes() != null ? arb.getOutcomes().size() : 0);
             return false;
         }
 
-        // Filter 5: Verify we have registered workers for all bookmakers
+        // NEW Filter 6: Both outcomes must have valid / meaningful outcome names
+        List<ArbOutcome> outcomes = arb.getOutcomes();
+        ArbOutcome outcome1 = outcomes.get(0);
+        ArbOutcome outcome2 = outcomes.get(1);
+
+        if (!hasValidOutcomeName(outcome1) || !hasValidOutcomeName(outcome2)) {
+            String name1 = outcome1 != null ? outcome1.getOutComeName() : null;
+            String name2 = outcome2 != null ? outcome2.getOutComeName() : null;
+
+            log.debug("{} Filtered (invalid/missing outcome name) | ArbId: {} | Outcome1: '{}' | Outcome2: '{}'",
+                    EMOJI_FILTERED, arb.getExternalId(), name1, name2);
+            return false;
+        }
+
+        // Filter 7: All required workers/bookmakers must be registered
         Set<BookMaker> arbBookmakers = getBookmakers(arb);
         Set<BookMaker> registeredWorkers = orchestrator.getRegisteredWorkers();
 
-        boolean allWorkersAvailable = registeredWorkers.containsAll(arbBookmakers);
-
-        if (!allWorkersAvailable) {
-            Set<BookMaker> missingWorkers = arbBookmakers.stream()
+        if (!registeredWorkers.containsAll(arbBookmakers)) {
+            Set<BookMaker> missing = arbBookmakers.stream()
                     .filter(bm -> !registeredWorkers.contains(bm))
                     .collect(Collectors.toSet());
 
-            log.debug("{} Filtered (missing workers) | ArbId: {} | MissingWorkers: {} | RegisteredWorkers: {}",
-                    EMOJI_FILTERED, arb.getId(), missingWorkers, registeredWorkers);
+            log.debug("{} Filtered (missing workers) | ArbId: {} | Missing: {} | Registered: {}",
+                    EMOJI_FILTERED, arb.getExternalId(), missing, registeredWorkers);
             return false;
         }
 
+        // All filters passed
         return true;
+    }
+
+    private boolean hasValidOutcomeName(ArbOutcome outcome) {
+        if (outcome == null) {
+            return false;
+        }
+
+        String name = outcome.getOutComeName();
+
+        if (name == null) {
+            return false;
+        }
+
+        String trimmed = name.trim();
+
+        if (trimmed.isEmpty()) {
+            return false;
+        }
+
+        String lower = trimmed.toLowerCase();
+
+        // Explicitly block common invalid values
+        return !lower.equals("n/a") &&
+                !lower.equals("unknown") &&
+                !lower.equals("none") &&
+                !lower.equals("null");
     }
 
     /**
