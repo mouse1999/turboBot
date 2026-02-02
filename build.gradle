@@ -43,15 +43,15 @@ dependencies {
 
 // Node configuration - use existing Node.js
 node {
-	download = false
+	download = true
 	version = "20.10.0"
 	nodeProjectDir = file("${project.projectDir}/src/main/frontend")
 }
 
 // Task to install npm dependencies
-//task npmInstall(type: NpmTask) {
-//  args = ['install']
-//}
+task npmInstall(type: NpmTask) {
+  args = ['install']
+}
 
 // Task to build the React app
 task buildReactApp(type: NpmTask) {

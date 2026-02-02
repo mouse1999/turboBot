@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: turboBot
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8085
+
+# --- Credentials & Logic ---
+msport:
+  username: "08141792738"
+  password: "Victor?!$#070"
+  headless: false
+
+sporty:
+  username: "08141792738"
+  password: "Victor?!$#070"
+  headless: false
+
+bet9ja:
+  username: "Emeritus19"
+  password: "Edwardkufre123"
+  headless: false
+
+# Combined ARB section to prevent "duplicate key" error
+arb:
+  polling:
+    enabled: true
+    interval:
+      ms: 5000
+    initial:
+      delay:
+        ms: 10000
+    freshness:
+      seconds: 2
+    min:
+      profit: 5
+    bookmakers: SPORTYBET,MSPORT,BET9JA
+
+fetch:
+  enabled:
+    football: true
+    basketball: true
+    table-tennis: true
+
+playwright:
+  enabled: false
+
+# Combined Breaking-Bet section
+breaking-bet:
+  api:
+    prematch:
+      url: "https://arbs.prematch.api.breaking-bet.com/v1/users/bb-51233/filter/items"
+    live:
+      url: "https://arbs.live.api.breaking-bet.com/v1/users/bb-50810/filter/items"
+  headless: false
+  connection:
+    timeout: 30
+  read:
+    timeout: 30
+  write:
+    timeout: 30

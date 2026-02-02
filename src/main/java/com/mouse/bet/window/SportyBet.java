@@ -127,6 +127,9 @@ public class SportyBet implements BettingWindow, Runnable {
     @Value("${sporty.base.url:https://www.sportybet.com/ng}")
     private String baseUrl;
 
+    @Value("${sporty.headless:false}")
+    private boolean headless;
+
     /**
      * Initialize Playwright and browser
      */
@@ -136,7 +139,7 @@ public class SportyBet implements BettingWindow, Runnable {
         try {
             playwright = Playwright.create();
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setHeadless(true)
+                    .setHeadless(headless)
                     .setArgs(Arrays.asList(
 //                            "--start-maximized",
 //                            "--window-size=2560,1440",

@@ -127,6 +127,9 @@ public class Bet9ja implements BettingWindow, Runnable {
     @Value("${bet9ja.base.url:https://sports.bet9ja.com}")
     private String baseUrl;
 
+    @Value("${bet9ja.headless:false}")
+    private boolean headless;
+
     /**
      * Initialize Playwright and browser
      */
@@ -136,7 +139,7 @@ public class Bet9ja implements BettingWindow, Runnable {
         try {
             playwright = Playwright.create();
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setHeadless(false)
+                    .setHeadless(headless)
                     .setArgs(Arrays.asList(
                             "--start-maximized",
                             "--window-size=2560,1440",

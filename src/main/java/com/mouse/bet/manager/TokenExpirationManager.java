@@ -73,7 +73,7 @@ public class TokenExpirationManager {
             log.error("7. Click on the request");
             log.error("8. Find 'Authorization' header");
             log.error("9. Copy the Bearer token (everything after 'Bearer ')");
-            log.error("10. Update 'breaking-bet.bearer.token' in application.properties");
+            log.error("10. Update 'breaking-bet.bearer.token' in application.yml");
             log.error("");
             log.error("OR save the token to a file at: {}", tokenFilePath);
             log.error("");
@@ -90,7 +90,7 @@ public class TokenExpirationManager {
 
                 if (tokenValid) {
                     log.info("{} {} Token from file is valid!", EMOJI_SUCCESS, EMOJI_TOKEN);
-                    log.warn("⚠️  IMPORTANT: Update your application.properties with this token!");
+                    log.warn("⚠️  IMPORTANT: Update your application.yml with this token!");
                 }
             }
         }
@@ -233,7 +233,7 @@ public class TokenExpirationManager {
     public void requireValidToken() {
         if (!tokenValid) {
             throw new IllegalStateException(
-                    "Bearer token is expired or invalid. Please update your token in application.properties. " +
+                    "Bearer token is expired or invalid. Please update your token in application.yml. " +
                             "See logs above for instructions on how to obtain a new token."
             );
         }

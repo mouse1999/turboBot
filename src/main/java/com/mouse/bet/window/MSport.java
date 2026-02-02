@@ -150,6 +150,9 @@ public class MSport implements BettingWindow, Runnable {
     @Value("${fetch.enabled.table-tennis:false}")
     private boolean fetchTableTennisEnabled;
 
+    @Value("${msport.headless:false}")
+    private boolean headless;
+
     // ========================================================================
     // INITIALIZATION
     // ========================================================================
@@ -160,7 +163,7 @@ public class MSport implements BettingWindow, Runnable {
         try {
             playwright = Playwright.create();
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setHeadless(true)
+                    .setHeadless(headless)
                     .setArgs(Arrays.asList(
                             "--disable-gpu",
                             "--disable-dev-shm-usage",
