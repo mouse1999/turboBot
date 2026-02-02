@@ -1,2 +1,0 @@
-2026-01-29 12:08:38.583 [main] INFO  c.m.bet.orchestrator.Orchestrator - 🚀 Registering worker | Bookmaker: Bet9ja | QueueCapacity: 2147483647
-2026-01-29 12:09:09.415 [main] INFO  c.m.bet.orchestrator.Orchestrator - ✅ Worker registered successfully | Bookmaker: Bet9ja | TotalRegisteredWorkers: 1
