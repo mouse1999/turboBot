@@ -49,9 +49,9 @@ node {
 }
 
 // Task to install npm dependencies
-task npmInstall(type: NpmTask) {
-  args = ['install']
-}
+//task npmInstall(type: NpmTask) {
+//  args = ['install']
+//}
 
 // Task to build the React app
 task buildReactApp(type: NpmTask) {

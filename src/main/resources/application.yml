@@ -1,3 +1,5 @@
+#http://localhost:8085/arbitrage
+
 spring:
   application:
     name: turboBot
@@ -20,12 +22,12 @@ server:
 msport:
   username: "08141792738"
   password: "Victor?!$#070"
-  headless: false
+  headless: true
 
 sporty:
   username: "08141792738"
   password: "Victor?!$#070"
-  headless: false
+  headless: true
 
 bet9ja:
   username: "Emeritus19"
@@ -60,13 +62,15 @@ playwright:
 breaking-bet:
   api:
     prematch:
-      url: "https://arbs.prematch.api.breaking-bet.com/v1/users/bb-51233/filter/items"
+      url: "https://arbs.prematch.api.breaking-bet.com/v1/users/bb-50810/filter/items"
     live:
       url: "https://arbs.live.api.breaking-bet.com/v1/users/bb-50810/filter/items"
-  headless: false
+  headless: true
   connection:
     timeout: 30
   read:
     timeout: 30
   write:
     timeout: 30
+  bearer:
+    token: "eyJhbGciOiJIUzI1NiJ9.eyJib29rbWFrZXJzIjpbODMsODYsMjEsNzksODIsNTMsMzksMzMsNDksOTQsOTMsMzYsODUsNzcsNiw4NCwzMSwxMCw5Miw4OSwyMyw0OCwzLDc0LDkxLDYyLDU2LDE2LDE0LDI1LDU3LDE1LDg3LDQxLDgsNTUsOTUsNjgsODAsNSw0MCw3Niw1MiwzOCw5MCw1NCw3LDksNjcsMzAsNjUsNDMsODgsNzEsNTEsMTgsMTksMjgsNCw0NF0sImV4cCI6MTc3MDEwOTQzNiwicmVzIjpbImFyYnNfcHJlbWF0Y2hfZ3Vlc3QiLCJhcmJzX2xpdmVfZ3Vlc3QiLCJ2YWx1ZWJldHNfcHJlbWF0Y2hfZ3Vlc3QiLCJ2YWx1ZWJldHNfbGl2ZV9ndWVzdCIsIm1pZGRsZXNfbGl2ZV9ndWVzdCIsIm1pZGRsZXNfcHJlbWF0Y2hfZ3Vlc3QiXSwidXNlciI6eyJpZCI6ImI2YzhjZTYyZjkxMTMwYTUzZTk0MDA0MTE3MDBhM2I3ZTBkM2ViNzgifX0.O5w-Des7rgUUl2O05tKbFzmx80H3iB8bwVcr2JQhr38"

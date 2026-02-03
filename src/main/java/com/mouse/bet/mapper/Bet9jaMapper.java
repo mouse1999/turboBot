@@ -100,6 +100,50 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // SOCCER/FOOTBALL MARKETS
         // ───────────────────────────────────────────────
         initializeSoccerMarkets();
+
+
+        // CORE MATCH MARKETS
+        generateTTCoreMarkets();
+
+        // SET-LEVEL MARKETS
+        generateTTSetWinner();
+
+        // HANDICAP MARKETS
+        generateTTMatchHandicap();
+        generateTTPerSetHandicap();            // sets 1-2  (HNDP1N20 / HNDP2N20 style)
+        generateTTPeriodHandicap();            // sets 3-7  (HND3PN20 … HND7PN20 style)
+        generateTTAlternatePerSetHandicap();   // sets 1-7  (HND1P … HND7P style)
+        generateTTMatchGameHandicap();
+        generateTTPerSetGameHandicap();        // sets 1-7
+        generateTTPointHandicap();
+
+        // TOTAL MARKETS
+        generateTTMatchTotal();
+        generateTTPerSetTotal();               // sets 1-4  (OU1PN … OU4PN style)
+        generateTTAlternatePerSetTotal();      // sets 1-7  (OU1P … OU7P style)
+        generateTTTotalPoints();
+        generateTTTotalGames();
+        generateTTPerSetGameTotal();           // sets 1-5  (G1OUP … G5OUP)
+
+        // ODD / EVEN MARKETS
+        generateTTPerSetOddEven();             // sets 1-7  (OE1PN … OE7PN)
+        generateTTAlternatePerSetOddEven();    // sets 1-7  (OE1P … OE7P)
+        generateTTSet1OddEven();               // G1OE
+
+        // RESULT MARKETS
+        generateTTFinalResultBest5();
+        generateTTFinalResultBest7();
+        generateTTCorrectMatchScore();
+        generateTTNumberOfSetsBest5();
+        generateTTNumberOfSetsBest7();
+
+        // SETS EXCEEDING SCORE LIMIT
+        generateTTSetsExceedingBest5();
+        generateTTSetsExceedingBest7();
+
+        // WHO SCORES Nth POINT
+        generateTTNthPointScorer();            // sets 1-5
+        generateTTNthPointScorer67();          // sets 6-7
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -1111,4 +1155,554 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // These markets are generated dynamically based on available players
         // The mapper will handle them when encountered in the odds data
     }
+
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – CORE MATCH MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTCoreMarkets() {
+        // Match Winner
+        // Market ID: LIVETT_12
+        // Outcome suffixes: _1HH (Player 1), _2HH (Player 2)
+        Map<String, String> matchWinner = new HashMap<>();
+        matchWinner.put("1HH", "Player 1");
+        matchWinner.put("2HH", "Player 2");
+        addMarket("LIVETT_12", null, "Match Winner", matchWinner);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – SET WINNER
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTSetWinner() {
+        // Set Winner
+        // Market ID format: LIVETT_SW@{setNumber}
+        // Outcome suffixes: _1 (Player 1), _2 (Player 2)
+
+        for (int set = 1; set <= 7; set++) {
+            String marketId = "LIVETT_SW@" + set;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("1", "Player 1");
+            map.put("2", "Player 2");
+            addMarket(marketId, null, "Set " + set + " Winner", map);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – HANDICAP MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTMatchHandicap() {
+        // Asian Handicap (Match)
+        // Market ID format: LIVETT_12HNDN20@{handicap}
+        // Outcome suffixes: _1H (Player 1), _2H (Player 2)
+
+        for (double hcp = -15.5; hcp <= 15.5; hcp += 0.5) {
+            if (hcp == 0) continue;
+
+            String line = formatDecimal(Math.abs(hcp));
+            String handicapValue = (hcp < 0 ? "-" : "") + line;
+            String marketId = "LIVETT_12HNDN20@" + handicapValue;
+
+            Map<String, String> map = new HashMap<>();
+            if (hcp < 0) {
+                map.put("1H", "Player 1 -" + line);
+                map.put("2H", "Player 2 +" + line);
+            } else {
+                map.put("1H", "Player 1 +" + line);
+                map.put("2H", "Player 2 -" + line);
+            }
+
+            addMarket(marketId, null, "Asian Handicap", map);
+        }
+    }
+
+    private void generateTTPerSetHandicap() {
+        // Asian Handicap – 1st / 2nd Period
+        // Market ID format: LIVETT_12HNDP{set}N20@{handicap}   (set = 1 or 2)
+        // Outcome suffixes: _1H (Player 1), _2H (Player 2)
+
+        for (int set = 1; set <= 2; set++) {
+            for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+                if (hcp == 0) continue;
+
+                String line = formatDecimal(Math.abs(hcp));
+                String handicapValue = (hcp < 0 ? "-" : "") + line;
+                String marketId = "LIVETT_12HNDP" + set + "N20@" + handicapValue;
+
+                Map<String, String> map = new HashMap<>();
+                if (hcp < 0) {
+                    map.put("1H", "Player 1 -" + line);
+                    map.put("2H", "Player 2 +" + line);
+                } else {
+                    map.put("1H", "Player 1 +" + line);
+                    map.put("2H", "Player 2 -" + line);
+                }
+
+                addMarket(marketId, null, getTTSetOrdinal(set) + " Set - Asian Handicap", map);
+            }
+        }
+    }
+
+    private void generateTTPeriodHandicap() {
+        // Asian Handicap – 3rd to 7th Period
+        // Market ID format: LIVETT_12HND{set}PN20@{handicap}   (set = 3 … 7)
+        // Outcome suffixes: _1H (Player 1), _2H (Player 2)
+
+        for (int set = 3; set <= 7; set++) {
+            for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+                if (hcp == 0) continue;
+
+                String line = formatDecimal(Math.abs(hcp));
+                String handicapValue = (hcp < 0 ? "-" : "") + line;
+                String marketId = "LIVETT_12HND" + set + "PN20@" + handicapValue;
+
+                Map<String, String> map = new HashMap<>();
+                if (hcp < 0) {
+                    map.put("1H", "Player 1 -" + line);
+                    map.put("2H", "Player 2 +" + line);
+                } else {
+                    map.put("1H", "Player 1 +" + line);
+                    map.put("2H", "Player 2 -" + line);
+                }
+
+                addMarket(marketId, null, getTTSetOrdinal(set) + " Set - Asian Handicap", map);
+            }
+        }
+    }
+
+    private void generateTTAlternatePerSetHandicap() {
+        // Asian Handicap – per period (alternate ID style)
+        // Market ID format: LIVETT_12HND{set}P@{handicap}   (set = 1 … 7)
+        // Outcome suffixes: _1H (Player 1), _2H (Player 2)
+
+        for (int set = 1; set <= 7; set++) {
+            for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+                if (hcp == 0) continue;
+
+                String line = formatDecimal(Math.abs(hcp));
+                String handicapValue = (hcp < 0 ? "-" : "") + line;
+                String marketId = "LIVETT_12HND" + set + "P@" + handicapValue;
+
+                Map<String, String> map = new HashMap<>();
+                if (hcp < 0) {
+                    map.put("1H", "Player 1 -" + line);
+                    map.put("2H", "Player 2 +" + line);
+                } else {
+                    map.put("1H", "Player 1 +" + line);
+                    map.put("2H", "Player 2 -" + line);
+                }
+
+                addMarket(marketId, null, getTTSetOrdinal(set) + " Set - Asian Handicap", map);
+            }
+        }
+    }
+
+    private void generateTTMatchGameHandicap() {
+        // Match Game Handicap
+        // Market ID format: LIVETT_12GHND@{handicap}
+        // Outcome suffixes: _1 (Player 1), _2 (Player 2)
+
+        for (double hcp = -3.5; hcp <= 3.5; hcp += 0.5) {
+            if (hcp == 0) continue;
+
+            String line = formatDecimal(Math.abs(hcp));
+            String handicapValue = (hcp < 0 ? "-" : "") + line;
+            String marketId = "LIVETT_12GHND@" + handicapValue;
+
+            Map<String, String> map = new HashMap<>();
+            if (hcp < 0) {
+                map.put("1", "Player 1 -" + line);
+                map.put("2", "Player 2 +" + line);
+            } else {
+                map.put("1", "Player 1 +" + line);
+                map.put("2", "Player 2 -" + line);
+            }
+
+            addMarket(marketId, null, "Match Game Handicap", map);
+        }
+    }
+
+    private void generateTTPerSetGameHandicap() {
+        // Game Handicap – per set
+        // Market ID format: LIVETT_12G{set}HND@{handicap}   (set = 1 … 7)
+        // Outcome suffixes: _1 (Player 1), _2 (Player 2)
+
+        for (int set = 1; set <= 7; set++) {
+            for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+                if (hcp == 0) continue;
+
+                String line = formatDecimal(Math.abs(hcp));
+                String handicapValue = (hcp < 0 ? "-" : "") + line;
+                String marketId = "LIVETT_12G" + set + "HND@" + handicapValue;
+
+                Map<String, String> map = new HashMap<>();
+                if (hcp < 0) {
+                    map.put("1", "Player 1 -" + line);
+                    map.put("2", "Player 2 +" + line);
+                } else {
+                    map.put("1", "Player 1 +" + line);
+                    map.put("2", "Player 2 -" + line);
+                }
+
+                addMarket(marketId, null, getTTSetOrdinal(set) + " Set - Game Handicap", map);
+            }
+        }
+    }
+
+    private void generateTTPointHandicap() {
+        // Point Handicap (Match)
+        // Market ID format: LIVETT_12PHND@{handicap}
+        // Outcome suffixes: _1 (Player 1), _2 (Player 2)
+
+        for (double hcp = -30.5; hcp <= 30.5; hcp += 0.5) {
+            if (hcp == 0) continue;
+
+            String line = formatDecimal(Math.abs(hcp));
+            String handicapValue = (hcp < 0 ? "-" : "") + line;
+            String marketId = "LIVETT_12PHND@" + handicapValue;
+
+            Map<String, String> map = new HashMap<>();
+            if (hcp < 0) {
+                map.put("1", "Player 1 -" + line);
+                map.put("2", "Player 2 +" + line);
+            } else {
+                map.put("1", "Player 1 +" + line);
+                map.put("2", "Player 2 -" + line);
+            }
+
+            addMarket(marketId, null, "Point Handicap", map);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – TOTAL MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTMatchTotal() {
+        // Total Points (Match)
+        // Market ID format: LIVETT_OU@{total}
+        // Outcome suffixes: _Over, _Under
+
+        for (double total = 30.5; total <= 120.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVETT_OU@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("Over", "Over " + line);
+            map.put("Under", "Under " + line);
+            addMarket(marketId, null, "Total Points", map);
+        }
+    }
+
+    private void generateTTPerSetTotal() {
+        // Total Points – per period (sets 1-4)
+        // Market ID format: LIVETT_OU{set}PN@{total}   (set = 1 … 4)
+        // Outcome suffixes: _O (Over), _U (Under)
+
+        for (int set = 1; set <= 4; set++) {
+            for (double total = 15.5; total <= 40.5; total += 0.5) {
+                String line = formatDecimal(total);
+                String marketId = "LIVETT_OU" + set + "PN@" + line;
+
+                Map<String, String> map = new HashMap<>();
+                map.put("O", "Over " + line);
+                map.put("U", "Under " + line);
+                addMarket(marketId, null, getTTSetOrdinal(set) + " Set - Total Points", map);
+            }
+        }
+    }
+
+    private void generateTTAlternatePerSetTotal() {
+        // Total Points – per period (alternate ID style, sets 1-7)
+        // Market ID format: LIVETT_OU{set}P@{total}   (set = 1 … 7)
+        // Outcome suffixes: _Over, _Under
+
+        for (int set = 1; set <= 7; set++) {
+            for (double total = 15.5; total <= 40.5; total += 0.5) {
+                String line = formatDecimal(total);
+                String marketId = "LIVETT_OU" + set + "P@" + line;
+
+                Map<String, String> map = new HashMap<>();
+                map.put("Over", "Over " + line);
+                map.put("Under", "Under " + line);
+                addMarket(marketId, null, getTTSetOrdinal(set) + " Set - Total Points", map);
+            }
+        }
+    }
+
+    private void generateTTTotalPoints() {
+        // Total Points Over/Under (match-level alternate)
+        // Market ID format: LIVETT_OUP@{total}
+        // Outcome suffixes: _O (Over), _U (Under)
+
+        for (double total = 30.5; total <= 120.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVETT_OUP@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, "Total Points Over/Under", map);
+        }
+    }
+
+    private void generateTTTotalGames() {
+        // Total Games Over/Under
+        // Market ID format: LIVETT_OUG@{total}
+        // Outcome suffixes: _O (Over), _U (Under)
+
+        for (double total = 2.5; total <= 7.5; total += 0.5) {
+            String line = formatDecimal(total);
+            String marketId = "LIVETT_OUG@" + line;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("O", "Over " + line);
+            map.put("U", "Under " + line);
+            addMarket(marketId, null, "Total Games Over/Under", map);
+        }
+    }
+
+    private void generateTTPerSetGameTotal() {
+        // Game Total Points Over/Under – per set
+        // Market ID format: LIVETT_G{set}OUP@{total}   (set = 1 … 5)
+        // Outcome suffixes: _O (Over), _U (Under)
+
+        for (int set = 1; set <= 5; set++) {
+            for (double total = 15.5; total <= 40.5; total += 0.5) {
+                String line = formatDecimal(total);
+                String marketId = "LIVETT_G" + set + "OUP@" + line;
+
+                Map<String, String> map = new HashMap<>();
+                map.put("O", "Over " + line);
+                map.put("U", "Under " + line);
+                addMarket(marketId, null, getTTSetOrdinal(set) + " Set - Game Total Points", map);
+            }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – ODD / EVEN MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTPerSetOddEven() {
+        // Odd/Even – per period (sets 1-7)
+        // Market ID format: LIVETT_OE{set}PN   (set = 1 … 7)
+        // Outcome suffixes: _OD (Odd), _EV (Even)
+
+        for (int set = 1; set <= 7; set++) {
+            String marketId = "LIVETT_OE" + set + "PN";
+
+            Map<String, String> map = new HashMap<>();
+            map.put("OD", "Odd");
+            map.put("EV", "Even");
+            addMarket(marketId, null, getTTSetOrdinal(set) + " Set - Odd/Even", map);
+        }
+    }
+
+    private void generateTTAlternatePerSetOddEven() {
+        // Odd/Even – per period (alternate ID style, sets 1-7)
+        // Market ID format: LIVETT_OE{set}P   (set = 1 … 7)
+        // Outcome suffixes: _Odd, _Even
+
+        for (int set = 1; set <= 7; set++) {
+            String marketId = "LIVETT_OE" + set + "P";
+
+            Map<String, String> map = new HashMap<>();
+            map.put("Odd", "Odd");
+            map.put("Even", "Even");
+            addMarket(marketId, null, getTTSetOrdinal(set) + " Set - Odd/Even", map);
+        }
+    }
+
+    private void generateTTSet1OddEven() {
+        // Game 1 Total Points Odd/Even
+        // Market ID: LIVETT_G1OE
+        // Outcome suffixes: _O (Odd), _E (Even)
+        Map<String, String> map = new HashMap<>();
+        map.put("O", "Odd");
+        map.put("E", "Even");
+        addMarket("LIVETT_G1OE", null, "Set 1 - Total Points Odd/Even", map);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – RESULT MARKETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTFinalResultBest5() {
+        // Final Result (in sets – best of 5)
+        // Market ID: LIVETT_12B5
+        // Outcome suffixes: _3-0, _3-1, _3-2, _0-3, _1-3, _2-3
+        Map<String, String> map = new HashMap<>();
+        map.put("3-0", "3-0");
+        map.put("3-1", "3-1");
+        map.put("3-2", "3-2");
+        map.put("0-3", "0-3");
+        map.put("1-3", "1-3");
+        map.put("2-3", "2-3");
+        addMarket("LIVETT_12B5", null, "Final Result (Best of 5)", map);
+    }
+
+    private void generateTTFinalResultBest7() {
+        // Final Result (in sets – best of 7)
+        // Market ID: LIVETT_12BO7
+        // Outcome suffixes: _4-0 … _3-4
+        Map<String, String> map = new HashMap<>();
+        map.put("4-0", "4-0");
+        map.put("4-1", "4-1");
+        map.put("4-2", "4-2");
+        map.put("4-3", "4-3");
+        map.put("0-4", "0-4");
+        map.put("1-4", "1-4");
+        map.put("2-4", "2-4");
+        map.put("3-4", "3-4");
+        addMarket("LIVETT_12BO7", null, "Final Result (Best of 7)", map);
+    }
+
+    private void generateTTCorrectMatchScore() {
+        // Correct Match Score
+        // Market ID: LIVETT_CS
+        // Covers both best-of-5 and best-of-7 score lines
+        Map<String, String> map = new HashMap<>();
+        map.put("3:0", "3:0");   map.put("0:3", "0:3");
+        map.put("3:1", "3:1");   map.put("1:3", "1:3");
+        map.put("3:2", "3:2");   map.put("2:3", "2:3");
+        map.put("4:0", "4:0");   map.put("0:4", "0:4");
+        map.put("4:1", "4:1");   map.put("1:4", "1:4");
+        map.put("4:2", "4:2");   map.put("2:4", "2:4");
+        map.put("4:3", "4:3");   map.put("3:4", "3:4");
+        addMarket("LIVETT_CS", null, "Correct Match Score", map);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – NUMBER OF SETS
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTNumberOfSetsBest5() {
+        // Number of Sets (Best of 5)
+        // Market ID: LIVETT_SETSB5
+        // Outcome suffixes: _3, _4, _5
+        Map<String, String> map = new HashMap<>();
+        map.put("3", "3 Sets");
+        map.put("4", "4 Sets");
+        map.put("5", "5 Sets");
+        addMarket("LIVETT_SETSB5", null, "Number of Sets (Best of 5)", map);
+    }
+
+    private void generateTTNumberOfSetsBest7() {
+        // Number of Sets (Best of 7)
+        // Market ID: LIVETT_SETSBO5
+        // Outcome suffixes: _4, _5, _6, _7
+        Map<String, String> map = new HashMap<>();
+        map.put("4", "4 Sets");
+        map.put("5", "5 Sets");
+        map.put("6", "6 Sets");
+        map.put("7", "7 Sets");
+        addMarket("LIVETT_SETSBO5", null, "Number of Sets (Best of 7)", map);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – SETS EXCEEDING SCORE LIMIT
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTSetsExceedingBest5() {
+        // How Many Sets Exceed Score Limit (Best of 5)
+        // Market ID: LIVETT_SETSEXN
+        // Outcome suffixes: _0 … _5
+        Map<String, String> map = new HashMap<>();
+        for (int i = 0; i <= 5; i++) {
+            map.put(String.valueOf(i), i + " Sets");
+        }
+        addMarket("LIVETT_SETSEXN", null, "Sets Exceeding Score Limit (Best of 5)", map);
+    }
+
+    private void generateTTSetsExceedingBest7() {
+        // How Many Sets Exceed Score Limit (Best of 7)
+        // Market ID: LIVETT_SETSEX
+        // Outcome suffixes: _0 … _7
+        Map<String, String> map = new HashMap<>();
+        for (int i = 0; i <= 7; i++) {
+            map.put(String.valueOf(i), i + " Sets");
+        }
+        addMarket("LIVETT_SETSEX", null, "Sets Exceeding Score Limit (Best of 7)", map);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – WHO SCORES Nth POINT (sets 1-5)
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTNthPointScorer() {
+        // Who Scores the Nth Point – sets 1 to 5
+        //
+        // Market ID patterns:
+        //   LIVETT_125P{set}   – 5th  point
+        //   LIVETT_1210P{set}  – 10th point
+        //   LIVETT_1215P{set}  – 15th point
+        //   LIVETT_1220P{set}  – 20th point
+        //
+        // Outcome suffixes: _1HH (Player 1), _2HH (Player 2)
+
+        int[] points = {5, 10, 15, 20};
+
+        for (int set = 1; set <= 5; set++) {
+            for (int point : points) {
+                String marketId;
+                if (point == 5) {
+                    marketId = "LIVETT_125P" + set;
+                } else {
+                    marketId = "LIVETT_12" + point + "P" + set;
+                }
+
+                Map<String, String> map = new HashMap<>();
+                map.put("1HH", "Player 1");
+                map.put("2HH", "Player 2");
+                addMarket(marketId, null, "Who Scores " + point + "th Point – Set " + set, map);
+            }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – WHO SCORES Nth POINT (sets 6-7)
+    // ──────────────────────────────────────────────────────────────
+
+    private void generateTTNthPointScorer67() {
+        // Who Scores the Nth Point – sets 6 and 7
+        //
+        // Market ID pattern: LIVETT_12S{point}P{set}P
+        //   e.g. LIVETT_12S5P6P   = 5th  point, set 6
+        //        LIVETT_12S20P7P  = 20th point, set 7
+        //
+        // Outcome suffixes: _1HH (Player 1), _2HH (Player 2)
+
+        int[] points = {5, 10, 15, 20};
+
+        for (int set = 6; set <= 7; set++) {
+            for (int point : points) {
+                String marketId = "LIVETT_12S" + point + "P" + set + "P";
+
+                Map<String, String> map = new HashMap<>();
+                map.put("1HH", "Player 1");
+                map.put("2HH", "Player 2");
+                addMarket(marketId, null, "Who Scores " + point + "th Point – Set " + set, map);
+            }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TABLE TENNIS – UTILITY
+    // ──────────────────────────────────────────────────────────────
+
+    private String getTTSetOrdinal(int set) {
+        String[] ordinals = {"", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th"};
+        if (set >= 1 && set <= 7) {
+            return ordinals[set];
+        }
+        return set + "th";
+    }
+
+
+
+
 }

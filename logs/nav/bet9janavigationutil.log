@@ -1,0 +1,31 @@
+2026-02-03 13:34:15.234 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - 🧭 ▶️ Navigating to MSport homepage: https://sports.bet9ja.com
+2026-02-03 13:34:52.833 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ 🎯 Successfully navigated to MSport
+2026-02-03 13:36:26.759 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - 🧭 ⏰ Navigating to Bet9ja live events page
+2026-02-03 13:36:26.759 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil -  Scrolling page before navigation attempt
+2026-02-03 13:36:26.981 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Starting probability-based scrolling. Actions: 10, Total height: 3745px
+2026-02-03 13:36:26.981 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 1: Moderate DOWN 593px to 593px (prob: 15)
+2026-02-03 13:36:27.893 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 2: Moderate DOWN 586px to 1179px (prob: 44)
+2026-02-03 13:36:28.873 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 3: Moderate DOWN 556px to 1735px (prob: 0)
+2026-02-03 13:36:29.865 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 4: Moderate DOWN 425px to 2160px (prob: 46)
+2026-02-03 13:36:30.418 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 5: Large UP 456px to 1704px (prob: 98)
+2026-02-03 13:36:32.157 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 6: Large UP 679px to 1025px (prob: 95)
+2026-02-03 13:36:36.890 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 7: Moderate DOWN 372px to 1397px (prob: 10)
+2026-02-03 13:36:42.298 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 8: Moderate DOWN 447px to 1844px (prob: 3)
+2026-02-03 13:36:44.970 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 9: Large UP 409px to 1435px (prob: 95)
+2026-02-03 13:36:46.257 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 10: Moderate DOWN 571px to 2006px (prob: 35)
+2026-02-03 13:36:48.845 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ Probability-based scrolling completed at position: 2006px
+2026-02-03 13:36:48.845 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - 🔍 ⏰ Attempting to click Live navigation element
+2026-02-03 13:36:48.845 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Trying selector: a.h-ml__nav-link[href='/liveCompetitions']
+2026-02-03 13:36:48.856 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ Found Live link with selector: a.h-ml__nav-link[href='/liveCompetitions']
+2026-02-03 13:36:48.861 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Scrolling to Live link element
+2026-02-03 13:36:51.596 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ ⏰ Successfully clicked Live navigation element
+2026-02-03 13:36:51.597 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil -  Scrolling page after navigation
+2026-02-03 13:36:54.504 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Starting probability-based scrolling. Actions: 7, Total height: 6446px
+2026-02-03 13:36:54.504 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 1: Large UP 402px to 0px (prob: 99)
+2026-02-03 13:36:55.676 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 2: Aggressive DOWN 818px to 818px (prob: 69)
+2026-02-03 13:36:56.813 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 3: Small UP 137px to 681px (prob: 82)
+2026-02-03 13:36:59.675 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 4: Large UP 441px to 240px (prob: 97)
+2026-02-03 13:37:01.305 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 5: Moderate DOWN 543px to 783px (prob: 33)
+2026-02-03 13:37:04.479 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 6: Large UP 374px to 409px (prob: 93)
+2026-02-03 13:37:05.037 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 7: Moderate DOWN 308px to 717px (prob: 7)
+2026-02-03 13:37:05.857 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ Probability-based scrolling completed at position: 717px

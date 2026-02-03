@@ -58,6 +58,21 @@
     </appender>
 
 
+    <appender name="BET9JA_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/window/bet9ja.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/window/bet9ja.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
     <appender name="ONEWIN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/window/onewin.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -151,6 +166,21 @@
     </appender>
 
 
+    <appender name="BET9JANAV_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/nav/bet9janavigationutil.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/nav/bet9janavigationutil-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
     <appender name="MSPORTNAV_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/nav/msportnavigationutil.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -170,6 +200,21 @@
         <file>logs/nav/sportynavigationutil.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/nav/sportynavigationutil-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="BET9JAMRK_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/bet9jamarketutil.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/bet9jamarketutil.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -225,6 +270,20 @@
         </encoder>
     </appender>
 
+    <appender name="BET9JAMRKFIN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/bet9jamarketoutcomefinder.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/bet9jamarketoutcomefinder.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
 
     <appender name="MSPORTMRKFIN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/market/msportmarketoutcomefinder.log</file>
@@ -260,6 +319,22 @@
         <file>logs/market/onewinmarketoutcomefinder.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/market/onewinmarketoutcomefinder.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+
+    <appender name="BET9JAPLACE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market/bet9jabetplacement.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market/bet9jabetplacement.log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -379,6 +454,11 @@
 <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
+    <logger name="com.mouse.bet.window.Bet9ja" level="DEBUG" additivity="false">
+        <appender-ref ref="BET9JA_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
     <logger name="com.mouse.bet.window.OneWin" level="DEBUG" additivity="false">
         <appender-ref ref="ONEWIN_FILE"/>
 <!--        <appender-ref ref="CONSOLE"/>-->
@@ -406,6 +486,11 @@
         <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
+    <logger name="com.mouse.bet.util.bet9ja.Bet9jaNavigationUtil" level="DEBUG" additivity="false">
+        <appender-ref ref="BET9JANAV_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
     <logger name="com.mouse.bet.util.msport.MSportNavigationUtil" level="DEBUG" additivity="false">
         <appender-ref ref="MSPORTNAV_FILE"/>
         <!--        <appender-ref ref="CONSOLE"/>-->
@@ -422,6 +507,11 @@
         <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
+    <logger name="com.mouse.bet.util.bet9ja.Bet9jaMarketUtil" level="DEBUG" additivity="false">
+        <appender-ref ref="BET9JAMRK_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
     <logger name="com.mouse.bet.util.msport.MSportMarketUtil" level="DEBUG" additivity="false">
         <appender-ref ref="MSPORTMRK_FILE"/>
         <!--        <appender-ref ref="CONSOLE"/>-->
@@ -429,6 +519,11 @@
 
     <logger name="com.mouse.bet.util.msport.MsportMarketOutcomeFinder" level="DEBUG" additivity="false">
         <appender-ref ref="MSPORTMRKFIN_FILE"/>
+        <!--        <appender-ref ref="CONSOLE"/>-->
+    </logger>
+
+    <logger name="com.mouse.bet.util.bet9ja.Bet9jaMarketOutcomeFinder" level="DEBUG" additivity="false">
+        <appender-ref ref="BET9JAMRKFIN_FILE"/>
         <!--        <appender-ref ref="CONSOLE"/>-->
     </logger>
 
@@ -450,6 +545,11 @@
     <logger name="com.mouse.bet.util.onewin.OneWinBetPlacement" level="DEBUG" additivity="false">
         <appender-ref ref="ONEPLACE_FILE"/>
                 <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="com.mouse.bet.util.bet9ja.Bet9jaBetPlacement" level="DEBUG" additivity="false">
+        <appender-ref ref="BET9JAPLACE_FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
     <logger name="com.mouse.bet.util.msport.MSportBetPlacement" level="DEBUG" additivity="false">

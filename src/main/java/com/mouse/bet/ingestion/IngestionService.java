@@ -7,10 +7,7 @@ import com.mouse.bet.entity.ArbOutcome;
 import com.mouse.bet.enums.ArbStatus;
 import com.mouse.bet.enums.BookMaker;
 import com.mouse.bet.enums.Sport;
-import com.mouse.bet.mapper.MSportBetMapper;
-import com.mouse.bet.mapper.OneWinMapper;
-import com.mouse.bet.mapper.OppositeOutcomeMapper;
-import com.mouse.bet.mapper.SportyBetMapper;
+import com.mouse.bet.mapper.*;
 import com.mouse.bet.mapper.model.MarketOutcome;
 import com.mouse.bet.monitoring.ArbitrageDataValidator;
 import com.mouse.bet.repository.ArbOutcomeRepository;
@@ -96,6 +93,7 @@ public class IngestionService {
     private SportyBetMapper sportyBetMapper;
     private MSportBetMapper mSportBetMapper;
     private OneWinMapper oneWinMapper;
+    private Bet9jaMapper bet9jaMapper;
     @Getter
     private int pollCount = 0;
 
@@ -127,6 +125,7 @@ public class IngestionService {
         sportyBetMapper = new SportyBetMapper();
         mSportBetMapper = new MSportBetMapper();
         oneWinMapper = new OneWinMapper();
+        bet9jaMapper = new Bet9jaMapper();
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -943,6 +942,14 @@ public class IngestionService {
                 if (midM == null) throw new IllegalArgumentException("Missing mid for MSPORT");
                 return mSportBetMapper.searchMarket(midM, specM);
 
+            case BET9JA:
+                String id = crumbs.get("id2");
+
+                if (id == null) throw new IllegalArgumentException("Missing id for BET9JA");
+
+                String mid = getMarketId(id);
+                return bet9jaMapper.searchMarket(mid, null);
+
             case SPORTYBET:
                 String midS = crumbs.get("mid");
                 String specS = crumbs.get("spec");
@@ -953,6 +960,10 @@ public class IngestionService {
                 log.error("No market outcome mapping for bookmaker: {}", bookMaker);
                 throw new UnsupportedOperationException("No mapping for " + bookMaker);
         }
+    }
+
+    private String getMarketId(String key) {
+        return key.substring(0, key.lastIndexOf('_'));
     }
 
     private static LocalDateTime parseTimestamp(String timestamp, String pattern) {

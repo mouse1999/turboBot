@@ -60,10 +60,10 @@ public class BreakingBetClient {
 
     private ScheduledExecutorService tokenRefreshScheduler;
 
-    @Value("${breaking-bet.api.prematch.url:https://arbs.prematch.app-api.breaking-bet.com/v1/users/bb-51233/filter/items}")
+    @Value("${breaking-bet.api.prematch.url:https://arbs.prematch.app-api.breaking-bet.com/v1/users/bb-50810/filter/items}")
     private String prematchApiUrl;
 
-    @Value("${breaking-bet.api.live.url:https://arbs.live.app-api.breaking-bet.com/v1/users/bb-51233/filter/items}")
+    @Value("${breaking-bet.api.live.url:https://arbs.live.app-api.breaking-bet.com/v1/users/bb-50810/filter/items}")
     private String liveApiUrl;
 
     @Value("${breaking-bet.connection.timeout:30}")
@@ -91,7 +91,7 @@ public class BreakingBetClient {
     private static final String LOGIN_URL = "https://breaking-bet.com/en/users/sign_in";
     private static final String LIVE_ARBS_URL = "https://breaking-bet.com/en/arbs/live";
     // FIXED: Changed from api.breaking-bet.com to app-api.breaking-bet.com
-    private static final String TARGET_XHR_URL = "https://arbs.live.app-api.breaking-bet.com/v1/users/bb-51233/filter/items";
+    private static final String TARGET_XHR_URL = "https://arbs.live.app-api.breaking-bet.com/v1/users/bb-50810/filter/items";
 
     @Value("${breaking-bet.login.wait.seconds:60}")
     private int loginWaitSeconds;

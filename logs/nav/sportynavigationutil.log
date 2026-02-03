@@ -1,0 +1,17 @@
+2026-02-03 13:33:34.714 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil -   🎯 Navigating to SportyBet...
+2026-02-03 13:34:16.953 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ 🎯 Successfully navigated to SportyBet
+2026-02-03 13:34:38.534 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Clicked 'Live Betting' using ID selector
+2026-02-03 13:34:55.329 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Successfully navigated to Live Betting page: https://www.sportybet.com/ng/sport/live/
+2026-02-03 13:34:56.199 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Attempting to click Multi View...
+2026-02-03 13:35:13.242 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Clicked Multi View
+2026-02-03 13:35:13.242 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Multi View loaded: https://www.sportybet.com/ng/sport/football/live_list
+2026-02-03 13:35:16.832 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Switching to live sport: Table Tennis → tableTennis
+2026-02-03 13:35:16.832 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Opening 'More Sports' dropdown to select: Table Tennis
+2026-02-03 13:35:16.847 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Found dropdown using: .select-title
+2026-02-03 13:35:23.379 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Opened 'More Sports' dropdown
+2026-02-03 13:35:24.746 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Dropdown list is now visible
+2026-02-03 13:35:24.751 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Found 21 sports in dropdown
+2026-02-03 13:35:24.962 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Found sport: 'Table Tennis'
+2026-02-03 13:35:30.838 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Clicked on: Table Tennis
+2026-02-03 13:35:30.840 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - ✅ Navigated to Table Tennis Multi View: https://www.sportybet.com/ng/sport/tableTennis/live_list
+2026-02-03 13:35:35.263 [BettingWindow-2] INFO  c.m.b.u.sporty.SportyNavigationUtil - Table Tennis Multi View ready! URL: https://www.sportybet.com/ng/sport/tableTennis/live_list
