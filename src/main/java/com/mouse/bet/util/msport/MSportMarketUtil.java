@@ -871,7 +871,7 @@ public class MSportMarketUtil {
                                     latestExpectedOdds, result.odds);
                             takeMarketScreenshot(page, "odds-rejected-" + safeFileName(market + "-" + outcome));
                             // TODO: Uncomment to enable strict odds rejection
-                            // return false;
+                             return false;
                         } else {
                             log.info("Odds acceptable after revalidation: expected {} → got {}",
                                     latestExpectedOdds, result.odds);

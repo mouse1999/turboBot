@@ -1,6 +1,7 @@
 package com.mouse.bet.ingestion;
 
 import com.mouse.bet.client.BreakingBetClient;
+import com.mouse.bet.config.WindowConfig;
 import com.mouse.bet.dto.*;
 import com.mouse.bet.entity.ArbitrageOpportunity;
 import com.mouse.bet.entity.ArbOutcome;
@@ -26,6 +27,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
+//import org.springframework.beans.factory.annotation.Value;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -72,7 +74,10 @@ public class IngestionService {
     private static final String EMOJI_POLLING = "🔄";
     private static final String EMOJI_CRUMBS = "🍪";
     private static final String EMOJI_MARKET = "🎯";
-    private static final BigDecimal TOTAL_STAKE = BigDecimal.valueOf(500);
+
+
+
+    private final WindowConfig windowConfig;
 
     List<BookMaker> PREFERRED_BOOKMAKERS = Arrays.asList(
             BookMaker.SPORTYBET,  // First priority
@@ -681,7 +686,7 @@ public class IngestionService {
                 : marketInfo.marketType)
                 : marketInfo.marketType;
 
-        BigDecimal stakeAmount = ArbCalculator.calculateStakeFromProfit(profitInfo.profitPercentage, oddsInfo.value, TOTAL_STAKE);
+        BigDecimal stakeAmount = ArbCalculator.calculateStakeFromProfit(profitInfo.profitPercentage, oddsInfo.value, windowConfig.getTotalStake());
 
         return OutcomeData.builder()
                 .subEventId(subEvent.getId())

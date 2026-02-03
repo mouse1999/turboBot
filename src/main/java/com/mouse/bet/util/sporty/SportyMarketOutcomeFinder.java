@@ -308,8 +308,8 @@ public class SportyMarketOutcomeFinder {
         // Validate odds
         if (!isOddsAcceptable(expectedOdds, actualOddsStr)) {
             log.warn("✗ Odds not acceptable: expected {} → got {}", expectedOdds, actualOddsStr);
-//            cleanupMarker(page);
-//            return OutcomeResult.oddsRejected(marketTitle, actualOutcome, odds); todo
+            cleanupMarker(page);
+            return OutcomeResult.oddsRejected(marketTitle, actualOutcome, odds);
         }
 
         // Click the marked element

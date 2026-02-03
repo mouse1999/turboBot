@@ -348,7 +348,7 @@ public class OneWinMarketUtil {
                                     latestExpectedOdds, result.odds);
                             takeMarketScreenshot(page, "odds-rejected-" + safeFileName(market + "-" + outcome));
                             // TODO: Uncomment to enable strict odds rejection
-                            // return false;
+                             return false;
                         } else {
                             log.info("Odds acceptable after revalidation: expected {} → got {}",
                                     latestExpectedOdds, result.odds);
@@ -1188,7 +1188,7 @@ public class OneWinMarketUtil {
             if (!isOddsAcceptable(betslipInfo.odds, task)) {
                 log.error("Odds in betslip not acceptable - Found: {}, Expected: {}, Min: {}, Max: {}",
                         betslipInfo.odds, task.expectedOdds(), task.minOdds(), task.maxOdds());
-//                return false; todo
+                return false;
             }
 
             // Verify teams if provided

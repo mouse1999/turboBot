@@ -1,9 +1,12 @@
 package com.mouse.bet.config;
 
 import lombok.Data;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,4 +30,9 @@ public class WindowConfig {
             "--disable-background-timer-throttling",
             "--disable-backgrounding-occluded-windows",
             "--disable-renderer-backgrounding");
+
+    @Getter
+    @Value("${app.total-stake:500}")
+    private BigDecimal totalStake;
+
 }

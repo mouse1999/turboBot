@@ -401,7 +401,7 @@ public class OneWinMarketOutcomeFinder {
         if (!isOddsAcceptable(expectedOdds, odds)) {
             log.warn("✗ Odds not acceptable: expected {} → got {}", expectedOdds, odds);
             cleanupMarker(page);
-//            return OutcomeResult.oddsRejected(marketTitle, actualOutcome, odds); todo
+            return OutcomeResult.oddsRejected(marketTitle, actualOutcome, odds);
         }
 
         // Click the marked element
