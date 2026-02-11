@@ -317,7 +317,7 @@ public class MsportMarketOutcomeFinder {
         }
         
         // Found the market - now search for outcome
-        // Check for specifier-based markets (O/U, Handicap, etc.)
+        // Check for specifier-based markets (O/U)
         const isSpecifierMarket = marketItem.querySelector('.m-market-specifier') !== null;
         const isHandicapMarket = marketItem.querySelector('.m-market-handicap') !== null;
         
@@ -325,33 +325,43 @@ public class MsportMarketOutcomeFinder {
             // Handle O/U or Handicap markets with rows
             const rows = marketItem.querySelectorAll('.m-market-row');
             
-            // Get column titles for handicap markets
-            let homeTitle = 'Home';
-            let awayTitle = 'Away';
-            let startRowIndex = 0;
+            // Get column titles
+            let columnTitles = [];
+            if (rows.length > 0) {
+                const titleElements = rows[0].querySelectorAll('.m-title');
+                titleElements.forEach(title => {
+                    columnTitles.push(title.textContent.trim());
+                });
+            }
             
+            let startRowIndex = 0;
             if (isHandicapMarket) {
-                // First row contains the titles
-                const headerRow = rows[0];
-                if (headerRow) {
-                    const titles = headerRow.querySelectorAll('.m-title');
-                    if (titles.length >= 2) {
-                        homeTitle = titles[0].textContent.trim();
-                        awayTitle = titles[1].textContent.trim();
-                    }
-                }
-                startRowIndex = 1; // Skip the header row
+                startRowIndex = 1; // Skip header row for handicap
             }
             
             for (let j = startRowIndex; j < rows.length; j++) {
                 const row = rows[j];
                 
-                // Get the specifier (e.g., "69.5" in Points O/U)
-                const specifierEl = row.querySelector('.m-outcome-desc span');
-                const specifier = specifierEl ? specifierEl.textContent.trim() : null;
+                // Get specifier value using more generic approach
+                let specifier = '';
+                if (isSpecifierMarket) {
+                    // Find the first element in the row that's NOT an m-outcome
+                    // This is typically the specifier box
+                    const rowChildren = Array.from(row.children);
+                    const specifierBox = rowChildren.find(child => 
+                        !child.classList.contains('m-outcome')
+                    );
+                    
+                    if (specifierBox) {
+                        const specifierEl = specifierBox.querySelector('span.tw-line-clamp-2');
+                        specifier = specifierEl ? specifierEl.textContent.trim() : '';
+                    }
+                }
                 
-                // Get all outcomes in this row
-                const outcomes = row.querySelectorAll('.m-outcome:not(.m-outcome-desc)');
+                // Get all outcomes in this row - FIXED: Different selector based on market type
+                const outcomes = isSpecifierMarket 
+                    ? row.querySelectorAll('.m-outcome')  // O/U: NO .has-desc class
+                    : row.querySelectorAll('.m-outcome.has-desc');  // Handicap: YES .has-desc class
                 
                 for (let k = 0; k < outcomes.length; k++) {
                     const outcomeEl = outcomes[k];
@@ -359,56 +369,55 @@ public class MsportMarketOutcomeFinder {
                     // Skip disabled outcomes
                     if (outcomeEl.classList.contains('disabled')) continue;
                     
-                    // Get outcome type from column position or desc
                     let outcomeType = '';
+                    let handicapValue = '';
+                    let fullOutcomeName = '';
+                    
                     if (isSpecifierMarket) {
-                        // For O/U: Get titles from the FIRST row in m-market-specifier
-                        const firstRow = marketItem.querySelector('.m-market-specifier .m-market-row');
-                        if (firstRow) {
-                            const titles = firstRow.querySelectorAll('.m-title');
-                            if (titles.length > k + 1) {
-                                outcomeType = titles[k + 1].textContent.trim();
-                            }
+                        // For O/U markets - get Over/Under from column titles
+                        if (columnTitles.length > k + 1) {
+                            outcomeType = columnTitles[k + 1]; // +1 to skip first empty column
                         }
+                        fullOutcomeName = `${outcomeType} ${specifier}`.trim();
                     } else if (isHandicapMarket) {
-                        // For Handicap: Get the desc value (e.g., "+2.5" or "-2.5")
+                        // For Handicap markets - get value from .desc element
                         const descEl = outcomeEl.querySelector('.desc');
                         if (descEl) {
-                            outcomeType = descEl.textContent.trim();
+                            handicapValue = descEl.textContent.trim();
+                            outcomeType = handicapValue;
                         }
+                        
+                        // Get team name from column titles
+                        const teamName = columnTitles[k] || (k === 0 ? 'Home' : 'Away');
+                        fullOutcomeName = `${teamName} (${handicapValue})`;
                     }
                     
                     // Match the outcome
                     let isMatch = false;
                     
-                    if (parsedOutcome.value && specifier) {
-                        // Format: "Over 69.5" or "Under 16.5"
+                    if (isSpecifierMarket && parsedOutcome.value && specifier) {
+                        // Format: "Over 2.5" or "Under 2.5"
                         const fullOutcome = `${outcomeType} ${specifier}`.trim();
                         isMatch = fullOutcome.toLowerCase() === outcomeLower || 
                                  (outcomeType.toLowerCase() === parsedOutcome.type.toLowerCase() && 
                                   specifier === parsedOutcome.value);
-                    } else if (isHandicapMarket && outcomeType) {
-                        // Determine team position (Home = index 0, Away = index 1)
-                        const teamPosition = k === 0 ? homeTitle : awayTitle;
+                    } else if (isHandicapMarket && handicapValue) {
+                        // Determine team position
+                        const teamPosition = columnTitles[k] || (k === 0 ? 'Home' : 'Away');
                         
-                        // Build full outcome: "Home (+2.5)" or "Away (-2.5)"
-                        const fullOutcome = `${teamPosition} (${outcomeType})`;
+                        // Build full outcome: "Home (-1.5)" or "Away (+1.5)"
+                        const fullOutcome = `${teamPosition} (${handicapValue})`;
                         
-                        // Match logic - be very strict
+                        // Match logic
                         if (parsedHandicap.team && parsedHandicap.value) {
-                            // User provided format like "Home (+2.5)"
-                            // Must match BOTH team AND value exactly
                             isMatch = 
                                 parsedHandicap.team.toLowerCase() === teamPosition.toLowerCase() &&
-                                parsedHandicap.value === outcomeType;
+                                parsedHandicap.value === handicapValue;
                         } else {
-                            // User provided just value like "(+2.5)" or "+2.5"
-                            // Remove parentheses and match the value
                             const cleanUserInput = outcomeNorm.replace(/[()]/g, '').trim();
-                            isMatch = outcomeType === cleanUserInput;
+                            isMatch = handicapValue === cleanUserInput;
                         }
                         
-                        // Also allow exact full string match
                         if (!isMatch) {
                             isMatch = fullOutcome === outcomeNorm || 
                                      fullOutcome.toLowerCase() === outcomeLower;
@@ -422,19 +431,10 @@ public class MsportMarketOutcomeFinder {
                         // Mark for clicking
                         outcomeEl.setAttribute('data-bet-target', 'true');
                         
-                        // Build proper outcome text for return
-                        let finalOutcomeText;
-                        if (isHandicapMarket) {
-                            const teamPosition = k === 0 ? homeTitle : awayTitle;
-                            finalOutcomeText = `${teamPosition} (${outcomeType})`;
-                        } else {
-                            finalOutcomeText = `${outcomeType} ${specifier || ''}`.trim();
-                        }
-                        
                         return {
                             found: true,
                             marketTitle: marketText,
-                            outcomeText: finalOutcomeText,
+                            outcomeText: fullOutcomeName,
                             odds: odds,
                             marketType: isSpecifierMarket ? 'specifier' : 'handicap'
                         };
@@ -442,8 +442,8 @@ public class MsportMarketOutcomeFinder {
                 }
             }
         } else {
-            // Regular market (Winner, Correct Score, etc.)
-            const outcomes = marketItem.querySelectorAll('.m-outcome');
+            // Regular market (1x2, DNB, etc.)
+            const outcomes = marketItem.querySelectorAll('.m-outcome.has-desc');
             
             for (let j = 0; j < outcomes.length; j++) {
                 const outcomeEl = outcomes[j];
@@ -531,86 +531,232 @@ public class MsportMarketOutcomeFinder {
      */
     private static Map<String, Object> gatherDebugInfo(Page page) {
         String jsDebug = """
-        () => {
-            const allOutcomes = [];
-            const marketItems = document.querySelectorAll('.m-market-item');
+    () => {
+        const allOutcomes = [];
+        const marketItems = document.querySelectorAll('.m-market-item');
+        
+        marketItems.forEach((marketItem, marketIndex) => {
+            const marketNameEl = marketItem.querySelector('.m-market-item--name span.tw-line-clamp-2');
+            if (!marketNameEl) return;
             
-            marketItems.forEach(marketItem => {
-                const marketNameEl = marketItem.querySelector('.m-market-item--name span.tw-line-clamp-2');
-                if (!marketNameEl) return;
+            const marketTitle = marketNameEl.textContent.trim();
+            
+            // Check market type
+            const isSpecifierMarket = marketItem.querySelector('.m-market-specifier') !== null;
+            const isHandicapMarket = marketItem.querySelector('.m-market-handicap') !== null;
+            
+            let marketType = 'regular';
+            if (isSpecifierMarket) marketType = 'specifier';
+            if (isHandicapMarket) marketType = 'handicap';
+            
+            if (isSpecifierMarket || isHandicapMarket) {
+                // Handle O/U or Handicap markets
+                const rows = marketItem.querySelectorAll('.m-market-row');
                 
-                const marketTitle = marketNameEl.textContent.trim();
-                
-                // Check market type
-                const isSpecifierMarket = marketItem.querySelector('.m-market-specifier') !== null;
-                const isHandicapMarket = marketItem.querySelector('.m-market-handicap') !== null;
-                
-                if (isSpecifierMarket || isHandicapMarket) {
-                    // Handle O/U or Handicap markets
-                    const rows = marketItem.querySelectorAll('.m-market-row');
-                    
-                    rows.forEach(row => {
-                        const specifierEl = row.querySelector('.m-outcome-desc span');
-                        const specifier = specifierEl ? specifierEl.textContent.trim() : '';
-                        
-                        const outcomes = row.querySelectorAll('.m-outcome:not(.m-outcome-desc)');
-                        const titles = marketItem.querySelectorAll('.m-market-row .m-title');
-                        
-                        outcomes.forEach((outcomeEl, idx) => {
-                            const disabled = outcomeEl.classList.contains('disabled');
-                            
-                            let outcomeType = '';
-                            if (isSpecifierMarket && titles.length > idx) {
-                                outcomeType = titles[idx].textContent.trim();
-                            } else if (isHandicapMarket) {
-                                const descEl = outcomeEl.querySelector('.desc');
-                                outcomeType = descEl ? descEl.textContent.trim() : '';
-                            }
-                            
-                            const oddsEl = outcomeEl.querySelector('.odds .tw-h-full');
-                            const odds = oddsEl ? oddsEl.textContent.trim() : 'N/A';
-                            
-                            allOutcomes.push({
-                                marketTitle: marketTitle,
-                                outcomeText: `${outcomeType} ${specifier}`.trim(),
-                                odds: odds,
-                                disabled: disabled
-                            });
-                        });
+                // Get column titles
+                let columnTitles = [];
+                if (rows.length > 0) {
+                    const titleElements = rows[0].querySelectorAll('.m-title');
+                    titleElements.forEach(title => {
+                        columnTitles.push(title.textContent.trim());
                     });
-                } else {
-                    // Regular market
-                    const outcomes = marketItem.querySelectorAll('.m-outcome');
+                }
+                
+                let startRowIndex = 0;
+                if (isHandicapMarket) {
+                    startRowIndex = 1; // Skip header row for handicap
+                }
+                
+                for (let i = startRowIndex; i < rows.length; i++) {
+                    const row = rows[i];
                     
-                    outcomes.forEach(outcomeEl => {
-                        const descEl = outcomeEl.querySelector('.desc');
-                        if (!descEl) return;
+                    // Get specifier value using generic approach
+                    let specifier = '';
+                    if (isSpecifierMarket) {
+                        // Find the first element in the row that's NOT an m-outcome
+                        const rowChildren = Array.from(row.children);
+                        const specifierBox = rowChildren.find(child => 
+                            !child.classList.contains('m-outcome')
+                        );
                         
-                        const text = descEl.textContent.trim();
+                        if (specifierBox) {
+                            const specifierEl = specifierBox.querySelector('span');
+                            specifier = specifierEl ? specifierEl.textContent.trim() : '';
+                        }
+                    }
+                    
+                    // Get all outcomes in this row - FIXED: Different selector based on market type
+                    const outcomes = isSpecifierMarket 
+                        ? row.querySelectorAll('.m-outcome')  // O/U: NO .has-desc class
+                        : row.querySelectorAll('.m-outcome.has-desc');  // Handicap: YES .has-desc class
+                    
+                    outcomes.forEach((outcomeEl, outcomeIndex) => {
                         const disabled = outcomeEl.classList.contains('disabled');
+                        
+                        let outcomeType = '';
+                        let outcomeValue = '';
+                        let fullOutcomeName = '';
+                        
+                        if (isSpecifierMarket) {
+                            // For O/U markets
+                            if (columnTitles.length > outcomeIndex + 1) {
+                                outcomeType = columnTitles[outcomeIndex + 1]; // +1 to skip first empty column
+                            }
+                            fullOutcomeName = `${outcomeType} ${specifier}`.trim();
+                        } else if (isHandicapMarket) {
+                            // For Handicap markets
+                            const descEl = outcomeEl.querySelector('.desc');
+                            outcomeValue = descEl ? descEl.textContent.trim() : '';
+                            
+                            // Get team name from column titles
+                            const teamName = columnTitles[outcomeIndex] || (outcomeIndex === 0 ? 'Home' : 'Away');
+                            fullOutcomeName = `${teamName} (${outcomeValue})`;
+                        }
+                        
                         const oddsEl = outcomeEl.querySelector('.odds .tw-h-full');
                         const odds = oddsEl ? oddsEl.textContent.trim() : 'N/A';
                         
                         allOutcomes.push({
+                            marketIndex: marketIndex + 1,
                             marketTitle: marketTitle,
-                            outcomeText: text,
+                            marketType: marketType,
+                            outcomeName: fullOutcomeName,
+                            outcomeType: outcomeType,
+                            specifier: specifier,
+                            handicapValue: outcomeValue,
                             odds: odds,
-                            disabled: disabled
+                            disabled: disabled,
+                            position: outcomeIndex + 1
                         });
                     });
                 }
+            } else {
+                // Regular market (Winner, 1x2, DNB, etc.)
+                const outcomes = marketItem.querySelectorAll('.m-outcome.has-desc');
+                
+                outcomes.forEach((outcomeEl, outcomeIndex) => {
+                    const descEl = outcomeEl.querySelector('.desc');
+                    if (!descEl) return;
+                    
+                    const outcomeName = descEl.textContent.trim();
+                    const disabled = outcomeEl.classList.contains('disabled');
+                    const oddsEl = outcomeEl.querySelector('.odds .tw-h-full');
+                    const odds = oddsEl ? oddsEl.textContent.trim() : 'N/A';
+                    
+                    allOutcomes.push({
+                        marketIndex: marketIndex + 1,
+                        marketTitle: marketTitle,
+                        marketType: marketType,
+                        outcomeName: outcomeName,
+                        outcomeType: outcomeName,
+                        specifier: '',
+                        handicapValue: '',
+                        odds: odds,
+                        disabled: disabled,
+                        position: outcomeIndex + 1
+                    });
+                });
+            }
+        });
+        
+        // Format summary
+        const summary = {
+            totalMarkets: marketItems.length,
+            totalOutcomes: allOutcomes.length,
+            enabledOutcomes: allOutcomes.filter(o => !o.disabled).length,
+            disabledOutcomes: allOutcomes.filter(o => o.disabled).length,
+            marketTypes: {
+                regular: allOutcomes.filter(o => o.marketType === 'regular').length,
+                specifier: allOutcomes.filter(o => o.marketType === 'specifier').length,
+                handicap: allOutcomes.filter(o => o.marketType === 'handicap').length
+            }
+        };
+        
+        // Group outcomes by market
+        const marketGroups = [];
+        const marketMap = new Map();
+        
+        allOutcomes.forEach(outcome => {
+            if (!marketMap.has(outcome.marketTitle)) {
+                marketMap.set(outcome.marketTitle, {
+                    marketIndex: outcome.marketIndex,
+                    marketTitle: outcome.marketTitle,
+                    marketType: outcome.marketType,
+                    outcomes: []
+                });
+            }
+            marketMap.get(outcome.marketTitle).outcomes.push({
+                outcomeName: outcome.outcomeName,
+                odds: outcome.odds,
+                disabled: outcome.disabled,
+                position: outcome.position
             });
-            
-            return { found: false, allOutcomes: allOutcomes };
-        }
-        """;
+        });
+        
+        marketMap.forEach(value => marketGroups.push(value));
+        
+        return {
+            found: false,
+            summary: summary,
+            allOutcomes: allOutcomes,
+            marketGroups: marketGroups
+        };
+    }
+    """;
 
         try {
             @SuppressWarnings("unchecked")
             Map<String, Object> result = (Map<String, Object>) page.evaluate(jsDebug);
+
+            // Pretty print the debug info
+            if (result != null && result.containsKey("summary")) {
+                log.info("\n========== MARKET DEBUG INFO ==========");
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> summary = (Map<String, Object>) result.get("summary");
+                log.info("Total Markets: " + summary.get("totalMarkets"));
+                log.info("Total Outcomes: " + summary.get("totalOutcomes"));
+                log.info("Enabled Outcomes: " + summary.get("enabledOutcomes"));
+                log.info("Disabled Outcomes: " + summary.get("disabledOutcomes"));
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> marketTypes = (Map<String, Object>) summary.get("marketTypes");
+                log.info("\nMarket Type Breakdown:");
+                log.info("  Regular: " + marketTypes.get("regular"));
+                log.info("  Specifier (O/U): " + marketTypes.get("specifier"));
+                log.info("  Handicap: " + marketTypes.get("handicap"));
+
+                log.info("\n========== MARKETS & OUTCOMES ==========");
+
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> marketGroups = (List<Map<String, Object>>) result.get("marketGroups");
+
+                for (Map<String, Object> market : marketGroups) {
+                    log.info("\n[" + market.get("marketIndex") + "] " +
+                            market.get("marketTitle") +
+                            " (" + market.get("marketType") + ")");
+                    log.info("─".repeat(60));
+
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> outcomes = (List<Map<String, Object>>) market.get("outcomes");
+
+                    for (Map<String, Object> outcome : outcomes) {
+                        String status = (Boolean) outcome.get("disabled") ? "❌ DISABLED" : "✓ ENABLED";
+                        System.out.printf("  %d. %-40s | Odds: %-8s | %s%n",
+                                outcome.get("position"),
+                                outcome.get("outcomeName"),
+                                outcome.get("odds"),
+                                status);
+                    }
+                }
+
+                log.info("\n========================================\n");
+            }
+
             return result != null ? result : Map.of("found", false, "allOutcomes", List.of());
         } catch (Exception e) {
-            return Map.of("found", false, "allOutcomes", List.of());
+            log.error("Debug info gathering failed: {}", e.getMessage());
+            return Map.of("found", false, "allOutcomes", List.of(), "error", e.getMessage());
         }
     }
 

@@ -171,6 +171,7 @@ public class SportyBet implements BettingWindow, Runnable {
             log.error("{} {} Failed to initialize Playwright: {}", EMOJI_ERROR, EMOJI_INIT, e.getMessage(), e);
             throw new RuntimeException("Playwright initialization failed", e);
         }
+//        run();
 
     }
 
@@ -216,8 +217,8 @@ public class SportyBet implements BettingWindow, Runnable {
 //                .homeTeam("Putrajaya")
 //                .awayTeam("Perak")
 //                .marketType("Over/Under")
-//                .outComeName("Over 5.5")
-//                .odds(new BigDecimal(1.65))
+//                .outComeName("Over 2.5")
+//                .odds(new BigDecimal(1.85))
 //                .previousOdds(new BigDecimal("2.10"))
 //                .stake(new BigDecimal("20"))
 //                .sport("Basketball")
@@ -225,7 +226,7 @@ public class SportyBet implements BettingWindow, Runnable {
 //                .reordered(false)
 //                .initiator(true)
 //                .leagueName("NBA")
-//                .bookMakerUrl("https://www.sportybet.com/ng/sport/football/live/Guatemala/Liga_Nacional,_Clausura/Deportivo_Achuapa_vs_Comunicaciones_FC_Guatemala_City/sr:match:67524518")
+//                .bookMakerUrl("https://www.sportybet.com/ng/sport/football/live/Netherlands/Eredivisie/Go_Ahead_Eagles_vs_SC_Heerenveen/sr:match:67240484")
 //                .build();
 //
 //
@@ -241,8 +242,10 @@ public class SportyBet implements BettingWindow, Runnable {
 //                outcome1.getStake().doubleValue(),              // 531.91
 //                outcome1.getLeagueName(),                       // "NBA"
 //                outcome1.getHomeTeam(),                         // "Test Lakers"
-//                outcome1.getAwayTeam(),                         // "Test Celtics"
-//                ""                            // "demo_arb_001"
+//                outcome1.getAwayTeam(),
+//                outcome1.getSubEventId(),
+//                outcome1.getSport()
+//                // "Test Celtics// "demo_arb_001"
 //        );
 //        Phaser phaser = new Phaser(1);
 //        return BetLegTask.builder()

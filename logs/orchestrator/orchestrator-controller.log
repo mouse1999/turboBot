@@ -1,2 +1,0 @@
-2026-02-03 13:43:12.493 [http-nio-8085-exec-9] INFO  c.m.b.c.OrchestratorController - Starting orchestrator via API
-2026-02-03 13:43:12.992 [http-nio-8085-exec-9] INFO  c.m.b.c.OrchestratorController - Orchestrator started successfully | Workers: 5

@@ -202,9 +202,9 @@ public class Bet9ja implements BettingWindow, Runnable {
 //                .bookmakerName(BookMaker.MSPORT)
 //                .homeTeam("Putrajaya")
 //                .awayTeam("Perak")
-//                .marketType("Double Chance")
-//                .outComeName("12")
-//                .odds(new BigDecimal(1.35))
+//                .marketType("Handicap")
+//                .outComeName("Home (-22.5) Konya BBSK")
+//                .odds(new BigDecimal(1.8))
 //                .previousOdds(new BigDecimal("2.10"))
 //                .stake(new BigDecimal("100"))
 //                .sport("Basketball")
@@ -212,7 +212,7 @@ public class Bet9ja implements BettingWindow, Runnable {
 //                .reordered(false)
 //                .initiator(true)
 //                .leagueName("NBA")
-//                .bookMakerUrl("https://sports.bet9ja.com/liveEvent/8653825")
+//                .bookMakerUrl("https://sports.bet9ja.com/liveEvent/8712264")
 //                .build();
 //
 //
@@ -263,17 +263,17 @@ public class Bet9ja implements BettingWindow, Runnable {
             // ========================================
             // STEP 1: REGISTER INTENT WITH PARTNER
             // ========================================
-//            boolean intentRegistered = syncManager.registerIntent(
-//                    arbId,
-//                    BOOKMAKER,
-//                    task.getExpectedOdds()
-//            );
-//
-//            if (!intentRegistered) {
-//                log.warn("{} {} Arb cancelled during intent registration: {}",
-//                        EMOJI_WARNING, EMOJI_SYNC, arbId);
-//                return false;
-//            }
+            boolean intentRegistered = syncManager.registerIntent(
+                    arbId,
+                    BOOKMAKER,
+                    task.getExpectedOdds()
+            );
+
+            if (!intentRegistered) {
+                log.warn("{} {} Arb cancelled during intent registration: {}",
+                        EMOJI_WARNING, EMOJI_SYNC, arbId);
+                return false;
+            }
 
             log.info("{} {} Intent registered for arb: {}", EMOJI_SUCCESS, EMOJI_SYNC, arbId);
 
@@ -316,36 +316,36 @@ public class Bet9ja implements BettingWindow, Runnable {
             // ========================================
             // STEP 4: MARK DEPLOYMENT SUCCESS
             // ========================================
-//            boolean markedDeployed = syncManager.markDeploymentSuccess(
-//                    arbId,
-//                    BOOKMAKER
-//            );
-//
-//            if (!markedDeployed) {
-//                log.warn("{} {} Arb cancelled after deployment: {}",
-//                        EMOJI_WARNING, EMOJI_SYNC, arbId);
-//                Bet9jaMarketUtil.clearBetSlip(page);
-//                return false;
-//            }
-//
-//            log.info("{} {} Deployment marked as successful", EMOJI_SUCCESS, EMOJI_SYNC);
-//
-//            // ========================================
-//            // STEP 5: WAIT FOR PARTNER DEPLOYMENT
-//            // ========================================
-//            log.info("{} {} [3/4] Waiting for partner to deploy...", EMOJI_SYNC, EMOJI_CLOCK);
-//
-//            boolean partnerDeployed = syncManager.waitForPartnerDeploymentOrTimeout(
-//                    arbId,
-//                    BOOKMAKER,
-//                    Duration.ofSeconds(deployTimeout)
-//            );
-//
-//            if (!partnerDeployed) {
-//                log.warn("{} {} Partner deployment failed or timeout", EMOJI_WARNING, EMOJI_SYNC);
-//                Bet9jaMarketUtil.clearBetSlip(page);
-//                return false;
-//            }
+            boolean markedDeployed = syncManager.markDeploymentSuccess(
+                    arbId,
+                    BOOKMAKER
+            );
+
+            if (!markedDeployed) {
+                log.warn("{} {} Arb cancelled after deployment: {}",
+                        EMOJI_WARNING, EMOJI_SYNC, arbId);
+                Bet9jaMarketUtil.clearBetSlip(page);
+                return false;
+            }
+
+            log.info("{} {} Deployment marked as successful", EMOJI_SUCCESS, EMOJI_SYNC);
+
+            // ========================================
+            // STEP 5: WAIT FOR PARTNER DEPLOYMENT
+            // ========================================
+            log.info("{} {} [3/4] Waiting for partner to deploy...", EMOJI_SYNC, EMOJI_CLOCK);
+
+            boolean partnerDeployed = syncManager.waitForPartnerDeploymentOrTimeout(
+                    arbId,
+                    BOOKMAKER,
+                    Duration.ofSeconds(deployTimeout)
+            );
+
+            if (!partnerDeployed) {
+                log.warn("{} {} Partner deployment failed or timeout", EMOJI_WARNING, EMOJI_SYNC);
+                Bet9jaMarketUtil.clearBetSlip(page);
+                return false;
+            }
 
             log.info("{} {} Both windows DEPLOYED - ready for simultaneous placement!",
                     EMOJI_SUCCESS, EMOJI_ROCKET);

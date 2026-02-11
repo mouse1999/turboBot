@@ -99,119 +99,240 @@ public class Bet9jaMarketOutcomeFinder {
      */
     private static Map<String, Object> fastSearchOutcome(Page page, String marketName, String outcomeName) {
         String jsSearch = """
-    (args) => {
-        const { market, outcome } = args;
-        const marketNorm = market.trim();
-        const marketLower = marketNorm.toLowerCase();
-        const outcomeNorm = outcome.trim();
-        const outcomeLower = outcomeNorm.toLowerCase();
+(args) => {
+    const { market, outcome } = args;
+    const marketNorm = market.trim();
+    const marketLower = marketNorm.toLowerCase();
+    const outcomeNorm = outcome.trim();
+    const outcomeLower = outcomeNorm.toLowerCase();
+    
+    console.log('🔍 [Bet9ja] Searching for market:', marketNorm, '| outcome:', outcomeNorm);
+    
+    // Find all accordion items
+    const accordionItems = document.querySelectorAll('div.accordion-item');
+    console.log('📋 Found', accordionItems.length, 'accordion items');
+    
+    for (let itemIdx = 0; itemIdx < accordionItems.length; itemIdx++) {
+        const item = accordionItems[itemIdx];
         
-        console.log('🔍 [Bet9ja] Searching for market:', marketNorm, '| outcome:', outcomeNorm);
+        // Get market name from accordion-text
+        const accordionText = item.querySelector('div.accordion-toggle div.accordion-text');
+        if (!accordionText) continue;
         
-        // Find all accordion items
-        const accordionItems = document.querySelectorAll('div.accordion-item');
-        console.log('📋 Found', accordionItems.length, 'accordion items');
+        const marketText = accordionText.textContent.trim();
+        const marketTextLower = marketText.toLowerCase();
         
-        // Search through each accordion item
-        for (let itemIndex = 0; itemIndex < accordionItems.length; itemIndex++) {
-            const item = accordionItems[itemIndex];
-            
-            // Get market title from accordion-text
-            const marketTitleElement = item.querySelector('div.accordion-text');
-            if (!marketTitleElement) continue;
-            
-            const marketText = marketTitleElement.textContent.trim();
-            const marketTextLower = marketText.toLowerCase();
-            
-            // EXACT MATCH ONLY - Check if this is the exact market we're looking for
-            if (marketText !== marketNorm && marketTextLower !== marketLower) {
-                continue;
-            }
-            
-            console.log('✅ Found exact matching market:', marketText);
-            
-            // Look for outcomes within this market
-            // Bet9ja uses market-container with market-row and market-item structure
-            const marketContainers = item.querySelectorAll('div.market-container');
-            
-            for (let containerIndex = 0; containerIndex < marketContainers.length; containerIndex++) {
-                const container = marketContainers[containerIndex];
-                const marketRows = container.querySelectorAll('div.market-row');
-                
-                for (let rowIndex = 0; rowIndex < marketRows.length; rowIndex++) {
-                    const row = marketRows[rowIndex];
-                    const marketItems = row.querySelectorAll('div.market-item');
-                    
-                    for (let itemIdx = 0; itemIdx < marketItems.length; itemIdx++) {
-                        const marketItemDiv = marketItems[itemIdx];
-                        
-                        // Get the outcome text (from span inside txt-gray txt-cut div)
-                        const textDiv = marketItemDiv.querySelector('div.txt-gray.txt-cut span');
-                        if (!textDiv) continue;
-                        
-                        const text = textDiv.textContent.trim();
-                        const textLower = text.toLowerCase();
-                        
-                        // Get the odds container
-                        const oddsDiv = marketItemDiv.querySelector('div.market-odd');
-                        if (!oddsDiv) continue;
-                        
-                        // Check if locked (disabled)
-                        const isLocked = oddsDiv.classList.contains('locked');
-                        if (isLocked) {
-                            console.log('  ⏭️ Skipping locked outcome:', text);
-                            continue;
-                        }
-                        
-                        // EXACT MATCH ONLY - Check if this is the exact outcome we're looking for
-                        if (text === outcomeNorm || textLower === outcomeLower) {
-                            // Extract odds from the odd-container
-                            const oddContainer = oddsDiv.querySelector('div.odd-container div.arrow-container');
-                            let odds = 'N/A';
-                            
-                            if (oddContainer) {
-                                // Odds text is directly in arrow-container (after the div for arrow)
-                                const oddsText = oddContainer.textContent.trim();
-                                // Remove any non-numeric characters except decimal point
-                                odds = oddsText.replace(/[^0-9.]/g, '').trim();
-                            }
-                            
-                            console.log('✅ EXACT MATCH FOUND!');
-                            console.log('  Market:', marketText);
-                            console.log('  Outcome:', text);
-                            console.log('  Odds:', odds);
-                            
-                            // Mark the odds div for direct clicking
-                            oddsDiv.setAttribute('data-bet-target', 'true');
-                            console.log('  ✅ Odds div marked with data-bet-target');
-                            
-                            return {
-                                found: true,
-                                marketTitle: marketText,
-                                outcomeText: text,
-                                odds: odds,
-                                itemIndex: itemIndex,
-                                containerIndex: containerIndex,
-                                rowIndex: rowIndex,
-                                itemIdx: itemIdx
-                            };
-                        }
-                    }
-                }
-            }
-            
-            console.log('  ❌ Exact outcome not found in this market accordion');
-            // Don't continue to next accordion - we found the exact market but not the outcome
-            // Return not found since we matched the market but not the outcome
+        // EXACT MATCH - Check if this is the exact market
+        if (marketText !== marketNorm && marketTextLower !== marketLower) {
+            continue;
+        }
+        
+        console.log('✅ Found exact matching market:', marketText);
+        
+        // Look for market-container within this accordion
+        const marketContainer = item.querySelector('div.market-container');
+        if (!marketContainer) {
+            console.log('  ⚠️ No market-container found in this market');
             break;
         }
         
-        console.log('❌ No exact match found');
-        return {
-            found: false
-        };
+        const rows = marketContainer.querySelectorAll('div.market-row');
+        console.log('  📊 Found', rows.length, 'rows in market-container');
+        
+        for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
+            const row = rows[rowIdx];
+            
+            const marketItems = row.querySelectorAll('div.market-item');
+            console.log('    Found', marketItems.length, 'market items in row', rowIdx);
+            
+            if (marketItems.length === 0) continue;
+            
+            // Collect all text values from items without odds (potential selection/team values)
+            const nonOddsTexts = [];
+            let firstOddsItemIndex = -1;
+            
+            for (let i = 0; i < marketItems.length; i++) {
+                const item = marketItems[i];
+                const hasOdds = item.querySelector('div.market-odd') !== null;
+                
+                if (!hasOdds) {
+                    const div = item.querySelector('div');
+                    if (div) {
+                        const text = div.textContent.trim();
+                        if (text) {
+                            nonOddsTexts.push(text);
+                        }
+                    }
+                } else if (firstOddsItemIndex === -1) {
+                    firstOddsItemIndex = i;
+                }
+            }
+            
+            console.log('    Non-odds texts:', nonOddsTexts);
+            console.log('    First odds item at index:', firstOddsItemIndex);
+            
+            // Start from first item with odds
+            const startIdx = firstOddsItemIndex >= 0 ? firstOddsItemIndex : 0;
+            
+            // Loop through outcome items (items with odds)
+            for (let itemIdx = startIdx; itemIdx < marketItems.length; itemIdx++) {
+                const marketItem = marketItems[itemIdx];
+                
+                // Get outcome name from txt-gray span
+                const outcomeSpan = marketItem.querySelector('div.txt-gray span');
+                if (!outcomeSpan) {
+                    console.log('      Item', itemIdx, '- No outcome span found, skipping');
+                    continue;
+                }
+                
+                const outcomeText = outcomeSpan.textContent.trim();
+                
+                // Get odds from market-odd
+                const marketOdd = marketItem.querySelector('div.market-odd');
+                if (!marketOdd) {
+                    console.log('      Item', itemIdx, '- No market-odd found, skipping');
+                    continue;
+                }
+                
+                // Check if odds are locked/unavailable
+                if (marketOdd.classList.contains('locked')) {
+                    console.log('      Item', itemIdx, '- Odds locked, skipping');
+                    continue;
+                }
+                
+                const oddsContainer = marketOdd.querySelector('div.odd-container div.arrow-container');
+                if (!oddsContainer) {
+                    console.log('      Item', itemIdx, '- No odds container found, skipping');
+                    continue;
+                }
+                
+                // Extract odds text (skip the arrow div)
+                const oddsText = Array.from(oddsContainer.childNodes)
+                    .filter(node => node.nodeType === Node.TEXT_NODE)
+                    .map(node => node.textContent.trim())
+                    .join('')
+                    .trim();
+                
+                // Build all possible outcome combinations
+                let possibleMatches = [];
+                
+                // Add the direct outcome text
+                possibleMatches.push(outcomeText);
+                
+                // If we have non-odds texts, combine them with outcome in all possible ways
+                if (nonOddsTexts.length > 0) {
+                    for (const nonOddsText of nonOddsTexts) {
+                        // Check if this is a handicap value
+                      const isHandicap = nonOddsText.match(/^[+-][0-9]+[.][0-9]*$/);
+                        
+                        if (isHandicap) {
+                            const hcpValue = nonOddsText;
+                            const absValue = hcpValue.replace(/^[+-]/, '');
+                            const isNegative = hcpValue.startsWith('-') || (!hcpValue.startsWith('+') && parseFloat(hcpValue) < 0);
+                            
+                            // Determine sign based on position (first odds item = home, second = away)
+                            const relativePosition = itemIdx - firstOddsItemIndex;
+                            let sign;
+                            
+                            if (relativePosition === 0) {
+                                // First outcome - use original sign
+                                sign = isNegative ? '-' : '+';
+                            } else {
+                                // Second outcome - flip sign
+                                sign = isNegative ? '+' : '-';
+                            }
+                            
+                            // Generate all handicap format variations
+                            // Format: "Home (-10.5) Universitet Yugra Surgut"
+                            possibleMatches.push(`Home (${sign}${absValue}) ${outcomeText}`);
+                            possibleMatches.push(`Away (${sign}${absValue}) ${outcomeText}`);
+                            
+                            // Format: "Home -10.5 Universitet Yugra Surgut"
+                            possibleMatches.push(`Home ${sign}${absValue} ${outcomeText}`);
+                            possibleMatches.push(`Away ${sign}${absValue} ${outcomeText}`);
+                            
+                            // Format: "Universitet Yugra Surgut (-10.5) Home"
+                            possibleMatches.push(`${outcomeText} (${sign}${absValue}) Home`);
+                            possibleMatches.push(`${outcomeText} (${sign}${absValue}) Away`);
+                            
+                            // Format: "Universitet Yugra Surgut -10.5 Home"
+                            possibleMatches.push(`${outcomeText} ${sign}${absValue} Home`);
+                            possibleMatches.push(`${outcomeText} ${sign}${absValue} Away`);
+                            
+                            // Format: "Universitet Yugra Surgut Home (-10.5)"
+                            possibleMatches.push(`${outcomeText} Home (${sign}${absValue})`);
+                            possibleMatches.push(`${outcomeText} Away (${sign}${absValue})`);
+                            
+                            // Format: "(-10.5) Universitet Yugra Surgut Home"
+                            possibleMatches.push(`(${sign}${absValue}) ${outcomeText} Home`);
+                            possibleMatches.push(`(${sign}${absValue}) ${outcomeText} Away`);
+                            
+                            // Format: "-10.5 Universitet Yugra Surgut"
+                            possibleMatches.push(`${sign}${absValue} ${outcomeText}`);
+                            possibleMatches.push(`${outcomeText} ${sign}${absValue}`);
+                            
+                            // Format: "(-10.5) Universitet Yugra Surgut"
+                            possibleMatches.push(`(${sign}${absValue}) ${outcomeText}`);
+                            possibleMatches.push(`${outcomeText} (${sign}${absValue})`);
+                            
+                        } else {
+                            // Non-handicap combination (like "2.5 Over", "Current Score 1:0")
+                            possibleMatches.push(`${nonOddsText} ${outcomeText}`);
+                            possibleMatches.push(`${outcomeText} ${nonOddsText}`);
+                        }
+                    }
+                    
+                    // Also combine ALL non-odds texts with outcome
+                    if (nonOddsTexts.length > 1) {
+                        const combined = nonOddsTexts.join(' ');
+                        possibleMatches.push(`${combined} ${outcomeText}`);
+                        possibleMatches.push(`${outcomeText} ${combined}`);
+                    }
+                }
+                
+                console.log('      Checking:', possibleMatches.slice(0, 5).join(' | '), '... (', possibleMatches.length, 'total) | Odds:', oddsText);
+                
+                // Check for exact match (case-insensitive)
+                const isMatch = possibleMatches.some(possible => {
+                    const possibleLower = possible.toLowerCase();
+                    return outcomeNorm === possible || outcomeLower === possibleLower;
+                });
+                
+                if (isMatch) {
+                    console.log('✅ EXACT MATCH FOUND!');
+                    console.log('  Market:', marketText);
+                    console.log('  Non-odds values:', nonOddsTexts);
+                    console.log('  Outcome:', outcomeText);
+                    console.log('  Odds:', oddsText);
+                    
+                    // Mark the odds element for targeting
+                    marketOdd.setAttribute('data-bet-target', 'true');
+                    
+                    return {
+                        found: true,
+                        marketTitle: marketText,
+                        selectionValues: nonOddsTexts,
+                        outcomeText: outcomeText,
+                        fullOutcome: possibleMatches.find(p => 
+                            p.toLowerCase() === outcomeLower || p === outcomeNorm
+                        ),
+                        odds: oddsText,
+                        itemIndex: itemIdx,
+                        rowIndex: rowIdx,
+                        marketItemIndex: itemIdx
+                    };
+                }
+            }
+        }
+        
+        console.log('  ❌ Exact outcome not found in this market');
+        break;
     }
-    """;
+    
+    console.log('❌ No exact match found');
+    return { found: false };
+}
+""";
 
         try {
             @SuppressWarnings("unchecked")

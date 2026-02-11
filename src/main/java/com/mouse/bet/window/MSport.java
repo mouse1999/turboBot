@@ -239,17 +239,17 @@ public class MSport implements BettingWindow, Runnable {
 //                .bookmakerName(BookMaker.MSPORT)
 //                .homeTeam("Putrajaya")
 //                .awayTeam("Perak")
-//                .marketType("GG/NG")
-//                .outComeName("No")
-//                .odds(new BigDecimal("1.52"))
+//                .marketType("Double Chance")
+//                .outComeName("1 2")
+//                .odds(new BigDecimal("1.85"))
 //                .previousOdds(new BigDecimal("2.10"))
 //                .stake(new BigDecimal("10"))
-//                .sport("Basketball")
+//                .sport("Soccer")
 //                .progress("Not Started")
 //                .reordered(false)
 //                .initiator(true)
 //                .leagueName("NBA")
-//                .bookMakerUrl("https://www.msport.com/ng/web/sports/Soccer/live/Brazil_Baiano__Serie_A/Bahia_vs_Barcelona_Ilheus_BA/sr:match:65901150")
+//                .bookMakerUrl("https://www.msport.com/ng/web/sports/Soccer/live/International_Clubs_Club_Friendly_Games/KS_Gornik_Polkowice_vs_Warta_Gorzow_Wielkopolski/sr:match:68826198")
 //                .build();
 //
 //
@@ -265,8 +265,10 @@ public class MSport implements BettingWindow, Runnable {
 //                outcome1.getStake().doubleValue(),              // 531.91
 //                outcome1.getLeagueName(),                       // "NBA"
 //                outcome1.getHomeTeam(),                         // "Test Lakers"
-//                outcome1.getAwayTeam(),                         // "Test Celtics"
-//                ""                            // "demo_arb_001"
+//                outcome1.getAwayTeam(),
+//                outcome1.getSubEventId(),
+//                outcome1.getSport()
+//                // "Test Celtics// "demo_arb_001"
 //        );
 //        Phaser phaser = new Phaser(1);
 //        return BetLegTask.builder()
@@ -302,7 +304,7 @@ public class MSport implements BettingWindow, Runnable {
                 EMOJI_START, EMOJI_TARGET, arbId, task.getArbId());
 
         try {
-            // STEP 1: REGISTER INTENT WITH PARTNER
+             //STEP 1: REGISTER INTENT WITH PARTNER
             boolean intentRegistered = syncManager.registerIntent(
                     arbId,
                     BOOKMAKER,

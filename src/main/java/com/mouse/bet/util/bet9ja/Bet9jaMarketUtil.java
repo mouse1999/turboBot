@@ -190,8 +190,94 @@ public class Bet9jaMarketUtil {
                 const oddsEl = betMatch.querySelector('div.betslip__match-odds span.txt-darkorange, div.betslip__match-odds span');
                 const displayedOdds = oddsEl ? oddsEl.textContent.trim() : 'N/A';
                 
-                // Case-insensitive comparison
-                const outcomeMatch = displayedOutcome.toLowerCase() === expectedOutcome.toLowerCase();
+                // Extract components from outcome string for flexible matching
+                const extractComponents = (outcome) => {
+                    const lower = outcome.toLowerCase();
+                    
+                    // Extract handicap value (e.g., "-1.0", "+1.5", "1.5")
+                    const handicapMatch = outcome.match(/([+-]?[0-9]+[.][0-9]+|[+-]?[0-9]+)/);
+                    const handicap = handicapMatch ? handicapMatch[1] : null;
+                    
+                    // Extract home/away indicator
+                    const hasHome = /\\bhome\\b/i.test(outcome);
+                    const hasAway = /\\baway\\b/i.test(outcome);
+                    
+                    // Extract over/under
+                    const hasOver = /\\bover\\b/i.test(outcome);
+                    const hasUnder = /\\bunder\\b/i.test(outcome);
+                    
+                    // Remove common patterns to get the team/outcome name
+                    let cleanText = outcome
+                        .replace(/\\(.*?\\)/g, '')  // Remove anything in parentheses
+                        .replace(/\\bhome\\b/gi, '')
+                        .replace(/\\baway\\b/gi, '')
+                        .replace(/[+-]?[0-9]+[.][0-9]+/g, '')
+                        .replace(/[+-]?[0-9]+/g, '')
+                        .replace(/\\s+/g, ' ')
+                        .trim()
+                        .toLowerCase();
+                    
+                    return {
+                        handicap,
+                        hasHome,
+                        hasAway,
+                        hasOver,
+                        hasUnder,
+                        cleanText,
+                        original: outcome
+                    };
+                };
+                
+                const displayedComponents = extractComponents(displayedOutcome);
+                const expectedComponents = extractComponents(expectedOutcome);
+                
+                // Compare components
+                let outcomeMatch = true;
+                
+                // Check handicap value (if present in either)
+                if (displayedComponents.handicap || expectedComponents.handicap) {
+                    // Normalize handicap values (remove leading +, compare numerically)
+                    const normalizeHandicap = (h) => {
+                        if (!h) return null;
+                        return h.replace(/^\\+/, '');
+                    };
+                    
+                    const dispHcp = normalizeHandicap(displayedComponents.handicap);
+                    const expHcp = normalizeHandicap(expectedComponents.handicap);
+                    
+                    if (dispHcp !== expHcp) {
+                        outcomeMatch = false;
+                    }
+                }
+                
+                // Check home/away
+                if (displayedComponents.hasHome !== expectedComponents.hasHome ||
+                    displayedComponents.hasAway !== expectedComponents.hasAway) {
+                    outcomeMatch = false;
+                }
+                
+                // Check over/under
+                if (displayedComponents.hasOver !== expectedComponents.hasOver ||
+                    displayedComponents.hasUnder !== expectedComponents.hasUnder) {
+                    outcomeMatch = false;
+                }
+                
+                // Check if the clean text matches (team names, etc.)
+                // Allow partial match since word order might differ
+                if (displayedComponents.cleanText && expectedComponents.cleanText) {
+                    const dispWords = displayedComponents.cleanText.split(/\\s+/).filter(w => w.length > 2);
+                    const expWords = expectedComponents.cleanText.split(/\\s+/).filter(w => w.length > 2);
+                    
+                    // Check if most significant words are present in both
+                    const hasCommonWords = dispWords.some(w => expWords.includes(w)) || 
+                                          expWords.some(w => dispWords.includes(w));
+                    
+                    if (!hasCommonWords && dispWords.length > 0 && expWords.length > 0) {
+                        outcomeMatch = false;
+                    }
+                }
+                
+                // Market matching (exact match)
                 const marketMatch = displayedMarket.toLowerCase() === expectedMarket.toLowerCase();
                 
                 if (!outcomeMatch) {
@@ -200,6 +286,8 @@ public class Bet9jaMarketUtil {
                         error: 'Outcome mismatch',
                         expected: expectedOutcome,
                         actual: displayedOutcome,
+                        displayedComponents: displayedComponents,
+                        expectedComponents: expectedComponents,
                         displayedMarket,
                         displayedOdds,
                         matchName,

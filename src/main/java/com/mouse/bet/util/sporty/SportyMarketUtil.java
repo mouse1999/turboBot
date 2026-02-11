@@ -715,8 +715,8 @@ public class SportyMarketUtil {
                 if ("Odds not acceptable".equals(result.errorMessage)) {
                     log.warn("Odds drifted: expected {} → got {}", expectedOdds, result.odds);
                     // TODO: Uncomment to enable strict odds rejection
-                     takeMarketScreenshot(page, "odds-rejected-" + safeFileName(market + "-" + outcome));
-                     return false;
+//                     takeMarketScreenshot(page, "odds-rejected-" + safeFileName(market + "-" + outcome));
+//                     return false;
                 }
 
                 takeMarketScreenshot(page, "failed-" + safeFileName(market + "-" + outcome));
