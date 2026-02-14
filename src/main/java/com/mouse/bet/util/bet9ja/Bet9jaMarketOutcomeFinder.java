@@ -16,7 +16,8 @@ public class Bet9jaMarketOutcomeFinder {
 
     private static final int DEFAULT_WAIT_TIMEOUT_MS = 12000;
     private static final int DEFAULT_POLL_INTERVAL_MS = 300;
-    private static final double TOLERANCE_PERCENT = 0.003; // 0.3% tolerance
+    private static final double UPPER_TOLERANCE_PERCENT = 0.4; // 0.3% tolerance
+    private static final double LOWER__TOLERANCE_PERCENT = 0.1;
 
     // Private constructor to prevent instantiation
     private Bet9jaMarketOutcomeFinder() {
@@ -546,22 +547,23 @@ public class Bet9jaMarketOutcomeFinder {
                 return false;
             }
 
-            // Calculate allowed range
-            double lowerBound = expectedOdds * (1 - TOLERANCE_PERCENT);
-            double upperBound = expectedOdds * (1 + TOLERANCE_PERCENT);
+            // Calculate allowed range with separate tolerances
+            double lowerBound = expectedOdds * (1 - LOWER__TOLERANCE_PERCENT);
+            double upperBound = expectedOdds * (1 + UPPER_TOLERANCE_PERCENT);
 
             boolean isAcceptable = displayedOdds >= lowerBound && displayedOdds <= upperBound;
 
             if (isAcceptable) {
                 double percentDiff = ((displayedOdds - expectedOdds) / expectedOdds) * 100.0;
-                log.debug("Displayed odds {} is {}% from expected {} → ACCEPTED (±{}% tolerance)",
-                        displayedOdds, String.format("%.2f", percentDiff), expectedOdds, TOLERANCE_PERCENT * 100);
+                log.debug("Displayed odds {} is {}% from expected {} → ACCEPTED (Lower: -{}%, Upper: +{}%)",
+                        displayedOdds, String.format("%.2f", percentDiff), expectedOdds,
+                        LOWER__TOLERANCE_PERCENT * 100,  UPPER_TOLERANCE_PERCENT * 100);
             } else {
                 String reason = displayedOdds < lowerBound ? "too low" : "too high";
                 double percentDiff = ((displayedOdds - expectedOdds) / expectedOdds) * 100.0;
-                log.debug("Displayed odds {} is {}% {} expected {} → REJECTED (±{}% tolerance)",
+                log.debug("Displayed odds {} is {}% {} expected {} → REJECTED (Lower: -{}%, Upper: +{}%)",
                         displayedOdds, String.format("%.2f", Math.abs(percentDiff)), reason,
-                        expectedOdds, TOLERANCE_PERCENT * 100);
+                        expectedOdds, LOWER__TOLERANCE_PERCENT * 100,  UPPER_TOLERANCE_PERCENT * 100);
             }
 
             return isAcceptable;

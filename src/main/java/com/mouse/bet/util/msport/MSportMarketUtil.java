@@ -49,7 +49,8 @@ public class MSportMarketUtil {
     private static final String EMOJI_TRASH = "🗑️";
     private static final String EMOJI_BET = "🎯";
 
-    private static final double TOLERANCE_PERCENT = 0.03; // 3% tolerance
+    private static final double UPPER_TOLERANCE_PERCENT = 0.4;
+    private static final double LOWER__TOLERANCE_PERCENT = 0.1;
     private static final BookMaker BOOK_MAKER = BookMaker.MSPORT;
 
     /**
@@ -778,8 +779,8 @@ public class MSportMarketUtil {
                 return false;
             }
 
-            double lowerBound = expectedOdds * (1 - TOLERANCE_PERCENT);
-            double upperBound = expectedOdds * (1 + TOLERANCE_PERCENT);
+            double lowerBound = expectedOdds * (1 - LOWER__TOLERANCE_PERCENT);
+            double upperBound = expectedOdds * (1 + UPPER_TOLERANCE_PERCENT);
 
             return displayedOdds >= lowerBound && displayedOdds <= upperBound;
 

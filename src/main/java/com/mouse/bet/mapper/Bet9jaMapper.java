@@ -1192,7 +1192,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
             Map<String, String> map = new HashMap<>();
             map.put("1", "1");
             map.put("2", "2");
-            addMarket(marketId, null, "Set " + " Winner", map);
+            addMarket(marketId, null, "Set " + "Winner", map);
         }
     }
 

@@ -165,14 +165,8 @@ public interface ArbitrageRepository extends JpaRepository<ArbitrageOpportunity,
             "ORDER BY a.createdAt DESC")
     List<ArbitrageOpportunity> findActiveArbsByMaxAge(@Param("ageCutoffTime") LocalDateTime ageCutoffTime);
 
-    /**
-     * Convenience method - finds active arbs not older than specified seconds
-     * Usage: findActiveArbsByMaxAge(30) - finds arbs created within last 30 seconds
-     */
-    default List<ArbitrageOpportunity> findActiveArbsByMaxAge(int maxAgeSeconds) {
-        LocalDateTime ageCutoffTime = LocalDateTime.now().minusSeconds(maxAgeSeconds);
-        return findActiveArbsByMaxAge(ageCutoffTime);
-    }
+
+
 
     /**
      * Find all arbs (any status) where age is not more than X seconds
@@ -315,5 +309,61 @@ public interface ArbitrageRepository extends JpaRepository<ArbitrageOpportunity,
     List<ArbitrageOpportunity> findActiveArbsCreatedAfterWithMinProfit(
             @Param("createdAfter") LocalDateTime createdAfter,
             @Param("minProfit") BigDecimal minProfit);
+
+
+    // Add these methods to your ArbitrageRepository interface
+
+    /**
+     * OPTIMIZED: Find all active arbs with outcomes (no additional filters)
+     * This is the fastest query - retrieves everything and lets the service filter in-memory
+     *
+     * @return List of all active arbitrage opportunities with outcomes
+     */
+    @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
+            "WHERE a.status = 'ACTIVE' " +
+            "ORDER BY a.profitPercentage DESC")
+    List<ArbitrageOpportunity> findAllActiveArbsFast();
+
+    /**
+     * OPTIMIZED: Find active arbs by max age (based on createdAt)
+     * Faster than filtering by both createdAt and profit - let service filter profit in-memory
+     *
+     * @param ageCutoffTime Cutoff time (e.g., now - 60 seconds)
+     * @return List of active arbs not older than cutoff
+     */
+    @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
+            "WHERE a.status = 'ACTIVE' " +
+            "AND a.createdAt >= :ageCutoffTime " +
+            "ORDER BY a.profitPercentage DESC")
+    List<ArbitrageOpportunity> findActiveArbsByMaxAgeFast(@Param("ageCutoffTime") LocalDateTime ageCutoffTime);
+
+    /**
+     * Convenience method - finds active arbs not older than specified seconds (FAST)
+     */
+    default List<ArbitrageOpportunity> findActiveArbsByMaxAge(int maxAgeSeconds) {
+        LocalDateTime ageCutoffTime = LocalDateTime.now().minusSeconds(maxAgeSeconds);
+        return findActiveArbsByMaxAgeFast(ageCutoffTime);
+    }
+
+    /**
+     * OPTIMIZED: Find active arbs updated recently (based on updatedAt)
+     * Use this if you want to get only recently updated arbs
+     *
+     * @param updateCutoffTime Cutoff time for updates
+     * @return List of active arbs updated after cutoff
+     */
+    @Query("SELECT DISTINCT a FROM ArbitrageOpportunity a LEFT JOIN FETCH a.outcomes " +
+            "WHERE a.status = 'ACTIVE' " +
+            "AND a.updatedAt >= :updateCutoffTime " +
+            "ORDER BY a.profitPercentage DESC")
+    List<ArbitrageOpportunity> findActiveArbsByRecentUpdate(@Param("updateCutoffTime") LocalDateTime updateCutoffTime);
+
+    /**
+     * Convenience method - finds active arbs updated within specified seconds
+     */
+    default List<ArbitrageOpportunity> findActiveArbsByRecentUpdate(int maxUpdateAgeSeconds) {
+        LocalDateTime updateCutoffTime = LocalDateTime.now().minusSeconds(maxUpdateAgeSeconds);
+        return findActiveArbsByRecentUpdate(updateCutoffTime);
+    }
 
 }

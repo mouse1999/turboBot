@@ -44,7 +44,8 @@ public class SportyMarketUtil {
     private static final long RETRY_TIMEOUT_MS = 10_000;
     private static final long RETRY_DELAY_MS = 1000;
 
-    private static final int TOLERANCE_PERCENT = (int) 0.003;
+    private static final double UPPER_TOLERANCE_PERCENT = 0.4; // 0.3% tolerance
+    private static final double LOWER__TOLERANCE_PERCENT = 0.1;
 
     private static boolean verifyBetSlip(Page page, BettingTask task) {
         String market = task.marketType();
@@ -502,8 +503,8 @@ public class SportyMarketUtil {
             }
 
             BigDecimal currentOdds = new BigDecimal(oddsValue);
-            BigDecimal minAcceptable = expectedOdds.multiply(BigDecimal.valueOf(1 - TOLERANCE_PERCENT));
-            BigDecimal maxAcceptable = expectedOdds.multiply(BigDecimal.valueOf(1 + TOLERANCE_PERCENT));
+            BigDecimal minAcceptable = expectedOdds.multiply(BigDecimal.valueOf(1 - LOWER__TOLERANCE_PERCENT));
+            BigDecimal maxAcceptable = expectedOdds.multiply(BigDecimal.valueOf(1 + UPPER_TOLERANCE_PERCENT));
 
             log.info("📊 LIVE ODDS: {} | Expected: {} | Min: {} | Max: {}" , currentOdds, expectedOdds, minAcceptable, minAcceptable);
 

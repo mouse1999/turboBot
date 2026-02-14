@@ -40,7 +40,8 @@ public class Bet9jaMarketUtil {
     private static final long RETRY_TIMEOUT_MS = 10_000;
     private static final long RETRY_DELAY_MS = 1000;
 
-    private static final int TOLERANCE_PERCENT = (int) 0.003;
+    private static final double UPPER_TOLERANCE_PERCENT = 0.4; // 0.3% tolerance
+    private static final double LOWER__TOLERANCE_PERCENT = 0.1;
     public static boolean selectAndVerifyBet(Page page, BettingTask task, ArbOutcomeService arbOutcomeService) {
         String market = task.marketType().trim();
         String outcome = task.outcome().trim();

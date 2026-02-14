@@ -1,0 +1,63 @@
+2026-02-14 15:45:58.045 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - 🧭 ▶️ Navigating to MSport homepage: https://sports.bet9ja.com
+2026-02-14 15:46:10.630 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ 🎯 Successfully navigated to MSport
+2026-02-14 15:47:43.536 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - 🧭 ⏰ Navigating to Bet9ja live events page
+2026-02-14 15:47:43.536 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil -  Scrolling page before navigation attempt
+2026-02-14 15:47:43.585 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Starting probability-based scrolling. Actions: 6, Total height: 3737px
+2026-02-14 15:47:43.586 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 1: Moderate DOWN 527px to 527px (prob: 58)
+2026-02-14 15:47:44.506 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 2: Small UP 307px to 220px (prob: 90)
+2026-02-14 15:47:45.435 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 3: Large UP 442px to 0px (prob: 92)
+2026-02-14 15:47:47.969 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 4: Moderate DOWN 230px to 230px (prob: 46)
+2026-02-14 15:47:53.799 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 5: Aggressive DOWN 1063px to 1293px (prob: 69)
+2026-02-14 15:47:55.349 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 6: Aggressive DOWN 666px to 1959px (prob: 66)
+2026-02-14 15:47:56.047 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ Probability-based scrolling completed at position: 1959px
+2026-02-14 15:47:56.048 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - 🔍 ⏰ Attempting to click Live navigation element
+2026-02-14 15:47:56.048 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Trying selector: a.h-ml__nav-link[href='/liveCompetitions']
+2026-02-14 15:47:56.260 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ Found Live link with selector: a.h-ml__nav-link[href='/liveCompetitions']
+2026-02-14 15:47:58.194 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Scrolling to Live link element
+2026-02-14 15:48:09.026 [BettingWindow-3] WARN  c.m.b.u.bet9ja.Bet9jaNavigationUtil - ⚠️ ⏰ Failed to click Live navigation element: Error {
+  message='Timeout 10000ms exceeded.
+  name='TimeoutError
+  stack='TimeoutError: Timeout 10000ms exceeded.
+    at ProgressController.run (C:\Users\USER\AppData\Local\Temp\playwright-java-12584090524468625266\package\lib\server\progress.js:68:28)
+    at FrameDispatcher._runCommand (C:\Users\USER\AppData\Local\Temp\playwright-java-12584090524468625266\package\lib\server\dispatchers\dispatcher.js:95:31)
+    at DispatcherConnection.dispatch (C:\Users\USER\AppData\Local\Temp\playwright-java-12584090524468625266\package\lib\server\dispatchers\dispatcher.js:329:39)
+}
+Call log:
+-   - waiting for locator("a.h-ml__nav-link[href='/liveCompetitions']").first()
+-     - locator resolved to <a class="h-ml__nav-link" href="/liveCompetitions" id="header_staticlink_live_betting">Live</a>
+-   - attempting click action
+-     2 × waiting for element to be visible, enabled and stable
+-       - element is visible, enabled and stable
+-       - scrolling into view if needed
+-       - done scrolling
+-       - <main class="novasdk-inbox-app-widget__background">…</main> from <div id="novasdk-inbox-widget">…</div> subtree intercepts pointer events
+-     - retrying click action
+-     - waiting 20ms
+-     2 × waiting for element to be visible, enabled and stable
+-       - element is visible, enabled and stable
+-       - scrolling into view if needed
+-       - done scrolling
+-       - <main class="novasdk-inbox-app-widget__background">…</main> from <div id="novasdk-inbox-widget">…</div> subtree intercepts pointer events
+-     - retrying click action
+-       - waiting 100ms
+-     14 × waiting for element to be visible, enabled and stable
+-        - element is visible, enabled and stable
+-        - scrolling into view if needed
+-        - done scrolling
+-        - <main class="novasdk-inbox-app-widget__background">…</main> from <div id="novasdk-inbox-widget">…</div> subtree intercepts pointer events
+-      - retrying click action
+-        - waiting 500ms
+
+2026-02-14 15:48:09.026 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - 🧭 ⏰ Using fallback: Direct navigation to live events
+2026-02-14 15:48:33.735 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ ⏰ Successfully navigated to Bet9ja live events page via direct URL
+2026-02-14 15:48:33.735 [BettingWindow-3] INFO  c.m.b.u.bet9ja.Bet9jaNavigationUtil -  Scrolling page after direct navigation
+2026-02-14 15:48:36.229 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Starting probability-based scrolling. Actions: 8, Total height: 15067px
+2026-02-14 15:48:36.230 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 1: Moderate DOWN 510px to 510px (prob: 38)
+2026-02-14 15:48:37.476 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 2: Moderate DOWN 228px to 738px (prob: 30)
+2026-02-14 15:48:37.924 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 3: Small UP 309px to 429px (prob: 86)
+2026-02-14 15:48:40.219 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 4: Aggressive DOWN 1203px to 1632px (prob: 64)
+2026-02-14 15:48:41.551 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 5: Small UP 168px to 1464px (prob: 82)
+2026-02-14 15:48:43.988 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 6: Aggressive DOWN 1028px to 2492px (prob: 75)
+2026-02-14 15:48:45.493 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 7: Moderate DOWN 419px to 2911px (prob: 4)
+2026-02-14 15:48:49.433 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - Action 8: Moderate DOWN 427px to 3338px (prob: 11)
+2026-02-14 15:48:50.487 [BettingWindow-3] DEBUG c.m.b.u.bet9ja.Bet9jaNavigationUtil - ✅ Probability-based scrolling completed at position: 3338px

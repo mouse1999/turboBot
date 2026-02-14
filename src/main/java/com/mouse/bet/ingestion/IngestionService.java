@@ -486,7 +486,7 @@ public class IngestionService {
 
         String finalOutcome = bookMaker == BookMaker._1WIN
                 ? oneWinOutcomeStyle(marketInfo.outcome, subEvent.getTeam2(), subEvent.getTeam1())
-                : marketInfo.outcome;
+                : bookMaker == BookMaker.BET9JA ? bet9jaOutcomeStyle(marketInfo.outcome, subEvent.getTeam1(), subEvent.getTeam2()) : marketInfo.outcome;
 
         Map<String, String> subEventCrumbs = subEvent.getCrumbs();
         String bookmakerUrl = buildBookmakerUrlWithMatchType(bookMaker, subEventCrumbs, subEvent.getId(), isLive);
@@ -503,6 +503,44 @@ public class IngestionService {
                 bookMaker, finalOutcome, oddsInfo.value, bookmakerUrl != null ? "✓" : "✗");
 
         return outcome;
+    }
+
+
+    private String bet9jaOutcomeStyle(String outcome, String home, String away) {
+        if (outcome == null || outcome.trim().isEmpty()) {
+            return outcome;
+        }
+
+        // Use fallback names if home/away are null or empty
+        String homeTeam = (home != null && !home.trim().isEmpty()) ? home.trim() : "Home";
+        String awayTeam = (away != null && !away.trim().isEmpty()) ? away.trim() : "Away";
+
+        String result = outcome;
+
+        // We work with lowercase copy only to detect presence (fast & simple)
+        String lowerOutcome = outcome.toLowerCase();
+
+        // Replace player 1 variants → home team
+        if (lowerOutcome.contains("player 1") || lowerOutcome.contains("player1") || lowerOutcome.contains("p1")) {
+            result = result.replace("player 1", homeTeam)
+                    .replace("Player 1", homeTeam)
+                    .replace("player1",  homeTeam)
+                    .replace("Player1",  homeTeam)
+                    .replace("p1",       homeTeam)
+                    .replace("P1",       homeTeam);
+        }
+
+        // Replace player 2 variants → away team
+        if (lowerOutcome.contains("player 2") || lowerOutcome.contains("player2") || lowerOutcome.contains("p2")) {
+            result = result.replace("player 2", awayTeam)
+                    .replace("Player 2", awayTeam)
+                    .replace("player2",  awayTeam)
+                    .replace("Player2",  awayTeam)
+                    .replace("p2",       awayTeam)
+                    .replace("P2",       awayTeam);
+        }
+
+        return result;
     }
 
     @Value

@@ -62,9 +62,9 @@ playwright:
 breaking-bet:
   api:
     prematch:
-      url: "https://arbs.prematch.api.breaking-bet.com/v1/users/bb-50810/filter/items"
+      url: "https://arbs.prematch.api.breaking-bet.com/v1/users/bb-81228/filter/items"
     live:
-      url: "https://arbs.live.api.breaking-bet.com/v1/users/bb-50810/filter/items"
+      url: "https://arbs.live.api.breaking-bet.com/v1/users/bb-81228/filter/items"
   headless: true
   connection:
     timeout: 30
