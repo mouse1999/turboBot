@@ -46,7 +46,7 @@ arb:
     freshness:
       seconds: 2
     min:
-      profit: 5
+      profit: 1.5
     bookmakers: SPORTYBET,MSPORT,BET9JA
 
 fetch:

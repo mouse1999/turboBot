@@ -99,12 +99,12 @@ public class Bet9jaMarketUtil {
                 return false;
             }
 
-            // Verify outcome match (sanity check)
-            if (!result.outcomeText.equalsIgnoreCase(outcome)) {
-                log.warn("Outcome mismatch: expected '{}' → got '{}'", outcome.trim(), result.outcomeText);
-                takeMarketScreenshot(page, "mismatch-" + safeFileName(market + "-" + outcome));
-                return false;
-            }
+            // Verify outcome match (sanity check) todo: consider brining this back
+//            if (!result.outcomeText.equalsIgnoreCase(outcome)) {
+//                log.warn("Outcome mismatch: expected '{}' → got '{}'", outcome.trim(), result.outcomeText);
+//                takeMarketScreenshot(page, "mismatch-" + safeFileName(market + "-" + outcome));
+//                return false;
+//            }
 
             randomHumanDelay(200, 400);
 
@@ -559,6 +559,12 @@ public class Bet9jaMarketUtil {
     }
 
     public static void clearBetSlip(Page page) {
+        page.evaluate("""
+        const closeBtn = document.querySelector('.betslip__match-head .betslip__match-item i.icon.close');
+        if (closeBtn) {
+            closeBtn.click();
+        }
+    """);
     }
 
     private static String safeFileName(String name) {

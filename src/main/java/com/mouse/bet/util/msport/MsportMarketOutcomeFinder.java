@@ -17,8 +17,8 @@ public class MsportMarketOutcomeFinder {
 
     private static final int DEFAULT_WAIT_TIMEOUT_MS = 12000;
     private static final int DEFAULT_POLL_INTERVAL_MS = 300;
-    private static final double UPPER_TOLERANCE_PERCENT = 0.4; // 0.3% tolerance
-    private static final double LOWER__TOLERANCE_PERCENT = 0.1;
+    private static final double UPPER_TOLERANCE_PERCENT = 1; // 0.3% tolerance
+    private static final double LOWER__TOLERANCE_PERCENT = 1;
 
 
     // Private constructor to prevent instantiation

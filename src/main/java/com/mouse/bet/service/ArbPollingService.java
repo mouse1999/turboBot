@@ -59,7 +59,10 @@ public class ArbPollingService {
     @Value("${arb.polling.freshness.seconds:30}")
     private int freshnessSeconds;
 
-    @Value("${arb.polling.min.profit:5}")
+    @Value("${arb.polling.freshness.seconds:5}")
+    private int  maxArbAgeSeconds;
+
+    @Value("${arb.polling.min.profit:1.5}")
     private double minProfitPercentage;
 
     /**
@@ -129,6 +132,7 @@ public class ArbPollingService {
 
     // Performance tracking
     private volatile long lastPollDurationMs = 0;
+
     private volatile long lastRetrievalTimeMs = 0;
     private volatile long lastFilterTimeMs = 0;
     private volatile int lastArbsRetrieved = 0;
@@ -375,6 +379,13 @@ public class ArbPollingService {
                                 EMOJI_FILTERED, arb.getExternalId(), arb.getUpdatedAt(), freshnessCutoff);
                         return false;
                     }
+
+                    if (arb.getArbAgeSeconds() == null || arb.getArbAgeSeconds() > maxArbAgeSeconds) {
+                        log.trace("{} Filtered (too old) | ArbId: {} | Age: {}s | Max allowed: {}s",
+                                EMOJI_FILTERED, arb.getExternalId(), arb.getArbAgeSeconds(), maxArbAgeSeconds);
+                        return false;
+                    }
+
 
                     // Filter 4: Sport must be enabled
                     if (!isSportEnabled(arb)) {
