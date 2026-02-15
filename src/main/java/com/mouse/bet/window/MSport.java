@@ -34,6 +34,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -159,38 +160,57 @@ public class MSport implements BettingWindow, Runnable {
 
     @PostConstruct
     public void init() {
-        log.info("{} {} Initializing MSport with Playwright...", EMOJI_INIT, EMOJI_BET);
+        log.info("{} {} Initializing Optimized SportyBet with Playwright...", EMOJI_INIT, EMOJI_BET);
         try {
             playwright = Playwright.create();
+
+            // Optimized argument list: Removed all --disable-cache and --disk-cache-size flags
+            List<String> optimizedArgs = Arrays.asList(
+                    // Core Performance
+                    "--disable-gpu",
+                    "--disable-dev-shm-usage",
+                    "--disable-extensions",
+                    "--no-sandbox",
+                    "--no-first-run",
+                    "--no-default-browser-check",
+                    "--mute-audio",
+
+                    // Background Process Stripping (Saves CPU)
+                    "--disable-background-networking",
+                    "--disable-background-timer-throttling",
+                    "--disable-backgrounding-occluded-windows",
+                    "--disable-renderer-backgrounding",
+                    "--metrics-recording-only",
+                    "--disable-component-update",
+                    "--disable-domain-reliability",
+
+                    // Speed Boosters (Resource Management)
+                    "--disable-images",
+                    "--blink-settings=imagesEnabled=false",
+                    "--disable-software-rasterizer",
+                    "--disable-popup-blocking",
+
+                    // Feature Stripping
+                    "--disable-features=TranslateUI,IsolateOrigins,BlockInsecurePrivateNetworkRequests",
+                    "--disable-site-isolation-trials",
+                    "--disable-translate",
+                    "--disable-sync"
+            );
+
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                     .setHeadless(headless)
-                    .setArgs(Arrays.asList(
-                            "--disable-gpu",
-                            "--disable-dev-shm-usage",
-                            "--disable-extensions",
-                            "--disable-background-networking",
-                            "--disable-background-timer-throttling",
-                            "--disable-backgrounding-occluded-windows",
-                            "--disable-renderer-backgrounding",
-                            "--disable-features=TranslateUI",
-                            "--disable-features=site-per-process",
-                            "--no-sandbox",
-                            "--no-first-run",
-                            "--no-default-browser-check",
-                            "--mute-audio"
-                    ))
+                    .setArgs(optimizedArgs)
                     .setSlowMo(0));
 
-            log.info("{} {} Playwright initialized successfully", EMOJI_SUCCESS, EMOJI_INIT);
-            log.info("Registering MSport Window for Bet placing");
+            log.info("{} {} Playwright initialized with Cache Support", EMOJI_SUCCESS, EMOJI_INIT);
+
+            log.info("Registering SportyBet Window for Bet placing");
             orchestrator.registerWorker(BOOKMAKER, taskQueue);
 
         } catch (Exception e) {
             log.error("{} {} Failed to initialize Playwright: {}", EMOJI_ERROR, EMOJI_INIT, e.getMessage(), e);
             throw new RuntimeException("Playwright initialization failed", e);
         }
-
-//        run();
     }
 
 //    "--start-maximized",
@@ -820,6 +840,7 @@ public class MSport implements BettingWindow, Runnable {
 
         return browser.newContext(new Browser.NewContextOptions()
                 .setUserAgent(profile.getUserAgent())
+                .setJavaScriptEnabled(true)
                 .setLocale("en-US")
                 .setViewportSize(profile.getViewport().getWidth(), profile.getViewport().getHeight())
         );
@@ -848,6 +869,7 @@ public class MSport implements BettingWindow, Runnable {
                         .setUserAgent(profile.getUserAgent())
                         .setLocale("en-US")
                         .setViewportSize(null)
+                        .setJavaScriptEnabled(true)
                         .setIgnoreHTTPSErrors(true)
                         .setStorageStatePath(contextFilePath));
 

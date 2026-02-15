@@ -939,108 +939,108 @@ public class Bet9jaBetPlacement {
      */
     private static String getStateMonitorScript() {
         return """
-        () => {
-            // First check for placed bet confirmation (bet ID present)
-            const betIdElement = document.querySelector('div.betslip__match-body div.table-a div.txt-r span');
-            if (betIdElement && betIdElement.textContent.includes('ID:')) {
-                return { 
-                    status: 'BET_PLACED',
-                    betId: betIdElement.textContent.trim()
-                };
-            }
-            
-            // Check if betslip has any active selections
-            const matchBox = document.querySelector('div.betslip__match-box');
-            if (!matchBox) {
-                // Also check for betslip__match (parent container)
-                const betslipMatch = document.querySelector('div.betslip__match');
-                if (!betslipMatch) {
-                    return { status: 'NO_SELECTION' };
-                }
-            }
-            
-            // Check for suspended market - CRITICAL CHECK
-            const suspendedMsg = document.querySelector('div.betslip__match-msg span.txt-red');
-            if (suspendedMsg && suspendedMsg.textContent.trim().toLowerCase() === 'suspended') {
-                return { status: 'SUSPENDED' };
-            }
-            
-            // Check for unavailable market (common states)
-            const msgElement = document.querySelector('div.betslip__match-msg');
-            if (msgElement) {
-                const msgText = msgElement.textContent.trim().toLowerCase();
-                if (msgText.includes('unavailable') || msgText.includes('closed')) {
-                    return { status: 'UNAVAILABLE' };
-                }
-            }
-            
-            // Get current odds - FIXED strategies
-            let oddsText = null;
-            
-            // Strategy 1: Direct path from your HTML structure
-            const oddsInRow = document.querySelector('div.betslip__match-row div.betslip__match-odds span.txt-primary');
-            if (oddsInRow) {
-                oddsText = oddsInRow.textContent.trim();
-            }
-            
-            // Strategy 2: Look in betslip__match-box (broader)
-            if (!oddsText) {
-                const oddsInBox = document.querySelector('div.betslip__match-box span.txt-primary');
-                if (oddsInBox) {
-                    oddsText = oddsInBox.textContent.trim();
-                }
-            }
-            
-            // Strategy 3: Most generic - any txt-primary in betslip__match-odds
-            if (!oddsText) {
-                const oddsAnywhere = document.querySelector('div.betslip__match-odds span.txt-primary');
-                if (oddsAnywhere) {
-                    oddsText = oddsAnywhere.textContent.trim();
-                }
-            }
-            
-            // Get market info
-            const matchItem = document.querySelector('div.betslip__match-row div.betslip__match-item strong');
-            const marketType = document.querySelector('div.betslip__match-row:last-child div.betslip__match-item');
-            const outcomeText = matchItem ? matchItem.textContent.trim() : null;
-            const marketTypeText = marketType ? marketType.textContent.trim() : null;
-            
-            // Get place bet button state - using Bet9ja's specific button structure
-            const placeBtn = document.querySelector('div#betslip_buttons_placebet.btn, button.betslip__footer-btn, button[class*="place"]');
-            const btnText = placeBtn ? placeBtn.textContent.trim() : '';
-            const btnDisabled = placeBtn ? (placeBtn.disabled || placeBtn.classList.contains('disabled') || placeBtn.classList.contains('btn-disabled')) : true;
-            
-            // Check for success modal/notification
-            const successModal = document.querySelector('div.success-modal, div[class*="success"], div.notification[class*="success"]');
-            const successVisible = !!(successModal && successModal.offsetParent !== null);
-            
-            // Check for odds change popup/notification
-            const oddsChangePopup = document.querySelector('div.odds-change-popup, div[class*="odds-change"]');
-            const oddsChangeVisible = !!(oddsChangePopup && oddsChangePopup.offsetParent !== null);
-            
-            // Get stake input value
-            const stakeInput = document.querySelector('div.input__holder input.input[type="number"][placeholder="stake"]');
-            const currentStake = stakeInput ? stakeInput.value : null;
-            
-            // Get potential return
-            const returnElement = document.querySelector('div.betslip__footer-amount, div[class*="potential-return"], div[class*="to-return"]');
-            const potentialReturn = returnElement ? returnElement.textContent.trim() : null;
-            
-            return {
-                status: 'OK',
-                oddsText: oddsText,
-                buttonText: btnText,
-                buttonDisabled: btnDisabled,
-                successVisible: successVisible,
-                oddsChangeVisible: oddsChangeVisible,
-                outcomeText: outcomeText,
-                marketTypeText: marketTypeText,
-                currentStake: currentStake,
-                potentialReturn: potentialReturn,
-                hasError: false
+    () => {
+        // First check for placed bet confirmation (bet ID present) - CORRECT SELECTOR
+        const betIdElement = document.querySelector('div.betslip__match-body div.table-a div.txt-r span');
+        if (betIdElement && betIdElement.textContent.includes('ID:')) {
+            return { 
+                status: 'BET_PLACED',
+                betId: betIdElement.textContent.trim()
             };
         }
-        """;
+        
+        // Check if betslip has any active selections
+        const matchBox = document.querySelector('div.betslip__match-box');
+        if (!matchBox) {
+            const betslipMatch = document.querySelector('div.betslip__match');
+            if (!betslipMatch) {
+                return { status: 'NO_SELECTION' };
+            }
+        }
+        
+        // Check for suspended market
+        const suspendedMsg = document.querySelector('div.betslip__match-msg span.txt-red');
+        if (suspendedMsg && suspendedMsg.textContent.trim().toLowerCase() === 'suspended') {
+            return { status: 'SUSPENDED' };
+        }
+        
+        // Check for unavailable market
+        const msgElement = document.querySelector('div.betslip__match-msg');
+        if (msgElement) {
+            const msgText = msgElement.textContent.trim().toLowerCase();
+            if (msgText.includes('unavailable') || msgText.includes('closed')) {
+                return { status: 'UNAVAILABLE' };
+            }
+        }
+        
+        // Get current odds
+        let oddsText = null;
+        const oddsInRow = document.querySelector('div.betslip__match-row div.betslip__match-odds span.txt-primary');
+        if (oddsInRow) {
+            oddsText = oddsInRow.textContent.trim();
+        }
+        
+        if (!oddsText) {
+            const oddsInBox = document.querySelector('div.betslip__match-box span.txt-primary');
+            if (oddsInBox) {
+                oddsText = oddsInBox.textContent.trim();
+            }
+        }
+        
+        if (!oddsText) {
+            const oddsAnywhere = document.querySelector('div.betslip__match-odds span.txt-primary');
+            if (oddsAnywhere) {
+                oddsText = oddsAnywhere.textContent.trim();
+            }
+        }
+        
+        // Get market info
+        const outcomeElement = document.querySelector('div.betslip__match-row:first-child div.betslip__match-item strong');
+        const outcomeText = outcomeElement ? outcomeElement.textContent.trim() : null;
+        
+        const marketTypeElement = document.querySelector('div.betslip__match-row:nth-child(2) div.betslip__match-item:first-child');
+        const marketTypeText = marketTypeElement ? marketTypeElement.textContent.trim() : null;
+        
+        const leagueElement = document.querySelector('div.betslip__match-row:nth-child(2) div.betslip__match-item:nth-child(2)');
+        const leagueText = leagueElement ? leagueElement.textContent.trim() : null;
+        
+        // Get place bet button state
+        const placeBtn = document.querySelector('div#betslip_buttons_placebet.btn, button.betslip__footer-btn, button[class*="place"]');
+        const btnText = placeBtn ? placeBtn.textContent.trim() : '';
+        const btnDisabled = placeBtn ? (placeBtn.disabled || placeBtn.classList.contains('disabled') || placeBtn.classList.contains('btn-disabled')) : true;
+        
+        // Check for success modal/notification
+        const successModal = document.querySelector('div.success-modal, div[class*="success"], div.notification[class*="success"]');
+        const successVisible = !!(successModal && successModal.offsetParent !== null);
+        
+        // Check for odds change popup/notification
+        const oddsChangePopup = document.querySelector('div.odds-change-popup, div[class*="odds-change"]');
+        const oddsChangeVisible = !!(oddsChangePopup && oddsChangePopup.offsetParent !== null);
+        
+        // Get stake input value
+        const stakeInput = document.querySelector('div.input__holder input.input[type="number"][placeholder="stake"]');
+        const currentStake = stakeInput ? stakeInput.value : null;
+        
+        // Get potential return
+        const returnElement = document.querySelector('div.betslip__footer-amount, div[class*="potential-return"], div[class*="to-return"]');
+        const potentialReturn = returnElement ? returnElement.textContent.trim() : null;
+        
+        return {
+            status: 'OK',
+            oddsText: oddsText,
+            buttonText: btnText,
+            buttonDisabled: btnDisabled,
+            successVisible: successVisible,
+            oddsChangeVisible: oddsChangeVisible,
+            outcomeText: outcomeText,
+            marketTypeText: marketTypeText,
+            leagueText: leagueText,
+            currentStake: currentStake,
+            potentialReturn: potentialReturn,
+            hasError: false
+        };
+    }
+    """;
     }
 
     /**
