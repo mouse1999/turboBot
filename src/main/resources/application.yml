@@ -65,7 +65,7 @@ breaking-bet:
       url: "https://arbs.prematch.api.breaking-bet.com/v1/users/bb-81228/filter/items"
     live:
       url: "https://arbs.live.api.breaking-bet.com/v1/users/bb-81228/filter/items"
-  headless: true
+  headless: false
   connection:
     timeout: 30
   read:

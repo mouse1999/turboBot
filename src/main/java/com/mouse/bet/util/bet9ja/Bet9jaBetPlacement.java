@@ -386,8 +386,13 @@ public class Bet9jaBetPlacement {
 //            } todo
 
                 // Click to place bet
-                log.info("→ CLICKING 'Place Bet' button @ {} (attempting placement)", currentOddsText);
-                clickPlaceButton(page);
+//                clickPlaceButton(page);
+                if (arbOutcomeService.isActiveByExternalIdAndBookmaker(bettingTask.taskId(), bettingTask.bookmakerId())) {
+                    log.info("→ CLICKING 'Place Bet' button @ {} (attempting placement)", currentOddsText);
+                    log.info("arb is still active, proceed to click");
+                    clickPlaceButton(page);
+                    continue;
+                }
                 randomHumanDelay(1000, 1500); // Wait for placement processing
 
                 // Check for success modal
