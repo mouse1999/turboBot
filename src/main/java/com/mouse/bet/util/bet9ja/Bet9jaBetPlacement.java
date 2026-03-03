@@ -892,8 +892,7 @@ public class Bet9jaBetPlacement {
      */
     private static boolean detectSuccessModal(Page page) {
         try {
-            // Bet9ja shows success in betslip with specific structure
-            // Look for the bet ID and match details
+            // Wait for betslip match body to appear
             Locator successBetslip = page.locator("div.betslip__match-body");
 
             successBetslip.waitFor(new Locator.WaitForOptions()
@@ -904,33 +903,62 @@ public class Bet9jaBetPlacement {
 
             // Extract bet details
             try {
-                // Extract bet ID
-                String betId = page.locator("div.betslip__match-body div.table-a div.txt-r span")
+                // Extract match name (first table-f > txt-cut > span)
+                String matchName = page.locator("div.betslip__match-body div.table-f:first-child div.txt-cut span")
+                        .first()
                         .textContent()
                         .trim();
+                log.info("⚽ Match: {}", matchName);
 
-                if (betId.startsWith("ID:")) {
-                    log.info("📋 Bet ID: {}", betId);
-                } else {
-                    log.info("📋 Bet Details: {}", betId);
-                }
+                // Extract odds (first table-f > betslip__match-odds > txt-primary)
+                String odds = page.locator("div.betslip__match-body div.table-f:first-child div.betslip__match-odds span.txt-primary")
+                        .first()
+                        .textContent()
+                        .trim();
+                log.info("📊 Odds: {}", odds);
 
-                // Extract stake
-                String stakeInfo = page.locator("div.betslip__match-body div.table-f div.txt-cut span:has-text('Stake')")
+                // Extract stake (second table-f > txt-cut > span containing "Stake:")
+                String stakeInfo = page.locator("div.betslip__match-body div.table-f div.txt-cut span")
+                        .filter(new Locator.FilterOptions().setHasText("Stake:"))
                         .textContent()
                         .trim();
                 log.info("💰 {}", stakeInfo);
 
-                // Extract potential win
-                String winInfo = page.locator("div.betslip__match-body div.table-f div.txt-r span:has-text('Potential Win')")
+                // Extract potential win (second table-f > txt-r > span containing "Potential Win:")
+                String winInfo = page.locator("div.betslip__match-body div.table-f div.txt-r span")
+                        .filter(new Locator.FilterOptions().setHasText("Potential Win:"))
                         .textContent()
                         .trim();
                 log.info("🎯 {}", winInfo);
 
+                // Extract bet ID (table-a > txt-r > span)
+                String betId = page.locator("div.betslip__match-body div.table-a div.txt-r span")
+                        .textContent()
+                        .trim();
+                log.info("📋 {}", betId);
+
+                // Extract selection/market details
+                String selection = page.locator("div.betslip__match-details div.txt-white.txt-cut span")
+                        .first()
+                        .textContent()
+                        .trim();
+                String market = page.locator("div.betslip__match-details div.mt5 span")
+                        .first()
+                        .textContent()
+                        .trim();
+                log.info("🎰 Selection: {} | Market: {}", selection, market);
+
+                // Extract kick-off time from match details
+                String kickOff = page.locator("div.betslip__match-details div.w-30.txt-r span")
+                        .textContent()
+                        .trim();
+                log.info("🕐 Kick-off: {}", kickOff);
+
                 return true;
+
             } catch (Exception e) {
                 log.warn("Could not extract bet details: {}", e.getMessage());
-                return true; // Still consider it successful if betslip body appeared
+                return true; // Still successful if betslip body appeared
             }
 
         } catch (Exception e) {
@@ -946,108 +974,159 @@ public class Bet9jaBetPlacement {
      */
     private static String getStateMonitorScript() {
         return """
-    () => {
-        // First check for placed bet confirmation (bet ID present) - CORRECT SELECTOR
-        const betIdElement = document.querySelector('div.betslip__match-body div.table-a div.txt-r span');
-        if (betIdElement && betIdElement.textContent.includes('ID:')) {
-            return { 
-                status: 'BET_PLACED',
-                betId: betIdElement.textContent.trim()
-            };
-        }
-        
-        // Check if betslip has any active selections
-        const matchBox = document.querySelector('div.betslip__match-box');
-        if (!matchBox) {
-            const betslipMatch = document.querySelector('div.betslip__match');
-            if (!betslipMatch) {
-                return { status: 'NO_SELECTION' };
-            }
-        }
-        
-        // Check for suspended market
-        const suspendedMsg = document.querySelector('div.betslip__match-msg span.txt-red');
-        if (suspendedMsg && suspendedMsg.textContent.trim().toLowerCase() === 'suspended') {
-            return { status: 'SUSPENDED' };
-        }
-        
-        // Check for unavailable market
-        const msgElement = document.querySelector('div.betslip__match-msg');
-        if (msgElement) {
-            const msgText = msgElement.textContent.trim().toLowerCase();
-            if (msgText.includes('unavailable') || msgText.includes('closed')) {
-                return { status: 'UNAVAILABLE' };
-            }
-        }
-        
-        // Get current odds
-        let oddsText = null;
-        const oddsInRow = document.querySelector('div.betslip__match-row div.betslip__match-odds span.txt-primary');
-        if (oddsInRow) {
-            oddsText = oddsInRow.textContent.trim();
-        }
-        
-        if (!oddsText) {
-            const oddsInBox = document.querySelector('div.betslip__match-box span.txt-primary');
-            if (oddsInBox) {
-                oddsText = oddsInBox.textContent.trim();
-            }
-        }
-        
-        if (!oddsText) {
-            const oddsAnywhere = document.querySelector('div.betslip__match-odds span.txt-primary');
-            if (oddsAnywhere) {
-                oddsText = oddsAnywhere.textContent.trim();
-            }
-        }
-        
-        // Get market info
-        const outcomeElement = document.querySelector('div.betslip__match-row:first-child div.betslip__match-item strong');
-        const outcomeText = outcomeElement ? outcomeElement.textContent.trim() : null;
-        
-        const marketTypeElement = document.querySelector('div.betslip__match-row:nth-child(2) div.betslip__match-item:first-child');
-        const marketTypeText = marketTypeElement ? marketTypeElement.textContent.trim() : null;
-        
-        const leagueElement = document.querySelector('div.betslip__match-row:nth-child(2) div.betslip__match-item:nth-child(2)');
-        const leagueText = leagueElement ? leagueElement.textContent.trim() : null;
-        
-        // Get place bet button state
-        const placeBtn = document.querySelector('div#betslip_buttons_placebet.btn, button.betslip__footer-btn, button[class*="place"]');
-        const btnText = placeBtn ? placeBtn.textContent.trim() : '';
-        const btnDisabled = placeBtn ? (placeBtn.disabled || placeBtn.classList.contains('disabled') || placeBtn.classList.contains('btn-disabled')) : true;
-        
-        // Check for success modal/notification
-        const successModal = document.querySelector('div.success-modal, div[class*="success"], div.notification[class*="success"]');
-        const successVisible = !!(successModal && successModal.offsetParent !== null);
-        
-        // Check for odds change popup/notification
-        const oddsChangePopup = document.querySelector('div.odds-change-popup, div[class*="odds-change"]');
-        const oddsChangeVisible = !!(oddsChangePopup && oddsChangePopup.offsetParent !== null);
-        
-        // Get stake input value
-        const stakeInput = document.querySelector('div.input__holder input.input[type="number"][placeholder="stake"]');
-        const currentStake = stakeInput ? stakeInput.value : null;
-        
-        // Get potential return
-        const returnElement = document.querySelector('div.betslip__footer-amount, div[class*="potential-return"], div[class*="to-return"]');
-        const potentialReturn = returnElement ? returnElement.textContent.trim() : null;
-        
+() => {
+    // ─── BET PLACED CHECK ───────────────────────────────────────────────
+    // ID lives in: div.betslip__match-body > div.table-a > div.txt-r > span
+    const betIdElement = document.querySelector('div.betslip__match-body div.table-a div.txt-r span');
+    if (betIdElement && betIdElement.textContent.includes('ID:')) {
+
+        // Match name: first table-f > txt-cut > span
+        const matchNameEl = document.querySelector('div.betslip__match-body div.table-f:first-child div.txt-cut span');
+        const matchName = matchNameEl ? matchNameEl.textContent.trim() : null;
+
+        // Odds: first table-f > betslip__match-odds > txt-primary
+        const confirmedOddsEl = document.querySelector('div.betslip__match-body div.table-f:first-child div.betslip__match-odds span.txt-primary');
+        const confirmedOdds = confirmedOddsEl ? confirmedOddsEl.textContent.trim() : null;
+
+        // Stake: second table-f > txt-cut > span  ("Stake: 100.00")
+        const stakeEl = Array.from(document.querySelectorAll('div.betslip__match-body div.table-f div.txt-cut span'))
+            .find(s => s.textContent.includes('Stake:'));
+        const stake = stakeEl ? stakeEl.textContent.trim() : null;
+
+        // Potential Win: second table-f > txt-r > span  ("Potential Win: 147.00")
+        const potWinEl = Array.from(document.querySelectorAll('div.betslip__match-body div.table-f div.txt-r span'))
+            .find(s => s.textContent.includes('Potential Win:'));
+        const potentialWin = potWinEl ? potWinEl.textContent.trim() : null;
+
+        // Kick-off date/time: table-a first div > span > span
+        const kickOffEl = document.querySelector('div.betslip__match-body div.table-a div:first-child span span');
+        const kickOff = kickOffEl ? kickOffEl.textContent.trim() : null;
+
+        // Selection: betslip__match-details > first table-f > txt-white > span  ("Under (2.5)")
+        const selectionEl = document.querySelector('div.betslip__match-details div.txt-white.txt-cut span');
+        const selection = selectionEl ? selectionEl.textContent.trim() : null;
+
+        // Market type: betslip__match-details > div.mt5 > span  ("Total")
+        const marketEl = document.querySelector('div.betslip__match-details div.mt5 span');
+        const market = marketEl ? marketEl.textContent.trim() : null;
+
+        // Selection odds: betslip__match-details > betslip__match-odds > txt-primary
+        const selOddsEl = document.querySelector('div.betslip__match-details div.betslip__match-odds span.txt-primary');
+        const selectionOdds = selOddsEl ? selOddsEl.textContent.trim() : null;
+
         return {
-            status: 'OK',
-            oddsText: oddsText,
-            buttonText: btnText,
-            buttonDisabled: btnDisabled,
-            successVisible: successVisible,
-            oddsChangeVisible: oddsChangeVisible,
-            outcomeText: outcomeText,
-            marketTypeText: marketTypeText,
-            leagueText: leagueText,
-            currentStake: currentStake,
-            potentialReturn: potentialReturn,
-            hasError: false
+            status: 'BET_PLACED',
+            betId: betIdElement.textContent.trim(),
+            matchName: matchName,
+            confirmedOdds: confirmedOdds,
+            stake: stake,
+            potentialWin: potentialWin,
+            kickOff: kickOff,
+            selection: selection,
+            market: market,
+            selectionOdds: selectionOdds
         };
     }
-    """;
+
+    // ─── NO SELECTION ────────────────────────────────────────────────────
+    const matchBox = document.querySelector('div.betslip__match-box');
+    if (!matchBox) {
+        const betslipMatch = document.querySelector('div.betslip__match');
+        if (!betslipMatch) {
+            return { status: 'NO_SELECTION' };
+        }
+    }
+
+    // ─── SUSPENDED ───────────────────────────────────────────────────────
+    const suspendedMsg = document.querySelector('div.betslip__match-msg span.txt-red');
+    if (suspendedMsg && suspendedMsg.textContent.trim().toLowerCase() === 'suspended') {
+        return { status: 'SUSPENDED' };
+    }
+
+    // ─── UNAVAILABLE / CLOSED ────────────────────────────────────────────
+    const msgElement = document.querySelector('div.betslip__match-msg');
+    if (msgElement) {
+        const msgText = msgElement.textContent.trim().toLowerCase();
+        if (msgText.includes('unavailable') || msgText.includes('closed')) {
+            return { status: 'UNAVAILABLE' };
+        }
+    }
+
+    // ─── LIVE ODDS ───────────────────────────────────────────────────────
+    // Mirrors confirmed-bet structure: betslip__match-body odds while bet is pending
+    let oddsText = null;
+    const oddsInBody = document.querySelector('div.betslip__match-body div.table-f:first-child div.betslip__match-odds span.txt-primary');
+    if (oddsInBody) {
+        oddsText = oddsInBody.textContent.trim();
+    }
+    if (!oddsText) {
+        const oddsInRow = document.querySelector('div.betslip__match-row div.betslip__match-odds span.txt-primary');
+        if (oddsInRow) oddsText = oddsInRow.textContent.trim();
+    }
+    if (!oddsText) {
+        const oddsInBox = document.querySelector('div.betslip__match-box span.txt-primary');
+        if (oddsInBox) oddsText = oddsInBox.textContent.trim();
+    }
+    if (!oddsText) {
+        const oddsAnywhere = document.querySelector('div.betslip__match-odds span.txt-primary');
+        if (oddsAnywhere) oddsText = oddsAnywhere.textContent.trim();
+    }
+
+    // ─── MARKET INFO (pre-placement) ─────────────────────────────────────
+    // Selection label e.g. "Under (2.5)" from match-details
+    const selectionEl = document.querySelector('div.betslip__match-details div.txt-white.txt-cut span');
+    const outcomeText = selectionEl ? selectionEl.textContent.trim() : null;
+
+    // Market type e.g. "Total"
+    const marketTypeEl = document.querySelector('div.betslip__match-details div.mt5 span');
+    const marketTypeText = marketTypeEl ? marketTypeEl.textContent.trim() : null;
+
+    // Match name from details (fallback for league/match info)
+    const detailsMatchEl = document.querySelector('div.betslip__match-details div.table-f div.txt-cut span.va-mid');
+    const leagueText = detailsMatchEl ? detailsMatchEl.textContent.trim() : null;
+
+    // ─── BUTTON STATE ────────────────────────────────────────────────────
+    const placeBtn = document.querySelector('div#betslip_buttons_placebet.btn, button.betslip__footer-btn, button[class*="place"]');
+    const btnText = placeBtn ? placeBtn.textContent.trim() : '';
+    const btnDisabled = placeBtn
+        ? (placeBtn.disabled || placeBtn.classList.contains('disabled') || placeBtn.classList.contains('btn-disabled'))
+        : true;
+
+    // ─── SUCCESS / ODDS-CHANGE OVERLAYS ──────────────────────────────────
+    const successModal = document.querySelector('div.success-modal, div[class*="success"], div.notification[class*="success"]');
+    const successVisible = !!(successModal && successModal.offsetParent !== null);
+
+    const oddsChangePopup = document.querySelector('div.odds-change-popup, div[class*="odds-change"]');
+    const oddsChangeVisible = !!(oddsChangePopup && oddsChangePopup.offsetParent !== null);
+
+    // ─── STAKE INPUT ─────────────────────────────────────────────────────
+    const stakeInput = document.querySelector('div.input__holder input.input[type="number"][placeholder="stake"]');
+    const currentStake = stakeInput ? stakeInput.value : null;
+
+    // ─── POTENTIAL RETURN (pre-placement label) ───────────────────────────
+    // Use same selector pattern as confirmed: span containing "Potential Win:"
+    const potReturnEl = Array.from(document.querySelectorAll('div.betslip__match-body div.table-f div.txt-r span'))
+        .find(s => s.textContent.includes('Potential Win:'));
+    const potentialReturn = potReturnEl
+        ? potReturnEl.textContent.trim()
+        : (document.querySelector('div.betslip__footer-amount, div[class*="potential-return"], div[class*="to-return"]') || {}).textContent?.trim() || null;
+
+    return {
+        status: 'OK',
+        oddsText: oddsText,
+        buttonText: btnText,
+        buttonDisabled: btnDisabled,
+        successVisible: successVisible,
+        oddsChangeVisible: oddsChangeVisible,
+        outcomeText: outcomeText,
+        marketTypeText: marketTypeText,
+        leagueText: leagueText,
+        currentStake: currentStake,
+        potentialReturn: potentialReturn,
+        hasError: false
+    };
+}
+""";
     }
 
     /**
