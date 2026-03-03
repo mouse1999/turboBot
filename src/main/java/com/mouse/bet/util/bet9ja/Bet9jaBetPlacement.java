@@ -390,9 +390,11 @@ public class Bet9jaBetPlacement {
                 if (arbOutcomeService.isActiveByExternalIdAndBookmaker(bettingTask.taskId(), bettingTask.bookmakerId())) {
                     log.info("→ CLICKING 'Place Bet' button @ {} (attempting placement)", currentOddsText);
                     log.info("arb is still active, proceed to click");
-                    clickPlaceButton(page);
+                    
                     continue;
                 }
+
+                clickPlaceButton(page);
                 randomHumanDelay(1000, 1500); // Wait for placement processing
 
                 // Check for success modal
