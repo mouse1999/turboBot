@@ -2,6 +2,7 @@ package com.mouse.bet.util.bet9ja;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.mouse.bet.checker.ArbChecker;
 import com.mouse.bet.converter.ModelConverter;
 import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.orchestrator.model.BetLeg;
@@ -44,7 +45,10 @@ public class Bet9jaBetPlacement {
     /**
      * Main method to place a bet with time-based retry logic
      */
-    public static boolean placeBet(Page page, BetLeg betLeg, ArbOutcomeService arbOutcomeService) {
+    public static boolean placeBet(Page page,
+                                   BetLeg betLeg,
+                                   ArbOutcomeService arbOutcomeService,
+                                   ArbChecker arbChecker)  {
         long startTime = System.currentTimeMillis();
         final long deadline = startTime + MAX_DURATION_MS;
 
@@ -60,7 +64,7 @@ public class Bet9jaBetPlacement {
             disableAcceptOddsChanges(page);
 
             // Step 3: Main placement loop
-            boolean success = executePlacementLoop(page, betLeg, arbOutcomeService, startTime, deadline);
+            boolean success = executePlacementLoop(page, betLeg, arbOutcomeService,arbChecker, startTime, deadline);
 
             if (!success) {
                 handlePlacementTimeout(page);
@@ -259,6 +263,7 @@ public class Bet9jaBetPlacement {
      */
     private static boolean executePlacementLoop(Page page, BettingTask bettingTask,
                                                 ArbOutcomeService arbOutcomeService,
+                                                ArbChecker arbChecker,
                                                 long startTime, long deadline) {
         log.info("[3/4] Starting optimized placement loop...");
 
@@ -310,6 +315,21 @@ public class Bet9jaBetPlacement {
             String buttonText = (String) state.getOrDefault("buttonText", "");
             boolean buttonDisabled = Boolean.TRUE.equals(state.get("buttonDisabled"));
 
+
+            // ── Push live slip odds into ArbChecker ────────────────────────
+            // This feeds Bet9ja's side of the arb on every tick.
+            // ArbChecker immediately recalculates isArbValid() + stakes so
+            // the other bookie's window sees the updated result on its next poll.
+            if (currentOddsText != null) {
+                try {
+                    BigDecimal liveOdds = new BigDecimal(currentOddsText.trim());
+                    arbChecker.updateOdds(bettingTask.bookmaker(), liveOdds);
+                } catch (NumberFormatException e) {
+                    log.warn("[ArbChecker] Could not parse slip odds '{}' — skipping update", currentOddsText);
+                }
+            }
+
+
             // Get fresh task from DB if possible
             BettingTask freshTask = getFreshTask(bettingTask, arbOutcomeService);
             if (freshTask != null) {
@@ -358,7 +378,15 @@ public class Bet9jaBetPlacement {
                 }
 
                 log.info("→ CLICKING 'Accept Changes' button @ {}", currentOddsText);
-                clickPlaceButton(page);
+                // ── ARB VALIDITY CHECK before Accept Changes ───────────────
+                ArbChecker.ArbResult arbResult = arbChecker.getResult();
+                if (arbResult.isArbValid()) {
+                    log.error("Arb is valide");
+                    clickPlaceButton(page);
+
+                }else {
+                    log.info("❌ Arb no longer valid");
+                }
                 randomHumanDelay(800, 1200); // Wait for button state to update
                 continue; // Re-check state after accepting changes
             }
@@ -372,8 +400,14 @@ public class Bet9jaBetPlacement {
                     continue;
                 }
 
-                // Re-enter stake before final placement
-                if (!reEnterStakeBeforePlacement(page, bettingTask)) {
+                ArbChecker.ArbResult arbResult = arbChecker.getResult();
+                // ── Get stake from ArbChecker — never from bettingTask ─────
+                // Recalculated on every odds update → always fresh & proportional.
+                BigDecimal arbStake = arbResult.getStake(bettingTask.bookmaker());
+                log.info("[ArbChecker] Bet9ja stake: ₦{}", arbStake);
+
+                // Re-enter the arb-calculated stake right before final click
+                if (!reEnterStakeBeforePlacement(page, arbStake)) {
                     randomHumanDelay(500, 800);
                     continue;
                 }
@@ -387,18 +421,37 @@ public class Bet9jaBetPlacement {
 
                 // Click to place bet
 //                clickPlaceButton(page);
-                if (arbOutcomeService.isActiveByExternalIdAndBookmaker(bettingTask.taskId(), bettingTask.bookmakerId())) {
+
+
+
+
+
+
+                if (arbResult.isArbValid()) {
                     log.info("→ CLICKING 'Place Bet' button @ {} (attempting placement)", currentOddsText);
                     log.info("arb is still active, proceed to click");
                     clickPlaceButton(page);
-                    continue;
+
+                }else {
+                    log.info("❌ Arb no longer valid..");
                 }
-                randomHumanDelay(1000, 1500); // Wait for placement processing
+//                // ── Get stake from ArbChecker — never from bettingTask ─────
+//                // Recalculated on every odds update → always fresh & proportional.
+//                BigDecimal arbStake = arbResult.getStake(bettingTask.bookmaker());
+//                log.info("[ArbChecker] Bet9ja stake: ₦{}", arbStake);
+//
+//                // Re-enter the arb-calculated stake right before final click
+//                if (!reEnterStakeBeforePlacement(page, arbStake)) {
+//                    randomHumanDelay(500, 800);
+//                    continue;
+//                }
+                randomHumanDelay(400, 900); // Wait for placement processing
+
+//                clickPlaceButton(page);
 
                 // Check for success modal
-                if (detectSuccessModal(page)) {
-                    success = true;
-                    break;
+                if (arbResult.isArbValid()) {
+                    detectSuccessModal(page);
                 }
 
                 // If no success modal, button may have changed to "Accept Changes" or error occurred
@@ -465,8 +518,8 @@ public class Bet9jaBetPlacement {
     /**
      * Re-enter stake before final placement
      */
-    private static boolean reEnterStakeBeforePlacement(Page page, BettingTask task) {
-        if (!enterStakeUsingJS(page, BigDecimal.valueOf(task.stakeAmount()))) {
+    private static boolean reEnterStakeBeforePlacement(Page page, BigDecimal stake) {
+        if (!enterStakeUsingJS(page, stake)) {
             log.warn("Failed to re-enter stake before Place Bet → will retry");
             randomHumanDelay(500, 800);
             return false;
@@ -890,8 +943,7 @@ public class Bet9jaBetPlacement {
      */
     private static boolean detectSuccessModal(Page page) {
         try {
-            // Bet9ja shows success in betslip with specific structure
-            // Look for the bet ID and match details
+            // Wait for betslip match body to appear
             Locator successBetslip = page.locator("div.betslip__match-body");
 
             successBetslip.waitFor(new Locator.WaitForOptions()
@@ -902,33 +954,61 @@ public class Bet9jaBetPlacement {
 
             // Extract bet details
             try {
-                // Extract bet ID
-                String betId = page.locator("div.betslip__match-body div.table-a div.txt-r span")
+                // Extract match name (first table-f > txt-cut > span)
+                String matchName = page.locator("div.betslip__match-body div.table-f:first-child div.txt-cut span")
+                        .first()
                         .textContent()
                         .trim();
+                log.info("⚽️ Match: {}", matchName);
 
-                if (betId.startsWith("ID:")) {
-                    log.info("📋 Bet ID: {}", betId);
-                } else {
-                    log.info("📋 Bet Details: {}", betId);
-                }
+                // Extract odds (first table-f > betslip__match-odds > txt-primary)
+                String odds = page.locator("div.betslip__match-body div.table-f:first-child div.betslip__match-odds span.txt-primary")
+                        .first()
+                        .textContent()
+                        .trim();
+                log.info("📊 Odds: {}", odds);
 
-                // Extract stake
-                String stakeInfo = page.locator("div.betslip__match-body div.table-f div.txt-cut span:has-text('Stake')")
+                // Extract stake (second table-f > txt-cut > span containing "Stake:")
+                String stakeInfo = page.locator("div.betslip__match-body div.table-f div.txt-cut span")
+                        .filter(new Locator.FilterOptions().setHasText("Stake:"))
                         .textContent()
                         .trim();
                 log.info("💰 {}", stakeInfo);
 
-                // Extract potential win
-                String winInfo = page.locator("div.betslip__match-body div.table-f div.txt-r span:has-text('Potential Win')")
+                // Extract potential win (second table-f > txt-r > span containing "Potential Win:")
+                String winInfo = page.locator("div.betslip__match-body div.table-f div.txt-r span")
+                        .filter(new Locator.FilterOptions().setHasText("Potential Win:"))
                         .textContent()
                         .trim();
                 log.info("🎯 {}", winInfo);
 
+                // Extract bet ID (table-a > txt-r > span)
+                String betId = page.locator("div.betslip__match-body div.table-a div.txt-r span")
+                        .textContent()
+                        .trim();
+                log.info("📋 {}", betId);
+
+                // Extract selection/market details
+                String selection = page.locator("div.betslip__match-details div.txt-white.txt-cut span")
+                        .first()
+                        .textContent()
+                        .trim();
+                String market = page.locator("div.betslip__match-details div.mt5 span")
+                        .first()
+                        .textContent()
+                        .trim();
+                log.info("🎰 Selection: {} | Market: {}", selection, market);
+                // Extract kick-off time from match details
+                String kickOff = page.locator("div.betslip__match-details div.w-30.txt-r span")
+                        .textContent()
+                        .trim();
+                log.info("🕐 Kick-off: {}", kickOff);
+
                 return true;
+
             } catch (Exception e) {
                 log.warn("Could not extract bet details: {}", e.getMessage());
-                return true; // Still consider it successful if betslip body appeared
+                return true; // Still successful if betslip body appeared
             }
 
         } catch (Exception e) {
@@ -979,25 +1059,24 @@ public class Bet9jaBetPlacement {
         }
         
         // Get current odds
-        let oddsText = null;
-        const oddsInRow = document.querySelector('div.betslip__match-row div.betslip__match-odds span.txt-primary');
-        if (oddsInRow) {
-            oddsText = oddsInRow.textContent.trim();
+        // ─── LIVE ODDS ───────────────────────────────────────────────────────
+    let oddsText = null;
+    const oddsSelectors = [
+        'div.betslip__match-odds span.txt-darkorange',  // Accept Changes state (odds dropped)
+        'div.betslip__match-odds span.txt-primary',      // Normal / Accept Changes state (odds rose)
+        'div.betslip__match-body div.betslip__match-odds span.txt-primary',
+        'div.betslip__match-row div.betslip__match-odds span.txt-primary',
+        'div.betslip__match-box span.txt-primary',
+    ];
+
+    for (const selector of oddsSelectors) {
+        const el = document.querySelector(selector);
+        if (el && el.textContent.trim()) {
+            oddsText = el.textContent.trim();
+            break;
         }
-        
-        if (!oddsText) {
-            const oddsInBox = document.querySelector('div.betslip__match-box span.txt-primary');
-            if (oddsInBox) {
-                oddsText = oddsInBox.textContent.trim();
-            }
-        }
-        
-        if (!oddsText) {
-            const oddsAnywhere = document.querySelector('div.betslip__match-odds span.txt-primary');
-            if (oddsAnywhere) {
-                oddsText = oddsAnywhere.textContent.trim();
-            }
-        }
+    }
+                     =======
         
         // Get market info
         const outcomeElement = document.querySelector('div.betslip__match-row:first-child div.betslip__match-item strong');

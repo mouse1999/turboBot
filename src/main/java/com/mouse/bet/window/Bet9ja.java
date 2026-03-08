@@ -2,6 +2,7 @@ package com.mouse.bet.window;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
+import com.mouse.bet.checker.ArbChecker;
 import com.mouse.bet.config.WindowConfig;
 import com.mouse.bet.entity.ArbOutcome;
 import com.mouse.bet.enums.BookMaker;
@@ -80,6 +81,8 @@ public class Bet9ja implements BettingWindow, Runnable {
     private final WindowSyncManager syncManager;
     private final Orchestrator orchestrator;
 
+    private final ArbChecker arbChecker;
+
     private static final BookMaker BOOKMAKER = BookMaker.BET9JA;
 
     // State management
@@ -143,6 +146,44 @@ public class Bet9ja implements BettingWindow, Runnable {
             // Optimized argument list: Removed all --disable-cache and --disk-cache-size flags
             List<String> optimizedArgs = Arrays.asList(
                     // Core Performance
+//                    "--disable-gpu",
+//                    "--disable-dev-shm-usage",
+//                    "--disable-extensions",
+//                    "--no-sandbox",
+//                    "--no-first-run",
+//                    "--no-default-browser-check",
+//                    "--mute-audio",
+//
+//                    // Background Process Stripping (Saves CPU)
+//                    "--disable-background-networking",
+//                    "--disable-background-timer-throttling",
+//                    "--disable-backgrounding-occluded-windows",
+//                    "--disable-renderer-backgrounding",
+//                    "--metrics-recording-only",
+//                    "--disable-component-update",
+//                    "--disable-domain-reliability",
+//
+//                    // Speed Boosters (Resource Management)
+//                    "--disable-images",
+//                    "--blink-settings=imagesEnabled=false",
+//                    "--disable-software-rasterizer",
+//                    "--disable-popup-blocking",
+//
+//                    // Feature Stripping
+//                    "--disable-features=TranslateUI,IsolateOrigins,BlockInsecurePrivateNetworkRequests",
+//                    "--disable-site-isolation-trials",
+//                    "--disable-translate",
+//                    "--disable-sync"
+
+                    "--start-maximized",
+                    "--window-size=2560,1440",
+                    "--force-device-scale-factor=1",
+                    "--disable-blink-features=AutomationControlled",
+                    // Speed Boosters (Resource Management)
+//                    "--disable-images",
+                    "--blink-settings=imagesEnabled=false",
+                    "--disable-software-rasterizer",
+                    "--disable-popup-blocking",
                     "--disable-gpu",
                     "--disable-dev-shm-usage",
                     "--disable-extensions",
