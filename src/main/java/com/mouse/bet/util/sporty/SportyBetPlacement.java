@@ -4,6 +4,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
 import com.microsoft.playwright.options.WaitForSelectorState;
+import com.mouse.bet.checker.ArbChecker;
 import com.mouse.bet.converter.ModelConverter;
 import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.service.ArbOutcomeService;
@@ -17,7 +18,7 @@ import java.util.Objects;
 @Slf4j
 public class SportyBetPlacement {
 
-    private static final double TOLERANCE_PERCENT = 0.05; // 5% tolerance - adjust as needed
+    private static final double TOLERANCE_PERCENT = 5; // 5% tolerance - adjust as needed
     private static final long MAX_DURATION_MS = 10 * 60 * 1000L; // 10 minutes
 
     private enum BetslipStatus {
@@ -265,7 +266,7 @@ public class SportyBetPlacement {
 
 
 
-public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService arbOutcomeService) {
+public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService arbOutcomeService, ArbChecker arbChecker) {
     BigDecimal stake = BigDecimal.valueOf(task.stakeAmount());
     String arbId = task.taskId();
     BigDecimal expectedOdds = BigDecimal.valueOf(task.expectedOdds());
@@ -374,7 +375,7 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
             }
 
             // ── D. MONITOR BETSLIP STATUS ──
-            BetslipStatus status = monitorAndHandleOddsInBetslip(page, expectedOdds);
+            BetslipStatus status = monitorAndHandleOddsInBetslip(page, expectedOdds, task, arbChecker);
             switch (status) {
                 case UNAVAILABLE:
                     log.error("❌ MARKET UNAVAILABLE → ABORTING");
@@ -400,8 +401,8 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
             if (finalConfirm.isVisible(new Locator.IsVisibleOptions().setTimeout(800))) {
                 log.warn("FINAL CONFIRM POPUP → Clicking 'Confirm'");
 
-                if (arbOutcomeService.isActiveByExternalIdAndBookmaker(task.taskId(), task.bookmakerId())) {
-                    log.info("Arb is still active");
+                if (arbChecker.getResult().isArbValid()) {
+                    log.info("✅✅Arb is still active for {}", task.bookmaker());
                     finalConfirm.click(new Locator.ClickOptions().setForce(true).setTimeout(1500));
                     randomHumanDelay(800, 1500);
 
@@ -417,14 +418,15 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
                             stakeInput.click(new Locator.ClickOptions().setTimeout(5000));
                             randomHumanDelay(100, 200);
                             stakeInput.fill("");
-                            SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(stake));
+                            SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(arbChecker.getResult().getStake(task.bookmaker())));
                             randomHumanDelay(100, 200);
+                            log.info("stake amount entered.:. {}", arbChecker.getResult().getStake(task.bookmaker()));
                             stakeInput.press("Tab", new Locator.PressOptions().setTimeout(5000));
                         }
                     }
                     continue;
                 } else {
-                    log.error("Arb no longer active → Aborting");
+                    log.error("❌ Arb no longer active → {}", task.bookmaker());
                     permanentFailure = true;
                     break;
                 }
@@ -455,8 +457,10 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
                 stakeInput.click(new Locator.ClickOptions().setTimeout(5000));
                 randomHumanDelay(100, 200);
                 stakeInput.fill("");
-                SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(stake));
+                SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(arbChecker.getResult().getStake(task.bookmaker())));
                 randomHumanDelay(100, 200);
+
+                log.info("stake amount entered: {}", arbChecker.getResult().getStake(task.bookmaker()));
                 stakeInput.press("Tab", new Locator.PressOptions().setTimeout(5000));
                 continue;
             }
@@ -540,7 +544,7 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
      * Monitors the betslip odds and status - ALWAYS READS FRESH FROM DOM
      * @return BetslipStatus indicating current state
      */
-    private static BetslipStatus monitorAndHandleOddsInBetslip(Page page, BigDecimal expectedOdds) {
+    private static BetslipStatus monitorAndHandleOddsInBetslip(Page page, BigDecimal expectedOdds, BettingTask task, ArbChecker arbChecker) {
         try {
             // Fresh read every time via JS
             String oddsValue = (String) page.evaluate("""
@@ -571,6 +575,10 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
             }
 
             BigDecimal currentOdds = new BigDecimal(oddsValue);
+
+           arbChecker.updateOdds(task.bookmaker(), currentOdds);
+
+
             BigDecimal minAcceptable = expectedOdds.multiply(BigDecimal.valueOf(1 - TOLERANCE_PERCENT));
             BigDecimal maxAcceptable = expectedOdds.multiply(BigDecimal.valueOf(1 + TOLERANCE_PERCENT));
 

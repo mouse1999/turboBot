@@ -3,8 +3,10 @@ package com.mouse.bet.util.msport;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.WaitForSelectorState;
+import com.mouse.bet.checker.ArbChecker;
 import com.mouse.bet.converter.ModelConverter;
 import com.mouse.bet.interfaces.BettingTask;
+import com.mouse.bet.orchestrator.model.BetLeg;
 import com.mouse.bet.service.ArbOutcomeService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +46,10 @@ public class MSportBetPlacement {
     /**
      * Main method to place a bet with time-based retry logic
      */
-    public static boolean placeBet(Page page, BettingTask bettingTask, ArbOutcomeService arbOutcomeService) {
+    public static boolean placeBet(Page page,
+                                   BettingTask bettingTask,
+                                   ArbOutcomeService arbOutcomeService,
+                                   ArbChecker arbChecker) {
         long startTime = System.currentTimeMillis();
         final long deadline = startTime + MAX_DURATION_MS;
 
@@ -65,7 +70,7 @@ public class MSportBetPlacement {
             disableAcceptOddsChanges(page);
 
             // Step 4: Main placement loop
-            boolean success = executePlacementLoop(page, bettingTask, arbOutcomeService, startTime, deadline);
+            boolean success = executePlacementLoop(page, bettingTask, arbOutcomeService, arbChecker, startTime, deadline);
 
             if (!success) {
                 handlePlacementTimeout(page);
@@ -108,6 +113,7 @@ public class MSportBetPlacement {
      */
     private static boolean executePlacementLoop(Page page, BettingTask bettingTask,
                                                 ArbOutcomeService arbOutcomeService,
+                                                ArbChecker arbChecker,
                                                 long startTime, long deadline) {
         log.info("[4/5] Starting optimized placement loop...");
 
@@ -147,6 +153,19 @@ public class MSportBetPlacement {
             String currentOddsText = (String) state.get("oddsText");
             String buttonText = (String) state.getOrDefault("buttonText", "");
             boolean buttonDisabled = Boolean.TRUE.equals(state.get("buttonDisabled"));
+
+            // ── Push live slip odds into ArbChecker ────────────────────────
+            // This feeds Bet9ja's side of the arb on every tick.
+            // ArbChecker immediately recalculates isArbValid() + stakes so
+            // the other bookie's window sees the updated result on its next poll.
+            if (currentOddsText != null) {
+                try {
+                    BigDecimal liveOdds = new BigDecimal(currentOddsText.trim());
+                    arbChecker.updateOdds(bettingTask.bookmaker(), liveOdds);
+                } catch (NumberFormatException e) {
+                    log.warn("[ArbChecker] Could not parse slip odds '{}' — skipping update", currentOddsText);
+                }
+            }
 
             BettingTask freshTask = getFreshTask(bettingTask, arbOutcomeService);
             if (freshTask != null) {
@@ -189,17 +208,23 @@ public class MSportBetPlacement {
                 continue;
             }
 
+            ArbChecker.ArbResult arbResult = arbChecker.getResult();
+
             // Step 2: Re-enter stake before final placement
             if (btnLower.contains("place bet") || btnLower.contains("place") || btnLower.contains("submit")) {
-                if (!reEnterStakeBeforePlacement(page, bettingTask)) {
+                if (!reEnterStakeBeforePlacement(page, arbResult.getStake(bettingTask.bookmaker()))) {
                     continue;
                 }
 
                 // Step 3: Click place bet
-                if (arbOutcomeService.isActiveByExternalIdAndBookmaker(bettingTask.taskId(), bettingTask.bookmakerId())) {
-                    log.info("arb is still active, proceed to click");
+                if (arbResult.isArbValid()) {
+                    log.error("Arb is valide");
                     handlePlaceBet(page, buttonText, currentOddsText);
+
                     continue;
+
+                }else {
+                    log.info("❌ Arb no longer valid for {}", bettingTask.bookmaker());
                 }
 
             }
@@ -271,8 +296,8 @@ public class MSportBetPlacement {
     /**
      * Re-enter stake before final placement
      */
-    private static boolean reEnterStakeBeforePlacement(Page page, BettingTask task) {
-        if (!enterStakeUsingJS(page, BigDecimal.valueOf(task.stakeAmount()))) {
+    private static boolean reEnterStakeBeforePlacement(Page page, BigDecimal stake) {
+        if (!enterStakeUsingJS(page, stake)) {
             log.warn("Failed to re-enter stake before Place Bet → will retry");
             randomHumanDelay(500, 800);
             return false;
@@ -603,26 +628,28 @@ public class MSportBetPlacement {
      * Check if odds are acceptable within tolerance
      */
     private static boolean isOddsAcceptable(double expectedOdds, String displayedOddsStr) {
-        if (displayedOddsStr == null || displayedOddsStr.trim().isEmpty()) {
-            return false;
-        }
+//        if (displayedOddsStr == null || displayedOddsStr.trim().isEmpty()) {
+//            return false;
+//        }
+//
+//        try {
+//            double displayedOdds = Double.parseDouble(displayedOddsStr.trim());
+//
+//            if (expectedOdds <= 0) {
+//                return false;
+//            }
+//
+//            double lowerBound = expectedOdds * (1 - TOLERANCE_PERCENT);
+//            double upperBound = expectedOdds * (1 + TOLERANCE_PERCENT);
+//
+//            return displayedOdds >= lowerBound && displayedOdds <= upperBound;
+//
+//        } catch (NumberFormatException e) {
+//            log.warn("Could not parse odds: '{}'", displayedOddsStr);
+//            return false;
+//        }
 
-        try {
-            double displayedOdds = Double.parseDouble(displayedOddsStr.trim());
-
-            if (expectedOdds <= 0) {
-                return false;
-            }
-
-            double lowerBound = expectedOdds * (1 - TOLERANCE_PERCENT);
-            double upperBound = expectedOdds * (1 + TOLERANCE_PERCENT);
-
-            return displayedOdds >= lowerBound && displayedOdds <= upperBound;
-
-        } catch (NumberFormatException e) {
-            log.warn("Could not parse odds: '{}'", displayedOddsStr);
-            return false;
-        }
+        return true;
 
     }
 
