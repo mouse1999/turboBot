@@ -279,7 +279,16 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
     try {
         // ── 1. ENTER STAKE ─────────────────────────────────────
         log.info("[1/6] Entering stake...");
-        Locator stakeInput = page.locator("#j_stake_0 input.m-input, .m-input[placeholder*='min']").first();
+
+        // UPDATED: target the input directly inside #j_stake_0 > span.m-input-com
+        // The actual element: <input class="m-input fs-exclude" placeholder="min. 10">
+        Locator stakeInput = page.locator("#j_stake_0 span.m-input-com input.m-input").first();
+
+        // Wait for it to be visible and enabled before touching it
+        stakeInput.waitFor(new Locator.WaitForOptions()
+                .setState(WaitForSelectorState.VISIBLE)
+                .setTimeout(10000));
+
         if (stakeInput.count() == 0) {
             log.error("Stake input missing");
             return false;
@@ -295,10 +304,17 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
             log.warn("Could not fetch fresh task, using current task");
         }
 
-        stakeInput.fill(""); // Clear
+        // FIXED: click to focus first, then fill, then use keyboard Tab/Enter
+        // Avoids the 30s press() timeout caused by focus loss mid-action
+        stakeInput.click(new Locator.ClickOptions().setTimeout(5000));
+        randomHumanDelay(100, 200);
+        stakeInput.fill("");
         SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(stake));
-        stakeInput.press("Enter");
-        log.info("[OK] Stake entered");
+        randomHumanDelay(100, 200);
+
+        // Use Tab to commit the value instead of Enter (safer — Enter can submit the form prematurely)
+        stakeInput.press("Tab", new Locator.PressOptions().setTimeout(5000));
+        log.info("[OK] Stake entered: {}", stake);
 
         // ── 2. WAIT FOR BET IN SLIP ─────────────────────────────────
         Locator betItemCheck = page.locator("div.m-item, .m-bet-item");
@@ -321,7 +337,7 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
             long elapsedMs = System.currentTimeMillis() - startTime;
             log.info("[Elapsed: {}s / {}s max] Checking state...", elapsedMs / 1000, MAX_DURATION_MS / 1000);
 
-            // ── A. CHECK FOR SUCCESS FIRST (in case it's already done) ──
+            // ── A. CHECK FOR SUCCESS FIRST ──
             boolean successDetected = page.locator("div.m-dialog-wrapper.m-dialog-suc").count() > 0 ||
                     page.locator("text='Submission Successful'").count() > 0 ||
                     page.locator("i.m-icon-suc").count() > 0 ||
@@ -337,7 +353,7 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
                 break;
             }
 
-            // ── B. CRITICAL ODDS NOT ACCEPTABLE POPUP ──
+            // ── B. ODDS NOT ACCEPTABLE POPUP ──
             Locator oddsChangePopup = page.locator("div.m-dialog-wrapper p:has-text('Odds not acceptable')").first();
             if (oddsChangePopup.isVisible(new Locator.IsVisibleOptions().setTimeout(500))) {
                 log.error("ODDS NOT ACCEPTABLE POPUP → Permanent failure");
@@ -360,65 +376,60 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
             BetslipStatus status = monitorAndHandleOddsInBetslip(page, expectedOdds);
             switch (status) {
                 case UNAVAILABLE:
-                    log.error("❌ MARKET UNAVAILABLE → Game over → ABORTING");
+                    log.error("❌ MARKET UNAVAILABLE → ABORTING");
                     permanentFailure = true;
                     break;
-
                 case ODDS_TOO_LOW:
-                    log.warn("⚠️ ODDS CURRENTLY TOO LOW → Waiting for odds to improve...");
+                    log.warn("⚠️ ODDS TOO LOW → Waiting...");
                     continue;
                 case ODDS_TOO_HIGH:
-                    log.warn("⚠️ ODDS CURRENTLY TOO HIGH → Waiting for odds to sync...");
+                    log.warn("⚠️ ODDS TOO HIGH → Waiting...");
                     continue;
-
                 case SUSPENDED:
-                    log.warn("⏸️ Market suspended → Waiting for odds to return...");
+                    log.warn("⏸️ Market suspended → Waiting...");
                     continue;
                 case ACCEPTABLE:
-                    log.info("✅ Odds acceptable in betslip → Proceeding");
+                    log.info("✅ Odds acceptable → Proceeding");
                     break;
             }
             if (permanentFailure) break;
 
-            // ── E. HANDLE CONFIRM POPUP (appears AFTER Place Bet is clicked) ──
+            // ── E. HANDLE CONFIRM POPUP ──
             Locator finalConfirm = page.locator("xpath=//button[.//span[text()='Confirm' or text()='Yes' or text()='OK']]").first();
             if (finalConfirm.isVisible(new Locator.IsVisibleOptions().setTimeout(800))) {
                 log.warn("FINAL CONFIRM POPUP → Clicking 'Confirm'");
 
                 if (arbOutcomeService.isActiveByExternalIdAndBookmaker(task.taskId(), task.bookmakerId())) {
-                    log.info("the Arb is still active");
-                    finalConfirm.click(new Locator.ClickOptions()
-                            .setForce(true)
-                            .setTimeout(1500));
+                    log.info("Arb is still active");
+                    finalConfirm.click(new Locator.ClickOptions().setForce(true).setTimeout(1500));
                     randomHumanDelay(800, 1500);
 
-                    // *** CRITICAL: After clicking confirm, check if "Accept Changes" appeared ***
                     Locator acceptChangesAfterConfirm = page.locator("button.af-button--primary >> visible=true").first();
                     if (acceptChangesAfterConfirm.count() > 0) {
                         String btnText = acceptChangesAfterConfirm.innerText().trim();
                         if (btnText.matches(".*(Accept Changes|Accept|Confirm Changes).*")) {
-                            log.warn("→ 'Accept Changes' appeared after Confirm! Clicking it...");
+                            log.warn("→ 'Accept Changes' after Confirm! Clicking...");
                             acceptChangesAfterConfirm.click(new Locator.ClickOptions().setForce(true).setNoWaitAfter(false));
                             randomHumanDelay(200, 500);
 
-                            // Re-enter stake after accepting changes
+                            // Re-enter stake — reuse same safe pattern
+                            stakeInput.click(new Locator.ClickOptions().setTimeout(5000));
+                            randomHumanDelay(100, 200);
                             stakeInput.fill("");
                             SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(stake));
-                            stakeInput.press("Enter");
-                            randomHumanDelay(200, 500);
+                            randomHumanDelay(100, 200);
+                            stakeInput.press("Tab", new Locator.PressOptions().setTimeout(5000));
                         }
                     }
-
-                    // After clicking confirm (and potentially Accept Changes), continue to check results
                     continue;
                 } else {
-                    log.error("Arb is no longer active, aborting");
+                    log.error("Arb no longer active → Aborting");
                     permanentFailure = true;
                     break;
                 }
             }
 
-            // ── F. MAIN BUTTON LOGIC (ONLY IF ODDS ACCEPTABLE) ──
+            // ── F. MAIN BUTTON LOGIC ──
             if (status != BetslipStatus.ACCEPTABLE) {
                 randomHumanDelay(1000, 2000);
                 continue;
@@ -434,31 +445,25 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
             String text = btn.innerText().trim();
             log.info("Main button: \"{}\" | Disabled: {}", text, btn.isDisabled());
 
-            // ── STEP 1: HANDLE "ACCEPT CHANGES" FIRST ──
             if (text.matches(".*(Accept Changes|Accept|Confirm Changes).*")) {
                 log.warn("→ Clicking 'Accept Changes'");
                 btn.click(new Locator.ClickOptions().setForce(true).setNoWaitAfter(false));
                 randomHumanDelay(200, 500);
 
-                // Re-enter stake after accepting changes
+                // Re-enter stake safely
+                stakeInput.click(new Locator.ClickOptions().setTimeout(5000));
+                randomHumanDelay(100, 200);
                 stakeInput.fill("");
                 SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(stake));
-                stakeInput.press("Enter");
-                randomHumanDelay(200, 500);
-
-                continue; // Loop again to find "Place Bet" button
+                randomHumanDelay(100, 200);
+                stakeInput.press("Tab", new Locator.PressOptions().setTimeout(5000));
+                continue;
             }
 
-            // ── STEP 2: CLICK "PLACE BET" ──
             if (text.matches(".*(Place Bet|Bet Now|Confirm Bet|Place bet).*") && !btn.isDisabled()) {
                 log.info("→ Clicking 'Place Bet'");
                 btn.click(new Locator.ClickOptions().setForce(true).setNoWaitAfter(true));
                 randomHumanDelay(500, 1000);
-
-                // After clicking, loop will check for:
-                // 1. Confirm popup (handled in section E)
-                // 2. Odds rejection popup (handled in section B)
-                // 3. Success modal (handled in section A)
                 continue;
             }
 
@@ -468,14 +473,13 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
                 continue;
             }
 
-            // If we get here, unknown button state
             log.warn("Unknown button state: \"{}\" → waiting...", text);
             randomHumanDelay(1000, 2000);
         }
 
         // ── HANDLE PERMANENT FAILURE ──
         if (permanentFailure) {
-            log.error("BET PLACEMENT FAILED → Unrecoverable state (unavailable / rejected)");
+            log.error("BET PLACEMENT FAILED → Unrecoverable state");
             try {
                 Locator closeBtn = page.locator("div.m-dialog-wrapper button:has-text('OK'), " +
                         "div.m-dialog-wrapper img.close-icon[data-action='close']").first();
