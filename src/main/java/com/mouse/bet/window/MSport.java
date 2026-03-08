@@ -534,7 +534,7 @@ public class MSport implements BettingWindow, Runnable {
                     boolean betPlaced = false;
                     try {
                         betPlaced = MSportBetPlacement.placeBet(
-                                page, task.getBetLeg(), arbOutcomeService);
+                                page, task.getBetLeg(), arbOutcomeService, arbChecker);
 
                         betId = "BET_" + System.currentTimeMillis(); // TODO: Extract actual bet ID
 

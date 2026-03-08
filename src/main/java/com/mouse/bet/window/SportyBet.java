@@ -505,7 +505,7 @@ public class SportyBet implements BettingWindow, Runnable {
                         EMOJI_MONEY, EMOJI_BET, task.getArbId(), BOOKMAKER);
 
                 boolean betPlaced = SportyBetPlacement.placeBet(
-                        page, task.getBetLeg(), arbOutcomeService);
+                        page, task.getBetLeg(), arbOutcomeService, arbChecker);
 
                 // Generate/extract bet ID
                 betId = "BET_" + System.currentTimeMillis(); // TODO: Extract actual bet ID

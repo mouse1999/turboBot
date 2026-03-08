@@ -506,7 +506,7 @@ public class Bet9ja implements BettingWindow, Runnable {
                         EMOJI_MONEY, EMOJI_BET, task.getArbId(), BOOKMAKER);
 
                 boolean betPlaced = Bet9jaBetPlacement.placeBet(
-                        page, task.getBetLeg(), arbOutcomeService);
+                        page, task.getBetLeg(), arbOutcomeService, arbChecker);
 
                 betId = "BET_" + System.currentTimeMillis();
 

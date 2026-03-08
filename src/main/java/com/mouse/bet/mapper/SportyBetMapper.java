@@ -689,7 +689,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
     }
 
     private void generateTeamOverUnder(String marketId, String teamName) {
-        double[] totals = {0.5, 1.5, 2.5, 3.5};
+        double[] totals = {0.5, 1.5, 2.5, 3.5, 4.5, 5.5};
 
         for (double total : totals) {
             String line = formatDecimal(total);
@@ -714,7 +714,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateFootballAsianHandicaps() {
         // Negative handicaps: -5.5 to -0.5
-        double start = -5.5;
+        double start = -10.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -728,7 +728,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps: +0.5 to +5.5
         start = 0.5;
-        end = 5.5;
+        end = 10.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -808,8 +808,8 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateMatchTotalPoints() {
         // Match total points: 50.5 to 120.5
-        double start = 50.5;
-        double end = 120.5;
+        double start = 30.5;
+        double end = 200.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -825,8 +825,8 @@ public class SportyBetMapper extends SimilarBookieMapper {
         String marketName = game + getOrdinalSuffix(game) + " game - total points";
 
         // Game total points: 15.5 to 30.5
-        double start = 15.5;
-        double end = 30.5;
+        double start = 10.5;
+        double end = 50.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -841,7 +841,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateGameHandicaps() {
         // Game handicaps: -2.5 to +2.5 (0.5 increments)
-        double start = -2.5;
+        double start = -9.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -856,7 +856,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps
         start = 0.5;
-        end = 2.5;
+        end = 9.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -871,7 +871,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
         String marketName = game + getOrdinalSuffix(game) + " game - point handicap";
 
         // Negative handicaps: -10.5 to -0.5
-        double start = -10.5;
+        double start = -20.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -886,7 +886,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps: +0.5 to +10.5
         start = 0.5;
-        end = 10.5;
+        end = 20.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -936,7 +936,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateMatchPointHandicaps() {
         // Match-level point handicaps: -20.5 to +20.5
-        double start = -20.5;
+        double start = -30.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -951,7 +951,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps
         start = 0.5;
-        end = 20.5;
+        end = 30.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -967,7 +967,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 // ──────────────────────────────────────────────────────────────
 
     private void generateFullGameTotals() {
-        double start = 110.5;
+        double start = 50.5;
         double end = 280.5;
         double step = 0.5;
 
@@ -981,8 +981,8 @@ public class SportyBetMapper extends SimilarBookieMapper {
     }
 
     private void generateFirstHalfTotals() {
-        double start = 30.5;
-        double end = 140.5;
+        double start = 20.5;
+        double end = 250.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -995,8 +995,8 @@ public class SportyBetMapper extends SimilarBookieMapper {
     }
 
     private void generateSecondHalfTotals() {
-        double start =30.5;
-        double end = 140.5;
+        double start =20.5;
+        double end = 240.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -1010,8 +1010,8 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateAllQuarterTotals() {
         for (int quarter = 1; quarter <= 4; quarter++) {
-            double start = 30.5;
-            double end = 80.5;
+            double start = 20.5;
+            double end = 180.5;
             double step = 0.5;
 
             String marketName = quarter + getOrdinalSuffix(quarter) + " quarter - Over/Under";
@@ -1033,7 +1033,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateFullGameHandicaps() {
         // Negative handicaps: -30.5 to -0.5
-        double start = -30.5;
+        double start = -80.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -1047,7 +1047,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps: +0.5 to +30.5
         start = 0.5;
-        end = 30.5;
+        end = 80.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -1060,7 +1060,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateAsianHandicaps() {
         // Negative handicaps: -30.5 to -0.5
-        double start = -40.5;
+        double start = -90.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -1074,7 +1074,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps: +0.5 to +30.5
         start = 0.5;
-        end = 40.5;
+        end = 90.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -1087,7 +1087,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateFirstHalfHandicaps() {
         // Negative handicaps: -15.5 to -0.5
-        double start = -15.5;
+        double start = -35.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -1101,7 +1101,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps: +0.5 to +15.5
         start = 0.5;
-        end = 15.5;
+        end = 35.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -1114,7 +1114,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateFirstHalfAsianHandicaps() {
         // Negative handicaps: -15.5 to -0.5
-        double start = -15.5;
+        double start = -35.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -1128,7 +1128,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps: +0.5 to +15.5
         start = 0.5;
-        end = 15.5;
+        end = 35.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -1141,7 +1141,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
     private void generateSecondHalfHandicaps() {
         // Negative handicaps: -15.5 to -0.5
-        double start = -15.5;
+        double start = -35.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -1155,7 +1155,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps: +0.5 to +15.5
         start = 0.5;
-        end = 15.5;
+        end = 35.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -1171,7 +1171,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
             String marketName = quarter + getOrdinalSuffix(quarter) + " quarter - handicap";
 
             // Negative handicaps: -10.5 to -0.5
-            double start = -10.5;
+            double start = -40.5;
             double end = -0.5;
             double step = 0.5;
 
@@ -1186,7 +1186,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
 
             // Positive handicaps: +0.5 to +10.5
             start = 0.5;
-            end = 10.5;
+            end = 40.5;
 
             for (double hcp = start; hcp <= end; hcp += step) {
                 String line = formatDecimal(hcp);
@@ -1220,7 +1220,7 @@ public class SportyBetMapper extends SimilarBookieMapper {
     private void generateTeamTotalsIncludingOvertime(String marketId, String teamName) {
         // Team totals: 50.5 to 100.5
         double start = 40.5;
-        double end = 110.5;
+        double end = 210.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {

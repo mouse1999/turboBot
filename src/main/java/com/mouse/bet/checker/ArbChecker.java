@@ -45,7 +45,7 @@ public class ArbChecker {
      * Set in application.properties:  arb.stale.threshold.ms=15000
      * Default: 15 seconds
      */
-    @Value("${arb.stale.threshold.ms:15000}")
+    @Value("${arb.stale.threshold.ms:2000}")
     private long staleThresholdMs;
 
     @Value("${arb.total.budget:10000}")

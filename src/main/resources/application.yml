@@ -35,6 +35,7 @@ bet9ja:
   headless: false
 
 # Combined ARB section to prevent "duplicate key" error
+#arb.total.budget
 arb:
   polling:
     enabled: true
@@ -44,10 +45,12 @@ arb:
       delay:
         ms: 10000
     freshness:
-      seconds: 2
+      seconds: 10
     min:
       profit: 1.5
     bookmakers: SPORTYBET,MSPORT,BET9JA
+  total:
+    budget: 100
 
 fetch:
   enabled:
@@ -62,9 +65,9 @@ playwright:
 breaking-bet:
   api:
     prematch:
-      url: "https://arbs.prematch.api.breaking-bet.com/v1/users/bb-81228/filter/items"
+      url: "https://arbs.prematch.api.breaking-bet.com/v1/users/bb-50810/filter/items"
     live:
-      url: "https://arbs.live.api.breaking-bet.com/v1/users/bb-81228/filter/items"
+      url: "https://arbs.live.api.breaking-bet.com/v1/users/bb-50810/filter/items"
   headless: false
   connection:
     timeout: 30

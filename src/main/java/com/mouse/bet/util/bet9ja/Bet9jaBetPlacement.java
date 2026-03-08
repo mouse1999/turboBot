@@ -422,15 +422,15 @@ public class Bet9jaBetPlacement {
                 // Click to place bet
 //                clickPlaceButton(page);
 
-
-
-
+                boolean isPlaceBetClicked = false;
 
 
                 if (arbResult.isArbValid()) {
                     log.info("→ CLICKING 'Place Bet' button @ {} (attempting placement)", currentOddsText);
                     log.info("arb is still active, proceed to click");
                     clickPlaceButton(page);
+
+                    isPlaceBetClicked = true;
 
                 }else {
                     log.info("❌ Arb no longer valid..");
@@ -450,7 +450,7 @@ public class Bet9jaBetPlacement {
 //                clickPlaceButton(page);
 
                 // Check for success modal
-                if (arbResult.isArbValid()) {
+                if (isPlaceBetClicked) {
                     detectSuccessModal(page);
                 }
 

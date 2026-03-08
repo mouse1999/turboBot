@@ -56,10 +56,10 @@ public class ArbPollingService {
     @Value("${arb.polling.initial.delay.ms:10000}")
     private long initialDelayMs;
 
-    @Value("${arb.polling.freshness.seconds:30}")
+    @Value("${arb.polling.freshness.seconds:10}")
     private int freshnessSeconds;
 
-    @Value("${arb.polling.freshness.seconds:5}")
+    @Value("${arb.polling.freshness.seconds:10}")
     private int  maxArbAgeSeconds;
 
     @Value("${arb.polling.min.profit:1.5}")
@@ -84,7 +84,7 @@ public class ArbPollingService {
      * Maximum age in seconds for arbs to be considered (based on createdAt)
      * This prevents processing very old arbs that might still be marked as ACTIVE
      */
-    @Value("${arb.polling.max.age.seconds:60}")
+    @Value("${arb.polling.max.age.seconds:90}")
     private int maxAgeSeconds;
 
     private Set<BookMaker> allowedBookmakers;
@@ -416,11 +416,11 @@ public class ArbPollingService {
                     Set<BookMaker> arbBookmakers = getBookmakers(arb);
 
                     // Filter 7: Must contain BET9JA (temporary requirement)
-                    if (!arbBookmakers.contains(BookMaker.BET9JA)) {
-                        log.trace("{} Filtered (missing BET9JA) | ArbId: {} | Bookmakers: {}",
-                                EMOJI_FILTERED, arb.getExternalId(), arbBookmakers);
-                        return false;
-                    }
+//                    if (!arbBookmakers.contains(BookMaker.BET9JA)) {
+//                        log.trace("{} Filtered (missing BET9JA) | ArbId: {} | Bookmakers: {}",
+//                                EMOJI_FILTERED, arb.getExternalId(), arbBookmakers);
+//                        return false;
+//                    }
 
                     // Filter 8: Bookmakers filter (if configured)
                     if (!allowedBookmakers.isEmpty()) {

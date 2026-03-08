@@ -63,7 +63,7 @@ public class BreakingBetClient {
     @Value("${breaking-bet.api.prematch.url:https://arbs.prematch.app-api.breaking-bet.com/v1/users/bb-50810/filter/items}")
     private String prematchApiUrl;
 
-    @Value("${breaking-bet.api.live.url:https://arbs.live.app-api.breaking-bet.com/v1/users/bb-81228/filter/items}")
+    @Value("${breaking-bet.api.live.url:https://arbs.live.app-api.breaking-bet.com/v1/users/bb-50810/filter/items}")
     private String liveApiUrl;
 
     @Value("${breaking-bet.connection.timeout:30}")

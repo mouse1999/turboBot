@@ -196,7 +196,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
     private void generateFootballOverUnder() {
         // Over/Under: 0.5 to 6.5
         double start = 0.5;
-        double end = 6.5;
+        double end = 10.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -211,7 +211,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
     private void generateFootballHomeAwayOverUnder() {
         // Home Team O/U: 0.5 to 4.5
         double start = 0.5;
-        double end = 4.5;
+        double end = 5.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -234,7 +234,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
     private void generateFootballHandicaps() {
         // Regular Handicaps: 1:0 to 5:0
-        int[] handicaps = {1, 2, 3, 4, 5};
+        int[] handicaps = {0,1, 2, 3, 4, 5};
 
         for (int hcp : handicaps) {
             Map<String, String> map = new HashMap<>();
@@ -247,7 +247,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
     private void generateFootballAsianHandicaps() {
         // Asian Handicaps: -5.5 to +5.5
-        double start = -5.5;
+        double start = -10.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -262,7 +262,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps
         start = 0.5;
-        end = 5.5;
+        end = 10.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -275,7 +275,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
     private void generateFootballDoubleChanceOverUnder() {
         // Double Chance & O/U for common totals: 1.5, 2.5, 3.5, 4.5
-        double[] totals = {1.5, 2.5, 3.5, 4.5};
+        double[] totals = {0.5, 1.5, 2.5, 3.5, 4.5};
 
         for (double total : totals) {
             String line = formatDecimal(total);
@@ -356,8 +356,8 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
     private void generateMatchTotalPoints() {
         // Match total points: 50.5 to 120.5
-        double start = 50.5;
-        double end = 120.5;
+        double start = 20.5;
+        double end = 250.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -372,7 +372,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
     private void generateHomeTeamTotalPoints() {
         // Home team total points: 20.5 to 60.5
         double start = 20.5;
-        double end = 60.5;
+        double end = 150.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -387,7 +387,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
     private void generateAwayTeamTotalPoints() {
         // Away team total points: 20.5 to 60.5
         double start = 20.5;
-        double end = 60.5;
+        double end = 150.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -401,7 +401,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
     private void generateMatchPointHandicaps() {
         // Match-level point handicaps: -20.5 to +20.5
-        double start = -20.5;
+        double start = -90.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -416,7 +416,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps
         start = 0.5;
-        end = 20.5;
+        end = 90.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -439,8 +439,8 @@ public class MSportBetMapper extends SimilarBookieMapper {
         String marketName = game + getOrdinalSuffix(game) + " game - total points";
 
         // Game total points: 15.5 to 30.5
-        double start = 15.5;
-        double end = 30.5;
+        double start = 10.5;
+        double end = 100.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -457,7 +457,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
         String marketName = game + getOrdinalSuffix(game) + " game - point handicap";
 
         // Negative handicaps: -10.5 to -0.5
-        double start = -10.5;
+        double start = -70.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -472,7 +472,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps: +0.5 to +10.5
         start = 0.5;
-        end = 10.5;
+        end = 70.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -624,7 +624,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
     private void generateBasketballFullGameTotals() {
         // Full game total (incl. OT): 150.5 to 280.5
-        double start = 150.5;
+        double start = 50.5;
         double end = 280.5;
         double step = 0.5;
 
@@ -639,7 +639,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
     private void generateBasketballFullGameHandicaps() {
         // Full game handicaps (incl. OT): -30.5 to +30.5
-        double start = -30.5;
+        double start = -150.5;
         double end = -0.5;
         double step = 0.5;
 
@@ -654,7 +654,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps
         start = 0.5;
-        end = 30.5;
+        end = 150.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -667,8 +667,8 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
     private void generateBasketballHomeAwayTotals() {
         // Home team total (incl. OT): 60.5 to 150.5
-        double start = 60.5;
-        double end = 150.5;
+        double start = 30.5;
+        double end = 250.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -691,8 +691,8 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
     private void generateBasketballWinnerAndTotal() {
         // Winner & O/U combinations: 120.5 to 200.5
-        double start = 120.5;
-        double end = 200.5;
+        double start = 50.5;
+        double end = 280.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -737,8 +737,8 @@ public class MSportBetMapper extends SimilarBookieMapper {
         addMarket("295", null, "2nd half - Odd/Even (incl. overtime)", halfOddEven);
 
         // 2nd Half - Totals: 60.5 to 140.5
-        double start = 60.5;
-        double end = 140.5;
+        double start = 30.5;
+        double end = 250.5;
         double step = 0.5;
 
         for (double total = start; total <= end; total += step) {
@@ -750,7 +750,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
         }
 
         // 2nd Half - Handicaps: -15.5 to +15.5
-        start = -15.5;
+        start = -30.5;
         end = -0.5;
         step = 0.5;
 
@@ -765,7 +765,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps
         start = 0.5;
-        end = 15.5;
+        end = 30.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -818,7 +818,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
         }
 
         // Quarter Handicaps: -10.5 to +10.5
-        start = -10.5;
+        start = -50.5;
         end = -0.5;
         step = 0.5;
 
@@ -834,7 +834,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
         // Positive handicaps
         start = 0.5;
-        end = 10.5;
+        end = 50.5;
 
         for (double hcp = start; hcp <= end; hcp += step) {
             String line = formatDecimal(hcp);
@@ -847,7 +847,7 @@ public class MSportBetMapper extends SimilarBookieMapper {
 
         // Quarter Home Team Total: 10.5 to 40.5
         start = 10.5;
-        end = 40.5;
+        end = 100.5;
         step = 0.5;
 
         for (double total = start; total <= end; total += step) {

@@ -155,7 +155,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Market ID format: LIVEB_12HNDOTN02@{handicap}
         // Outcome suffixes: _1H (Home), _2H (Away)
 
-        for (double hcp = -40.5; hcp <= 40.5; hcp += 0.5) {
+        for (double hcp = -50.5; hcp <= 50.5; hcp += 0.5) {
             if (hcp == 0) continue;
 
             String line = formatDecimal(Math.abs(hcp));
@@ -179,7 +179,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Market ID format: LIVEB_12HND3P@{handicap}
         // Outcome suffixes: _1H (Home), _2H (Away)
 
-        for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+        for (double hcp = -20.5; hcp <= 20.5; hcp += 0.5) {
             if (hcp == 0) continue;
 
             String line = formatDecimal(Math.abs(hcp));
@@ -208,7 +208,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Market ID format: LIVEB_OUOT@{total}
         // Outcome suffixes: _O (Over), _U (Under)
 
-        for (double total = 110.5; total <= 280.5; total += 0.5) {
+        for (double total = 30.5; total <= 280.5; total += 0.5) {
             String line = formatDecimal(total);
             String marketId = "LIVEB_OUOT@" + line;
 
@@ -224,7 +224,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Market ID format: LIVEB_OU@{total}
         // Outcome suffixes: _O (Over), _U (Under)
 
-        for (double total = 110.5; total <= 280.5; total += 0.5) {
+        for (double total = 20.5; total <= 300.5; total += 0.5) {
             String line = formatDecimal(total);
             String marketId = "LIVEB_OU@" + line;
 
@@ -549,7 +549,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
     private void generateTeamTotals() { //todo
         // Home Team Total (Including Overtime)
         // Market ID format: LIVEB_HTOT@{total}
-        for (double total = 40.5; total <= 140.5; total += 0.5) {
+        for (double total = 20.5; total <= 200.5; total += 0.5) {
             String line = formatDecimal(total);
             String marketId = "LIVEB_HTOT@" + line;
 
@@ -561,7 +561,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
 
         // Away Team Total (Including Overtime)
         // Market ID format: LIVEB_ATOT@{total}
-        for (double total = 40.5; total <= 140.5; total += 0.5) {
+        for (double total = 20.5; total <= 200.5; total += 0.5) {
             String line = formatDecimal(total);
             String marketId = "LIVEB_ATOT@" + line;
 
@@ -573,7 +573,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
 
         // Home Team Total (Regular Time)
         // Market ID format: LIVEB_HT@{total}
-        for (double total = 40.5; total <= 140.5; total += 0.5) {
+        for (double total = 20.5; total <= 200.5; total += 0.5) {
             String line = formatDecimal(total);
             String marketId = "LIVEB_HT@" + line;
 
@@ -913,7 +913,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
 
     private void generateSoccerHandicapMarkets() {
         // Asian Handicap
-        double[] handicaps = {-2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5};
+        double[] handicaps = {-1.0,-1.5, -2.0, -2.5, -3.0, -3.5, -4.0, -4.5, 5.0, -5.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5};
 
         for (double hcp : handicaps) {
             if (hcp == 0.0) continue;
@@ -928,7 +928,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         }
 
         // 3-Way Handicap
-        for (double hcp : new double[]{-2.0, -1.0, 1.0, 2.0}) {
+        for (double hcp : new double[]{-1.0,-1.5, -2.0, -2.5, -3.0, -3.5, -4.0, -4.5, 5.0, -5.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5}) {
             String hcpStr = formatDecimal(Math.abs(hcp));
             String marketId = "LIVES_1X2HNDHN1@" + (hcp < 0 ? "-" : "") + hcpStr;
 
@@ -940,7 +940,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         }
 
         // Halftime Handicap
-        for (double hcp : new double[]{-1.0, 1.0}) {
+        for (double hcp : new double[]{-1.0,-1.5, -2.0, -2.5, -3.0, -3.5, -4.0, -4.5, 5.0, -5.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5}) {
             String hcpStr = formatDecimal(Math.abs(hcp));
             String marketId = "LIVES_1X2HTN@" + (hcp < 0 ? "-" : "") + hcpStr;
 
@@ -965,52 +965,52 @@ public class Bet9jaMapper extends SimilarBookieMapper {
             String marketId = "LIVES_OU@" + totalStr;
 
             Map<String, String> map = new HashMap<>();
-            map.put("O", "Over");
-            map.put("U", "Under");
+            map.put("O", "Over " + totalStr);
+            map.put("U", "Under " + totalStr);
             addMarket(marketId, null, "Total", map);
         }
 
         // Over/Under 1st Half
-        for (double total : new double[]{0.5, 1.5, 2.5}) {
+        for (double total : new double[]{1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5}) {
             String totalStr = formatDecimal(total);
             String marketId = "LIVES_OU1T@" + totalStr;
 
             Map<String, String> map = new HashMap<>();
-            map.put("O", "Over");
-            map.put("U", "Under");
+            map.put("O", "Over " + totalStr);
+            map.put("U", "Under " + totalStr);
             addMarket(marketId, null, "Halftime - Total", map);
         }
 
         // Over/Under 2nd Half
-        for (double total : new double[]{0.5, 1.5, 2.5}) {
+        for (double total : new double[]{1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5}) {
             String totalStr = formatDecimal(total);
             String marketId = "LIVES_OU2T@" + totalStr;
 
             Map<String, String> map = new HashMap<>();
-            map.put("O", "Over");
-            map.put("U", "Under");
+            map.put("O", "Over " + totalStr);
+            map.put("U", "Under " + totalStr);
             addMarket(marketId, null, "2nd Half - Total", map);
         }
 
         // Home Team Total
-        for (double total : new double[]{0.5, 1.5, 2.5}) {
+        for (double total : new double[]{1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5}) {
             String totalStr = formatDecimal(total);
             String marketId = "LIVES_OUHOME@" + totalStr;
 
             Map<String, String> map = new HashMap<>();
-            map.put("O", "Over");
-            map.put("U", "Under");
+            map.put("O", "Over " + totalStr);
+            map.put("U", "Under " + totalStr);
             addMarket(marketId, null, "Home Team Total", map);
         }
 
         // Away Team Total
-        for (double total : new double[]{0.5, 1.5, 2.5}) {
+        for (double total : new double[]{1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5}) {
             String totalStr = formatDecimal(total);
             String marketId = "LIVES_OUAWAY@" + totalStr;
 
             Map<String, String> map = new HashMap<>();
-            map.put("O", "Over");
-            map.put("U", "Under");
+            map.put("O", "Over " + totalStr);
+            map.put("U", "Under " + totalStr);
             addMarket(marketId, null, "Away Team Total", map);
         }
     }
@@ -1021,15 +1021,15 @@ public class Bet9jaMapper extends SimilarBookieMapper {
 
     private void generateSoccerCornerMarkets() { //todo
         // Total Corners
-        double[] cornerTotals = {6.5, 7.5, 8.5, 9.5, 10.5};
+        double[] cornerTotals = {1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5};
 
         for (double total : cornerTotals) {
             String totalStr = formatDecimal(total);
             String marketId = "LIVES_OUCORNER@" + totalStr;
 
             Map<String, String> map = new HashMap<>();
-            map.put("Over", "Over");
-            map.put("Under", "Under");
+            map.put("Over", "Over " + totalStr);
+            map.put("Under", "Under " + totalStr);
             addMarket(marketId, null, "Total Corners", map);
         }
 
@@ -1047,13 +1047,13 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         addMarket("LIVES_OECORNERS", null, "Odd/Even Corners", oeCorner);
 
         // Home Team Corners Total
-        for (double total : new double[]{5.5}) {
+        for (double total : new double[]{1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5}) {
             String totalStr = formatDecimal(total);
             String marketId = "LIVES_CORNEROUH@" + totalStr;
 
             Map<String, String> map = new HashMap<>();
-            map.put("HOver", "Over");
-            map.put("HUnder", "Under");
+            map.put("HOver", "Over " + totalStr);
+            map.put("HUnder", "Under " + totalStr);
             addMarket(marketId, null, "Home Corners Total", map);
         }
     }
@@ -1064,15 +1064,15 @@ public class Bet9jaMapper extends SimilarBookieMapper {
 
     private void generateSoccerCardMarkets() { //todo
         // Total Cards
-        double[] cardTotals = {1.5, 2.5, 3.5, 4.5};
+        double[] cardTotals = {1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5};
 
         for (double total : cardTotals) {
             String totalStr = formatDecimal(total);
             String marketId = "LIVES_TOTACARDSS@" + totalStr;
 
             Map<String, String> map = new HashMap<>();
-            map.put("O", "Over");
-            map.put("U", "Under");
+            map.put("O", "Over " + totalStr);
+            map.put("U", "Under " + totalStr);
             addMarket(marketId, null, "Total Cards", map);
         }
 
@@ -1130,8 +1130,8 @@ public class Bet9jaMapper extends SimilarBookieMapper {
                 String marketIdWithTotal = marketId + "@" + totalStr;
 
                 Map<String, String> map = new HashMap<>();
-                map.put("O", "Over");
-                map.put("U", "Under");
+                map.put("O", "Over "+ totalStr);
+                map.put("U", "Under " + totalStr);
                 addMarket(marketIdWithTotal, null, mins + " Minutes - Over/Under", map);
             }
         }
@@ -1231,7 +1231,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Outcome suffixes: _1H (Player 1), _2H (Player 2)
 
         for (int set = 1; set <= 2; set++) {
-            for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+            for (double hcp = -50.5; hcp <= 50.5; hcp += 0.5) {
                 if (hcp == 0) continue;
 
                 String line = formatDecimal(Math.abs(hcp));
@@ -1258,7 +1258,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Outcome suffixes: _1H (Player 1), _2H (Player 2)
 
         for (int set = 3; set <= 7; set++) {
-            for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+            for (double hcp = -40.5; hcp <= 40.5; hcp += 0.5) {
                 if (hcp == 0) continue;
 
                 String line = formatDecimal(Math.abs(hcp));
@@ -1285,7 +1285,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Outcome suffixes: _1H (Player 1), _2H (Player 2)
 
         for (int set = 1; set <= 7; set++) {
-            for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+            for (double hcp = -50.5; hcp <= 50.5; hcp += 0.5) {
                 if (hcp == 0) continue;
 
                 String line = formatDecimal(Math.abs(hcp));
@@ -1311,7 +1311,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Market ID format: LIVETT_12GHND@{handicap}
         // Outcome suffixes: _1 (Player 1), _2 (Player 2)
 
-        for (double hcp = -3.5; hcp <= 3.5; hcp += 0.5) {
+        for (double hcp = -20.5; hcp <= 20.5; hcp += 0.5) {
             if (hcp == 0) continue;
 
             String line = formatDecimal(Math.abs(hcp));
@@ -1337,7 +1337,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Outcome suffixes: _1 (Player 1), _2 (Player 2)
 
         for (int set = 1; set <= 7; set++) {
-            for (double hcp = -10.5; hcp <= 10.5; hcp += 0.5) {
+            for (double hcp = -40.5; hcp <= 40.5; hcp += 0.5) {
                 if (hcp == 0) continue;
 
                 String line = formatDecimal(Math.abs(hcp));
@@ -1363,7 +1363,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Market ID format: LIVETT_12PHND@{handicap}
         // Outcome suffixes: _1 (Player 1), _2 (Player 2)
 
-        for (double hcp = -30.5; hcp <= 30.5; hcp += 0.5) {
+        for (double hcp = -70.5; hcp <= 70.5; hcp += 0.5) {
             if (hcp == 0) continue;
 
             String line = formatDecimal(Math.abs(hcp));
@@ -1392,7 +1392,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Market ID format: LIVETT_OU@{total}
         // Outcome suffixes: _Over, _Under
 
-        for (double total = 30.5; total <= 120.5; total += 0.5) {
+        for (double total = 30.5; total <= 200.5; total += 0.5) {
             String line = formatDecimal(total);
             String marketId = "LIVETT_OU@" + line;
 
@@ -1455,7 +1455,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Market ID format: LIVETT_OUP@{total}
         // Outcome suffixes: _O (Over), _U (Under)
 
-        for (double total = 30.5; total <= 120.5; total += 0.5) {
+        for (double total = 10.5; total <= 190.5; total += 0.5) {
             String line = formatDecimal(total);
             String marketId = "LIVETT_OUP@" + line;
 
@@ -1471,7 +1471,7 @@ public class Bet9jaMapper extends SimilarBookieMapper {
         // Market ID format: LIVETT_OUG@{total}
         // Outcome suffixes: _O (Over), _U (Under)
 
-        for (double total = 2.5; total <= 7.5; total += 0.5) {
+        for (double total = 2.5; total <= 10.5; total += 0.5) {
             String line = formatDecimal(total);
             String marketId = "LIVETT_OUG@" + line;
 
