@@ -3,6 +3,7 @@ package com.mouse.bet.util.sporty;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import com.mouse.bet.converter.ModelConverter;
 import com.mouse.bet.interfaces.BettingTask;
 import com.mouse.bet.service.ArbOutcomeService;
