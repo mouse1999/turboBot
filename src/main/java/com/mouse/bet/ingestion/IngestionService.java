@@ -470,8 +470,8 @@ public class IngestionService {
 
         OddsInfo oddsInfo = extractOddsInfo(odd);
 
-        // Only save crumbs from non-1WIN and non-Bet9ja bookmakers
-        if (bookMaker != BookMaker._1WIN && bookMaker != BookMaker.BET9JA) {
+        // Only Msport and Sportybet save crumbs (for 1WIN to use later)
+        if ((bookMaker == BookMaker.MSPORT || bookMaker == BookMaker.SPORTYBET)) {
             Map<String, String> crumbs = odd.getCrumbs();
             if (crumbs != null && !crumbs.isEmpty() && crumbsHolder.savedCrumbs == null) {
                 crumbsHolder.saveCrumbs(bookMaker, crumbs);
@@ -504,6 +504,7 @@ public class IngestionService {
 
         return outcome;
     }
+
 
 
     private String bet9jaOutcomeStyle(String outcome, String home, String away) {
@@ -612,21 +613,31 @@ public class IngestionService {
 
         String keyToUse;
         Map<String, String> crumbsToUse;
-        boolean isBet9jaSpecialProcessing = (bookMaker == BookMaker.BET9JA);
+        String source;
 
-        if (isBet9jaSpecialProcessing) {
-            // Bet9ja ALWAYS uses its own crumbs
+        // 1WIN: Use saved crumbs from Msport/Sportybet if available
+        if (bookMaker == BookMaker._1WIN) {
+            if (crumbsHolder.hasCrumbs()) {
+                crumbsToUse = crumbsHolder.getSavedCrumbs();
+                keyToUse = crumbsHolder.getSavedKey();
+                source = "saved from " + crumbsHolder.getSourceBookmaker();
+            } else {
+                crumbsToUse = crumbs;
+                keyToUse = "oid";
+                source = "own crumbs (no saved available)";
+            }
+        }
+        // BET9JA: Always uses own crumbs with id2
+        else if (bookMaker == BookMaker.BET9JA) {
             crumbsToUse = crumbs;
             keyToUse = "id2";
-        } else if (crumbsHolder.hasCrumbs()) {
-            // Other normal bookmakers use saved crumbs (only from non-Bet9ja sources)
-            crumbsToUse = crumbsHolder.getSavedCrumbs();
-            keyToUse = crumbsHolder.getSavedKey();
-        } else {
-            // First non-Bet9ja non-1WIN bookmaker → save now with oid
+            source = "own crumbs";
+        }
+        // All other bookmakers: Use own crumbs independently
+        else {
             crumbsToUse = crumbs;
             keyToUse = "oid";
-            crumbsHolder.saveCrumbs(bookMaker, crumbs);
+            source = "own crumbs";
         }
 
         String rawId = crumbsToUse.get(keyToUse);
@@ -639,7 +650,7 @@ public class IngestionService {
 
         // For Bet9ja: take the part AFTER the LAST underscore
         String selectedId;
-        if (isBet9jaSpecialProcessing) {
+        if (bookMaker == BookMaker.BET9JA) {
             int lastUnderscore = rawId.lastIndexOf('_');
             if (lastUnderscore == -1 || lastUnderscore == rawId.length() - 1) {
                 log.warn("{} {} Bet9ja id2 format invalid (no '_' or ends with '_'): '{}'",
@@ -648,15 +659,12 @@ public class IngestionService {
             }
             selectedId = rawId.substring(lastUnderscore + 1).trim();
         } else {
-            // Normal bookmakers use the value as-is
             selectedId = rawId;
         }
 
         log.info("{} {} Using key='{}' = '{}' → selectedId='{}' for bookmaker: {} (source: {})",
                 EMOJI_CRUMBS, EMOJI_INFO,
-                keyToUse, rawId, selectedId, bookMaker,
-                isBet9jaSpecialProcessing ? "own crumbs (post-underscore)" :
-                        (crumbsHolder.hasCrumbs() ? crumbsHolder.getSourceBookmaker() : "self (first non-Bet9ja)"));
+                keyToUse, rawId, selectedId, bookMaker, source);
 
         return Optional.ofNullable(getMarketOutcome(bookMaker, crumbsToUse))
                 .map(outcome -> {

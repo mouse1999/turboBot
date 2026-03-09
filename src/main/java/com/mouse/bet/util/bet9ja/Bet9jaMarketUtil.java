@@ -191,104 +191,116 @@ public class Bet9jaMarketUtil {
                 const oddsEl = betMatch.querySelector('div.betslip__match-odds span.txt-darkorange, div.betslip__match-odds span');
                 const displayedOdds = oddsEl ? oddsEl.textContent.trim() : 'N/A';
                 
-                // Extract components from outcome string for flexible matching
-                const extractComponents = (outcome) => {
-                    const lower = outcome.toLowerCase();
+                // Normalize outcome strings for comparison
+                const normalizeOutcome = (outcome) => {
+                    // Convert to lowercase
+                    let normalized = outcome.toLowerCase().trim();
                     
-                    // Extract handicap value (e.g., "-1.0", "+1.5", "1.5")
-                    const handicapMatch = outcome.match(/([+-]?[0-9]+[.][0-9]+|[+-]?[0-9]+)/);
-                    const handicap = handicapMatch ? handicapMatch[1] : null;
+                    // Remove extra spaces
+                    normalized = normalized.replace(/\\s+/g, ' ');
                     
-                    // Extract home/away indicator
-                    const hasHome = /\\bhome\\b/i.test(outcome);
-                    const hasAway = /\\baway\\b/i.test(outcome);
+                    // Extract and normalize handicap/total value
+                    const numberMatch = normalized.match(/([+-]?\\d+\\.\\d+|[+-]?\\d+)/);
+                    const number = numberMatch ? numberMatch[1].replace(/^\\+/, '') : null;
                     
-                    // Extract over/under
-                    const hasOver = /\\bover\\b/i.test(outcome);
-                    const hasUnder = /\\bunder\\b/i.test(outcome);
+                    // Extract keywords
+                    const hasOver = /\\bover\\b/i.test(normalized);
+                    const hasUnder = /\\bunder\\b/i.test(normalized);
+                    const hasHome = /\\bhome\\b/i.test(normalized);
+                    const hasAway = /\\baway\\b/i.test(normalized);
+                    const hasHandicap = /\\bhandicap\\b/i.test(normalized);
+                    const hasTotal = /\\btotal\\b/i.test(normalized);
                     
-                    // Remove common patterns to get the team/outcome name
-                    let cleanText = outcome
-                        .replace(/\\(.*?\\)/g, '')  // Remove anything in parentheses
+                    // Remove numbers, keywords, and punctuation to get core text
+                    let coreText = normalized
+                        .replace(/\\bover\\b/gi, '')
+                        .replace(/\\bunder\\b/gi, '')
                         .replace(/\\bhome\\b/gi, '')
                         .replace(/\\baway\\b/gi, '')
-                        .replace(/[+-]?[0-9]+[.][0-9]+/g, '')
-                        .replace(/[+-]?[0-9]+/g, '')
+                        .replace(/\\bhandicap\\b/gi, '')
+                        .replace(/\\btotal\\b/gi, '')
+                        .replace(/[+-]?\\d+\\.\\d+/g, '')
+                        .replace(/[+-]?\\d+/g, '')
+                        .replace(/\\(.*?\\)/g, '')
+                        .replace(/[^a-z0-9\\s]/g, ' ')
                         .replace(/\\s+/g, ' ')
-                        .trim()
-                        .toLowerCase();
+                        .trim();
                     
                     return {
-                        handicap,
-                        hasHome,
-                        hasAway,
+                        number,
                         hasOver,
                         hasUnder,
-                        cleanText,
+                        hasHome,
+                        hasAway,
+                        hasHandicap,
+                        hasTotal,
+                        coreText,
                         original: outcome
                     };
                 };
                 
-                const displayedComponents = extractComponents(displayedOutcome);
-                const expectedComponents = extractComponents(expectedOutcome);
+                const displayed = normalizeOutcome(displayedOutcome);
+                const expected = normalizeOutcome(expectedOutcome);
                 
-                // Compare components
+                // Compare normalized components
                 let outcomeMatch = true;
+                let mismatchReason = [];
                 
-                // Check handicap value (if present in either)
-                if (displayedComponents.handicap || expectedComponents.handicap) {
-                    // Normalize handicap values (remove leading +, compare numerically)
-                    const normalizeHandicap = (h) => {
-                        if (!h) return null;
-                        return h.replace(/^\\+/, '');
-                    };
+                // 1. Compare numeric values (handicap/total)
+                if (displayed.number !== expected.number) {
+                    outcomeMatch = false;
+                    mismatchReason.push(`Number mismatch: expected '${expected.number}', got '${displayed.number}'`);
+                }
+                
+                // 2. Compare over/under
+                if (displayed.hasOver !== expected.hasOver) {
+                    outcomeMatch = false;
+                    mismatchReason.push(`Over flag mismatch`);
+                }
+                if (displayed.hasUnder !== expected.hasUnder) {
+                    outcomeMatch = false;
+                    mismatchReason.push(`Under flag mismatch`);
+                }
+                
+                // 3. Compare home/away
+                if (displayed.hasHome !== expected.hasHome) {
+                    outcomeMatch = false;
+                    mismatchReason.push(`Home flag mismatch`);
+                }
+                if (displayed.hasAway !== expected.hasAway) {
+                    outcomeMatch = false;
+                    mismatchReason.push(`Away flag mismatch`);
+                }
+                
+                // 4. Compare core text (team names, etc.) - flexible matching
+                if (displayed.coreText && expected.coreText) {
+                    const dispWords = displayed.coreText.split(/\\s+/).filter(w => w.length > 2);
+                    const expWords = expected.coreText.split(/\\s+/).filter(w => w.length > 2);
                     
-                    const dispHcp = normalizeHandicap(displayedComponents.handicap);
-                    const expHcp = normalizeHandicap(expectedComponents.handicap);
+                    // Check if there are common words (flexible matching)
+                    const hasCommonWords = dispWords.length === 0 || expWords.length === 0 ||
+                                          dispWords.some(w => expWords.some(ew => ew.includes(w) || w.includes(ew))) ||
+                                          expWords.some(w => dispWords.some(dw => dw.includes(w) || w.includes(dw)));
                     
-                    if (dispHcp !== expHcp) {
+                    if (!hasCommonWords) {
                         outcomeMatch = false;
+                        mismatchReason.push(`Core text mismatch: expected '${expected.coreText}', got '${displayed.coreText}'`);
                     }
                 }
                 
-                // Check home/away
-                if (displayedComponents.hasHome !== expectedComponents.hasHome ||
-                    displayedComponents.hasAway !== expectedComponents.hasAway) {
-                    outcomeMatch = false;
-                }
-                
-                // Check over/under
-                if (displayedComponents.hasOver !== expectedComponents.hasOver ||
-                    displayedComponents.hasUnder !== expectedComponents.hasUnder) {
-                    outcomeMatch = false;
-                }
-                
-                // Check if the clean text matches (team names, etc.)
-                // Allow partial match since word order might differ
-                if (displayedComponents.cleanText && expectedComponents.cleanText) {
-                    const dispWords = displayedComponents.cleanText.split(/\\s+/).filter(w => w.length > 2);
-                    const expWords = expectedComponents.cleanText.split(/\\s+/).filter(w => w.length > 2);
-                    
-                    // Check if most significant words are present in both
-                    const hasCommonWords = dispWords.some(w => expWords.includes(w)) || 
-                                          expWords.some(w => dispWords.includes(w));
-                    
-                    if (!hasCommonWords && dispWords.length > 0 && expWords.length > 0) {
-                        outcomeMatch = false;
-                    }
-                }
-                
-                // Market matching (exact match)
-                const marketMatch = displayedMarket.toLowerCase() === expectedMarket.toLowerCase();
+                // Market matching (case-insensitive, whitespace-normalized)
+                const normalizedDisplayedMarket = displayedMarket.toLowerCase().replace(/\\s+/g, ' ').trim();
+                const normalizedExpectedMarket = expectedMarket.toLowerCase().replace(/\\s+/g, ' ').trim();
+                const marketMatch = normalizedDisplayedMarket === normalizedExpectedMarket;
                 
                 if (!outcomeMatch) {
                     return {
                         success: false,
-                        error: 'Outcome mismatch',
+                        error: 'Outcome mismatch: ' + mismatchReason.join(', '),
                         expected: expectedOutcome,
                         actual: displayedOutcome,
-                        displayedComponents: displayedComponents,
-                        expectedComponents: expectedComponents,
+                        displayedComponents: displayed,
+                        expectedComponents: expected,
                         displayedMarket,
                         displayedOdds,
                         matchName,
@@ -303,6 +315,8 @@ public class Bet9jaMarketUtil {
                         error: 'Market mismatch',
                         expected: expectedMarket,
                         actual: displayedMarket,
+                        normalizedExpected: normalizedExpectedMarket,
+                        normalizedActual: normalizedDisplayedMarket,
                         displayedOutcome,
                         displayedOdds,
                         matchName,
