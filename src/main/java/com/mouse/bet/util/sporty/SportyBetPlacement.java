@@ -417,14 +417,20 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
                             // Re-enter stake — reuse same safe pattern
                             stakeInput.click(new Locator.ClickOptions().setTimeout(5000));
                             randomHumanDelay(100, 200);
-                            stakeInput.fill("");
-                            SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(arbChecker.getResult().getStake(task.bookmaker())));
-                            randomHumanDelay(100, 200);
-                            log.info("stake amount entered.:. {}", arbChecker.getResult().getStake(task.bookmaker()));
-                            stakeInput.press("Tab", new Locator.PressOptions().setTimeout(5000));
+
+                            if (arbChecker.getResult().isArbValid()) {
+                                stakeInput.fill("");
+                                SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(arbChecker.getResult().getStake(task.bookmaker())));
+                                randomHumanDelay(100, 200);
+                                log.info("stake amount entered.:. {}", arbChecker.getResult().getStake(task.bookmaker()));
+                                stakeInput.press("Tab", new Locator.PressOptions().setTimeout(5000));
+
+                            }
+
+
                         }
                     }
-                    continue;
+//                    continue;
                 } else {
                     log.error("❌ Arb no longer active → {}", task.bookmaker());
                     permanentFailure = true;
@@ -456,20 +462,25 @@ public static boolean placeBet(Page page, BettingTask task, ArbOutcomeService ar
                 // Re-enter stake safely
                 stakeInput.click(new Locator.ClickOptions().setTimeout(5000));
                 randomHumanDelay(100, 200);
-                stakeInput.fill("");
-                SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(arbChecker.getResult().getStake(task.bookmaker())));
-                randomHumanDelay(100, 200);
+                if (arbChecker.getResult().isArbValid()) {
+                    stakeInput.fill("");
+                    SportyBetLoginUtil.typeFastHumanLike(stakeInput, String.valueOf(arbChecker.getResult().getStake(task.bookmaker())));
+//                    randomHumanDelay(100, 200);
+                    randomHumanDelay(100, 200);
 
-                log.info("stake amount entered: {}", arbChecker.getResult().getStake(task.bookmaker()));
-                stakeInput.press("Tab", new Locator.PressOptions().setTimeout(5000));
-                continue;
+                    log.info("stake amount entered: {}", arbChecker.getResult().getStake(task.bookmaker()));
+                    stakeInput.press("Tab", new Locator.PressOptions().setTimeout(5000));
+
+                }
+
+//                continue;
             }
 
             if (text.matches(".*(Place Bet|Bet Now|Confirm Bet|Place bet).*") && !btn.isDisabled()) {
                 log.info("→ Clicking 'Place Bet'");
                 btn.click(new Locator.ClickOptions().setForce(true).setNoWaitAfter(true));
                 randomHumanDelay(500, 1000);
-                continue;
+//                continue;
             }
 
             if (text.contains("Place Bet") && btn.isDisabled()) {
