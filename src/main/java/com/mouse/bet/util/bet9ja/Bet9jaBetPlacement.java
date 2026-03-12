@@ -407,7 +407,8 @@ public class Bet9jaBetPlacement {
                 log.info("[ArbChecker] Bet9ja stake: ₦{}", arbStake);
 
                 // Re-enter the arb-calculated stake right before final click
-                if (!reEnterStakeBeforePlacement(page, arbStake)) {
+                if (arbResult.isArbValid()) {
+                    reEnterStakeBeforePlacement(page, arbStake);
                     randomHumanDelay(500, 800);
                     continue;
                 }
@@ -1076,7 +1077,6 @@ public class Bet9jaBetPlacement {
             break;
         }
     }
-                     =======
         
         // Get market info
         const outcomeElement = document.querySelector('div.betslip__match-row:first-child div.betslip__match-item strong');
