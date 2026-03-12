@@ -205,15 +205,16 @@ public class MSportBetPlacement {
             // Step 1: Handle "Accept Changes"
             if (btnLower.contains("accept changes")) {
                 handleAcceptChanges(page, currentOddsText);
-                continue;
+//                continue;
             }
 
             ArbChecker.ArbResult arbResult = arbChecker.getResult();
 
             // Step 2: Re-enter stake before final placement
             if (btnLower.contains("place bet") || btnLower.contains("place") || btnLower.contains("submit")) {
-                if (!reEnterStakeBeforePlacement(page, arbResult.getStake(bettingTask.bookmaker()))) {
-                    continue;
+                if (arbResult.isArbValid()) {
+                    reEnterStakeBeforePlacement(page, arbResult.getStake(bettingTask.bookmaker()));
+//                    continue;
                 }
 
                 // Step 3: Click place bet
