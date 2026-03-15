@@ -1,12 +1,12 @@
-# Real-Time Event Processing and Automation System
+# Real-Time Event Processing and Automation System for Live Sport Arbing
 
-This project is a sophisticated, real-time event processing system designed to identify and act upon arbitrage opportunities from multiple data sources. It leverages a powerful combination of Spring Boot, Playwright for web automation, and a robust, multi-threaded architecture to ensure high performance and reliability.
+This project is a real-time event processing system designed to identify and capitalize on live sports arbitrage opportunities. It specifically targets the Nigerian market, integrating with major local bookmakers such as **MSport**, **SportyBet**, and **Bet9ja**. By leveraging a powerful combination of Spring Boot, Playwright for web automation, and a robust, multi-threaded architecture, the system ensures high-speed data ingestion and automated execution.
 
 This system is engineered to:
 
-- Ingest real-time event data from the `breaking-bet.com` API.
-- Identify profitable arbitrage opportunities across multiple platforms.
-- Automate interactions with web-based platforms to execute trades.
+- Ingest real-time live event data from the `breaking-bet.com` API.
+- Identify profitable arbitrage opportunities across **MSport**, **SportyBet**, and **Bet9ja**.
+- Automate interactions with these web-based platforms to execute bets instantly.
 - Provide a comprehensive and scalable solution for real-time data analysis and automated decision-making.
 
 The project is built with a focus on clean code, scalability, and maintainability, making it an excellent showcase of modern Java development practices.
@@ -46,6 +46,7 @@ The system is designed with a modular, multi-layered architecture:
 The application is configured using `src/main/resources/application.yml`. You must update this file with your credentials and preferences before running the application.
 
 #### Bookmaker Credentials & Settings
+
 Configure credentials and browser behavior (headless mode) for each supported platform.
 
 ```yaml
@@ -66,6 +67,7 @@ bet9ja:
 ```
 
 #### Arbitrage Logic
+
 Control how the bot identifies and acts on opportunities.
 
 ```yaml
@@ -84,6 +86,7 @@ arb:
 ```
 
 #### Data Source (Breaking-Bet)
+
 Configure the connection to the data provider.
 
 ```yaml
@@ -134,6 +137,19 @@ The application will start, and you can access the API at `http://localhost:8085
 
 #### Starting the Workflow
 
-1.  Once the application is running, open your web browser and navigate to `http://localhost:8085/arbitrage`.
-2.  Click on the **menu** button to reveal the controls.
-3.  Click on **Start Orchestrator** to initiate the automated workflow. The system will then begin to fetch data and process opportunities according to your configuration.
+1. Once the application is running, open your web browser and navigate to `http://localhost:8085/arbitrage`.
+2. Click on the **menu** button to reveal the controls.
+3. Click on **Start Orchestrator** to initiate the automated workflow. The system will then begin to fetch data and process opportunities according to your configuration.
+
+### Codebase Maturity & Future Improvements
+
+While the core functionality of the system is robust and fully operational, the project is currently in an active phase of refinement. The codebase demonstrates a functional implementation of complex real-time processing and automation logic.
+
+Key areas identified for future refactoring and optimization (Technical Debt) include:
+
+- **Authentication Automation**: Currently, some initial authentication steps involve manual intervention to capture tokens. Future iterations will fully automate this process using headless browser scripts.
+- **Component Decoupling**: Further separation of concerns between the browser automation logic (Playwright) and the HTTP client (OkHttp) to enhance testability and modularity.
+- **Enhanced Error Recovery**: Implementing more granular retry mechanisms and circuit breakers for external API interactions.
+- **Logging Standardization**: Transitioning from custom logging formats to a structured logging approach for better integration with centralized monitoring tools.
+
+This project serves as a practical demonstration of integrating diverse technologies to solve a real-time problem, prioritizing functionality and performance while acknowledging the continuous cycle of software improvement.
