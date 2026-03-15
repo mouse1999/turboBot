@@ -27,11 +27,13 @@ The project is built with a focus on clean code, scalability, and maintainabilit
 - **Web Automation**: Playwright 1.57.0
 - **HTTP Client**: OkHttp 4.12.0
 - **API Documentation**: SpringDoc OpenAPI 2.6.0
-- **Frontend**: Node.js 20.10.0, React
+- **Frontend**: Node.js 20.10.0, ReactJs
 - **Database**: H2 (Runtime only)
 - **Build Tool**: Gradle
 
 ### Architecture
+
+![High-Level Diagram](high_level_design-High_Level_Design.png)
 
 The system is designed with a modular, multi-layered architecture:
 
